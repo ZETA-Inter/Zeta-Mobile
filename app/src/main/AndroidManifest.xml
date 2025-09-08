@@ -13,6 +13,93 @@
         android:theme="@style/Theme.ZetaMobile"
         tools:targetApi="31">
         <activity
+            android:name=".worker.GoalsPageWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.ChatBotPageWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.LessonsWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.SummarizeCourseWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.ModulePageWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.TrainingPageWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.HomePageWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.PaymentFailureWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.PaymentSuccessfulWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.PaymentWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.PlanWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.SendEmailWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.ForgetPasswordWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.RegisterSuccessfulWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.LoginWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".worker.RegisterWorkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.WorkerListPageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.RankingPageCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.HomePageCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.PaymentFailureCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.PaymentSuccessfulCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.PaymentCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.PlanCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.RegisterCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.SendEmailCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.ForgetPasswordCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.LoginCompanyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FirstPageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashScreenActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
