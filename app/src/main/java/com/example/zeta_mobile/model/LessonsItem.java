@@ -1,5 +1,5 @@
 package com.example.zeta_mobile.model;
 
-public class CursoItem {
+public class LessonsItem {
     //Item do curso 
 }
