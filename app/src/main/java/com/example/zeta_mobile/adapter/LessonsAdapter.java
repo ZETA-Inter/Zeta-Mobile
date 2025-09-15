@@ -1,5 +1,5 @@
 package com.example.zeta_mobile.adapter;
 
-public class CursoAdapter {
+public class LessonsAdapter {
     //Adapter do curso
 }
