@@ -1,17 +1,9 @@
 package com.example.zeta_mobile.company;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -19,22 +11,23 @@ import com.example.zeta_mobile.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import android.widget.TextView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class RegisterCompanyActivity extends AppCompatActivity {
 
-    private TextInputLayout tilNome, tilEmail, tilTelefone, tilCnpj, tilSenha, tilConfirmar;
+    private TextInputLayout tilNome, tilEmail, tilTelefone, tilCnpj, tilSenha, tilConfirmar, tilMsg;
     private TextInputEditText edtNome, edtEmail, edtTelefone, edtCnpj, edtSenha, edtConfirmar;
-    private TextView tvFormMsg, tvJaConta;
     private MaterialButton btnCadastrar;
+    private FirebaseAuth mAuth;
+    private final CompanyRepository repo = new CompanyRepository();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_company);
 
-        // refs
+        mAuth = FirebaseAuth.getInstance();
+
         tilNome = findViewById(R.id.tilNome);
         tilEmail = findViewById(R.id.tilEmail);
         tilTelefone = findViewById(R.id.tilTelefone);
@@ -49,107 +42,81 @@ public class RegisterCompanyActivity extends AppCompatActivity {
         edtSenha = findViewById(R.id.edtSenha);
         edtConfirmar = findViewById(R.id.edtConfirmar);
 
-        tvFormMsg = findViewById(R.id.tvFormMsg);
-        tvJaConta = findViewById(R.id.tvJaConta);
         btnCadastrar = findViewById(R.id.btnCadastrar);
-
-        // link “Entre com ela.” clicável e vermelho
-        configurarJaPossuiConta();
-
-        btnCadastrar.setOnClickListener(v -> validarOuIr());
+        btnCadastrar.setOnClickListener(v -> cadastrar());
     }
 
-    private void configurarJaPossuiConta() {
-        String base = "Já possui uma conta? Entre com ela.";
-        SpannableString ss = new SpannableString(base);
-        int start = base.indexOf("Entre com ela.");
-        int end = start + "Entre com ela.".length();
+    private void cadastrar() {
+        clearErrors();
 
-        // cor vermelha
-        ss.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.error_red)),
-                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        String nome = get(edtNome);
+        String email = get(edtEmail);
+        String fone = get(edtTelefone);
+        String cnpj = get(edtCnpj);
+        String s1 = get(edtSenha);
+        String s2 = get(edtConfirmar);
 
-        // clique -> LoginCompanyActivity
-        ClickableSpan click = new ClickableSpan() {
-            @Override public void onClick(@NonNull View widget) {
-                startActivity(new Intent(RegisterCompanyActivity.this, LoginCompanyActivity.class));
-                finish();
-            }
-        };
-        ss.setSpan(click, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        tvJaConta.setText(ss);
-        tvJaConta.setMovementMethod(LinkMovementMethod.getInstance());
-        tvJaConta.setHighlightColor(Color.TRANSPARENT);
-    }
-
-    private void validarOuIr() {
         boolean ok = true;
 
-        limparTodosErros();
-        ocultarMensagem();
+        if (TextUtils.isEmpty(nome)) { error(tilNome, "Informe seu nome"); ok = false; }
+        if (TextUtils.isEmpty(email)) { error(tilEmail, "Informe seu e-mail"); ok = false; }
+        else if (!Validators.isValidEmail(email)) { error(tilEmail, "E-mail inválido"); ok = false; }
 
-        if (isEmpty(edtNome))    { marcarErro(tilNome, "Informe seu nome"); ok = false; }
-        if (isEmpty(edtEmail))   { marcarErro(tilEmail, "Informe seu e-mail"); ok = false; }
-        if (isEmpty(edtTelefone)){ marcarErro(tilTelefone, "Informe seu telefone"); ok = false; }
-        if (isEmpty(edtCnpj))    { marcarErro(tilCnpj, "Informe seu CNPJ"); ok = false; }
-        if (isEmpty(edtSenha))   { marcarErro(tilSenha, "Informe sua senha"); ok = false; }
-        if (isEmpty(edtConfirmar)){ marcarErro(tilConfirmar, "Confirme sua senha"); ok = false; }
+        if (TextUtils.isEmpty(fone)) { error(tilTelefone, "Informe seu telefone"); ok = false; }
+        else if (!Validators.isValidPhone(fone)) { error(tilTelefone, "Telefone inválido"); ok = false; }
 
-        if (!ok) {
-            mostrarMensagem("Preencha todos os campos.");
-            return;
-        }
+        if (TextUtils.isEmpty(cnpj)) { error(tilCnpj, "Informe seu CNPJ"); ok = false; }
+        else if (!Validators.isValidCNPJ(cnpj)) { error(tilCnpj, "CNPJ inválido"); ok = false; }
 
-        String s1 = edtSenha.getText().toString();
-        String s2 = edtConfirmar.getText().toString();
-        if (!s1.equals(s2)) {
-            marcarErro(tilConfirmar, "As senhas não coincidem");
-           mostrarMensagem("Corrija os campos em vermelho.");
-             return;
-        }
+        if (TextUtils.isEmpty(s1)) { error(tilSenha, "Informe sua senha"); ok = false; }
+        else if (!Validators.isStrongPassword(s1)) { error(tilSenha, "Mín. 6, com letra e número"); ok = false; }
 
-        // Sucesso -> vai para PlanCompanyActivity
-        startActivity(new Intent(this, PlanCompanyActivity.class));
-        finish();
+        if (TextUtils.isEmpty(s2)) { error(tilConfirmar, "Confirme sua senha"); ok = false; }
+        else if (!s1.equals(s2)) { error(tilConfirmar, "As senhas não coincidem"); ok = false; }
+
+        if (!ok) return;
+
+        // 1) Cria no Auth
+        mAuth.createUserWithEmailAndPassword(email, s1)
+                .addOnSuccessListener(res -> {
+                    // 2) Atualiza displayName no Auth
+                    res.getUser().updateProfile(new UserProfileChangeRequest.Builder()
+                            .setDisplayName(nome).build()
+                    );
+
+                    // 3) Upsert no Firestore com createdAt/lastLoginAt + cnpj/phone
+                    repo.upsertFromAuth(res.getUser(), null)
+                            .onSuccessTask(aVoid -> repo.updateContact(res.getUser().getUid(), cnpj, fone))
+                            .addOnSuccessListener(v -> {
+                                // 4) Próxima tela do seu fluxo
+                                startActivity(new Intent(this, PlanCompanyActivity.class));
+                                finish();
+                            })
+                            .addOnFailureListener(e -> error(tilEmail, "Falha ao salvar dados. Tente novamente."));
+                })
+                .addOnFailureListener(e -> error(tilEmail, mapAuthCreateError(e)));
     }
 
-    private boolean isEmpty(TextInputEditText edt) {
-        CharSequence t = edt.getText();
-        return t == null || TextUtils.isEmpty(t.toString().trim());
+    // ===== utilidades =====
+    private String get(TextInputEditText e) { return e.getText() == null ? "" : e.getText().toString().trim(); }
+    private void clearErrors() {
+        for (TextInputLayout til : new TextInputLayout[]{tilNome, tilEmail, tilTelefone, tilCnpj, tilSenha, tilConfirmar}) {
+            if (til != null) { til.setError(null); til.setBoxStrokeColor(ContextCompat.getColor(this, R.color.plan_card_bg)); }
+        }
     }
-
-    private void marcarErro(TextInputLayout til, String msg) {
-        int red = ContextCompat.getColor(this, R.color.error_red);
+    private void error(TextInputLayout til, String msg) {
+        if (til == null) return;
         til.setError(msg);
         til.setErrorIconDrawable(null);
+        int red = ContextCompat.getColor(this, R.color.error_red);
         til.setBoxStrokeColor(red);
-        try {
-            til.setBoxStrokeWidth(2);
-            til.setBoxStrokeWidthFocused(2);
-        } catch (Exception ignored) {}
+        try { til.setBoxStrokeWidth(2); til.setBoxStrokeWidthFocused(2); } catch (Exception ignored) {}
     }
-
-    private void limparTodosErros() {
-        limparErro(tilNome);
-        limparErro(tilEmail);
-        limparErro(tilTelefone);
-        limparErro(tilCnpj);
-        limparErro(tilSenha);
-        limparErro(tilConfirmar);
-    }
-
-    private void limparErro(TextInputLayout til) {
-        til.setError(null);
-        til.setErrorEnabled(false);
-    }
-
-    private void mostrarMensagem(String s) {
-        tvFormMsg.setText(s);
-        tvFormMsg.setVisibility(View.VISIBLE);
-    }
-
-    private void ocultarMensagem() {
-        tvFormMsg.setVisibility(View.GONE);
+    private String mapAuthCreateError(Exception e) {
+        String m = e.getMessage() == null ? "" : e.getMessage();
+        if (m.contains("email address is already in use")) return "E-mail já cadastrado";
+        if (m.contains("WEAK_PASSWORD")) return "Senha fraca (mín. 6)";
+        if (m.contains("INVALID_EMAIL")) return "E-mail inválido";
+        return "Não foi possível criar sua conta";
     }
 }
