@@ -1,5 +1,6 @@
 package com.example.zeta_mobile.model;
 
 public class LessonsItem {
-    //Item do curso 
+    //Item do curso
+    //nome atualizado
 }
