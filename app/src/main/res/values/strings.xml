@@ -5,4 +5,7 @@
     <string name="sign_in_google">Entrar com Google</string>
     <string name="sign_in_facebook">Entrar com Facebook</string>
     <string name="sign_in_apple">Entrar com Apple</string>
+
+    <string name="default_web_client_id">407643507558-rall1dd6kssps2gq8bh7l96h6cesp6hs.apps.googleusercontent.com</string>
+
 </resources>
