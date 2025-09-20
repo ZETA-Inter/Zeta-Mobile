@@ -68,6 +68,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
+
             <!-- Label E-mail -->
             <TextView
                 android:id="@+id/lblEmail"
@@ -108,7 +109,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tilEmail"
                 app:layout_constraintStart_toStartOf="parent"/>
 
-            <!-- Input Senha -->
+            <!-- Input Senha (preenchido Material) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSenha"
                 style="@style/Widget.App.FilledInput"
@@ -127,7 +128,7 @@
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Link: Esqueceu sua senha? -->
+            <!-- Link: Esqueceu sua senha?-->
             <TextView
                 android:id="@+id/tvForgotPasswordCompany"
                 android:layout_width="wrap_content"
@@ -153,7 +154,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="20dp"/>
 
-            <!-- Separador -->
+
+            <!-- Separador: "Ou entre com" com linhas dos dois lados -->
             <View
                 android:id="@+id/divLeft"
                 android:layout_width="0dp"
