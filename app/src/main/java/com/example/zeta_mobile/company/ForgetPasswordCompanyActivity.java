@@ -1,10 +1,8 @@
 package com.example.zeta_mobile.company;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -13,70 +11,44 @@ import com.example.zeta_mobile.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import android.widget.TextView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgetPasswordCompanyActivity extends AppCompatActivity {
 
     private TextInputLayout tilEmail;
     private TextInputEditText edtEmail;
-    private MaterialButton btnEnviarEmail;
-    private TextView tvFormMsg;
+    private MaterialButton btnEnviar;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forget_password_company);
 
         tilEmail = findViewById(R.id.tilEmail);
         edtEmail = findViewById(R.id.edtEmail);
-        btnEnviarEmail = findViewById(R.id.btnEnviarEmail);
-        tvFormMsg = findViewById(R.id.tvFormMsg);
+        btnEnviar = findViewById(R.id.btnEnviarEmail);
 
-        btnEnviarEmail.setOnClickListener(v -> validarOuIr());
+        btnEnviar.setOnClickListener(v -> enviar());
     }
 
-    private void validarOuIr() {
-        String email = edtEmail.getText() != null ? edtEmail.getText().toString().trim() : "";
+    private void enviar() {
+        tilEmail.setError(null);
+        String email = edtEmail.getText() == null ? "" : edtEmail.getText().toString().trim();
+        if (TextUtils.isEmpty(email)) { setErr("Informe seu e-mail"); return; }
+        if (!Validators.isValidEmail(email)) { setErr("E-mail inválido"); return; }
 
-        limparErro(tilEmail);
-        ocultarMensagem();
-
-        if (TextUtils.isEmpty(email)) {
-            marcarErro(tilEmail, "Informe seu e-mail");
-            mostrarMensagem("O campo deve ser preenchido.");
-            return;
-        }
-
-        // OK -> próxima tela (envio de e-mail)
-        startActivity(new Intent(this, SendEmailCompanyActivity.class));
-        finish();
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnSuccessListener(v -> {
+                    startActivity(new Intent(this, SendEmailCompanyActivity.class));
+                    finish();
+                })
+                .addOnFailureListener(e -> setErr("Não foi possível enviar. Verifique o e-mail."));
     }
 
-    private void marcarErro(TextInputLayout til, String msg) {
+    private void setErr(String msg) {
+        tilEmail.setError(msg);
+        tilEmail.setErrorIconDrawable(null);
         int red = ContextCompat.getColor(this, R.color.error_red);
-        til.setError(msg);
-        til.setErrorIconDrawable(null);
-        til.setBoxStrokeColor(red);
-        try {
-            til.setBoxStrokeWidth(2);
-            til.setBoxStrokeWidthFocused(2);
-        } catch (Exception ignored) {}
-    }
-
-    private void limparErro(TextInputLayout til) {
-        til.setError(null);
-        til.setErrorEnabled(false);
-    }
-
-    private void mostrarMensagem(String s) {
-        if (tvFormMsg != null) {
-            tvFormMsg.setText(s);
-            tvFormMsg.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void ocultarMensagem() {
-        if (tvFormMsg != null) tvFormMsg.setVisibility(View.GONE);
+        tilEmail.setBoxStrokeColor(red);
+        try { tilEmail.setBoxStrokeWidth(2); tilEmail.setBoxStrokeWidthFocused(2); } catch (Exception ignored) {}
     }
 }

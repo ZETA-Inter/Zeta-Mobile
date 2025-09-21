@@ -12,6 +12,10 @@ import androidx.core.content.ContextCompat;
 
 import android.widget.ImageView;
 
+import com.example.zeta_mobile.company.HomePageCompanyActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class SplashScreenActivity extends AppCompatActivity {
 
     private static final long SPLASH_DELAY = 1200L; // 1.2s
@@ -33,5 +37,10 @@ public class SplashScreenActivity extends AppCompatActivity {
             startActivity(new Intent(SplashScreenActivity.this, com.example.zeta_mobile.FirstPageActivity.class));
             finish();
         }, SPLASH_DELAY);
+
+        FirebaseUser fu = FirebaseAuth.getInstance().getCurrentUser();
+        startActivity(new Intent(this, fu != null ? HomePageCompanyActivity.class : FirstPageActivity.class));
+        finish();
+
     }
 }
