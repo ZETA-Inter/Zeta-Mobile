@@ -1,3 +1,9 @@
+# 📌 Módulo alterado
+- [ ]  **:app** 
+- [ ]  **:core** 
+- [ ]  **:feature_produtor**
+- [ ]  **:feature_fornecedor** 
+
 # 📌 Tipo de alteração
 <!-- Marque apenas uma opção -->
 - [ ] ✨ **feature** (nova funcionalidade)
