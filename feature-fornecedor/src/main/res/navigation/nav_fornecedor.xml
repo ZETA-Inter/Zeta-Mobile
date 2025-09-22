@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_fornecedor"
+    app:startDestination="@id/HomePageCompany">
+
+    <fragment
+        android:id="@+id/HomePageCompany"
+        android:name="com.example.feature_fornecedor.HomePageCompany">
+        <deepLink
+            android:id="@+id/HomePageCompanyDeepLink"
+            app:uri="app://Company/Home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/RankingPageCompany"
+        android:name="com.example.feature_fornecedor.RankingPageCompany">
+        <deepLink
+            android:id="@+id/RankingPageCompanyDeepLink"
+            app:uri="app://Company/Ranking" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/WorkerListPageCompany"
+        android:name="com.example.feature_fornecedor.WorkerListPageCompany">
+        <deepLink
+            android:id="@+id/WorkerListPageCompanyDeepLink"
+            app:uri="app://Company/WorkerList" />
+    </fragment>
+
+</navigation>

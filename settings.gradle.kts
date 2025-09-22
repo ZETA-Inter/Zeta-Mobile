@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Zeta-Mobile"
 include(":app")
- 
+include(":core")
+include(":feature-fornecedor")
+include(":feature-produtor")

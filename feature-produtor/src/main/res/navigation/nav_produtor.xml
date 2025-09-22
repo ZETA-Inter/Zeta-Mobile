@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_produtor"
+    app:startDestination="@id/HomePageWorker">
+
+    <fragment
+        android:id="@+id/HomePageWorker"
+        android:name="com.example.feature_produtor.HomePageWorker">
+        <deepLink
+            android:id="@+id/HomePageWorkerDeepLink"
+            app:uri="app://Worker/Home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/GoalsPageWorker"
+        android:name="com.example.feature_produtor.GoalsPageWorker">
+        <deepLink
+            android:id="@+id/GoalsPageWorkerDeepLink"
+            app:uri="app://Worker/Goals" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/LessonsWorker"
+        android:name="com.example.feature_produtor.LessonsWorker">
+        <deepLink
+            android:id="@+id/LessonsWorkerDeepLink"
+            app:uri="app://Worker/Lessons" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ModulePageWorker"
+        android:name="com.example.feature_produtor.ModulePageWorker">
+        <deepLink
+            android:id="@+id/ModulePageWorkerDeepLink"
+            app:uri="app://Worker/Module" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PaymentFailureWorkerIndependent"
+        android:name="com.example.feature_produtor.PaymentFailureWorkerIndependent">
+        <deepLink
+            android:id="@+id/PaymentFailureWorkerIndependentDeepLink"
+            app:uri="app://WorkerIndependent/PaymentFailure" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PaymentWorkerIndependent"
+        android:name="com.example.feature_produtor.PaymentWorkerIndependent">
+        <deepLink
+            android:id="@+id/PaymentWorkerIndependentDeepLink"
+            app:uri="app://WorkerIndependent/Payment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PaymentSuccessfulWorkerIndependent"
+        android:name="com.example.feature_produtor.PaymentSuccessfulWorkerIndependent">
+        <deepLink
+            android:id="@+id/PaymentSuccessfulWorkerIndependentDeepLink"
+            app:uri="app://WorkerIndependent/PaymentSuccessful" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PlanWorkerIndependent"
+        android:name="com.example.feature_produtor.PlanWorkerIndependent">
+        <deepLink
+            android:id="@+id/PlanWorkerIndependentDeepLink"
+            app:uri="app://WorkerIndependent/Plan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/SummarizeCourseWorker"
+        android:name="com.example.feature_produtor.SummarizeCourseWorker">
+        <deepLink
+            android:id="@+id/SummarizeCourseWorkerDeepLink"
+            app:uri="app://Worker/SummarizeCourse" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/TrainingPageWorker"
+        android:name="com.example.feature_produtor.TrainingPageWorker">
+        <deepLink
+            android:id="@+id/TrainingPageWorkerDeepLink"
+            app:uri="app://Worker/Training" />
+    </fragment>
+
+</navigation>

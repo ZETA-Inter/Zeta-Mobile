@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_core"
+    app:startDestination="@id/SplashScreen">
+
+
+    <fragment
+        android:id="@+id/SplashScreen"
+        android:name="com.example.core.SplashScreen">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FirstPage"
+        android:name="com.example.core.FirstPage">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ForgetPassword"
+        android:name="com.example.core.ForgetPassword">
+    </fragment>
+
+    <fragment
+        android:id="@+id/Login"
+        android:name="com.example.core.Login">
+    </fragment>
+
+    <fragment
+        android:id="@+id/Register"
+        android:name="com.example.core.Register">
+    </fragment>
+
+    <fragment
+        android:id="@+id/SendEmail"
+        android:name="com.example.core.SendEmail">
+    </fragment>
+
+
+
+
+
+
+</navigation>
