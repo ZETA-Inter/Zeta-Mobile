@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.core.Repository;
 import com.example.zeta_mobile.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,7 +21,7 @@ public class RegisterCompanyActivity extends AppCompatActivity {
     private TextInputEditText edtNome, edtEmail, edtTelefone, edtCnpj, edtSenha, edtConfirmar;
     private MaterialButton btnCadastrar;
     private FirebaseAuth mAuth;
-    private final CompanyRepository repo = new CompanyRepository();
+    private final Repository repo = new Repository();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

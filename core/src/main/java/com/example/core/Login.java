@@ -1,95 +1,148 @@
 package com.example.core;
-
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.NavigationRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.example.core.R;
+import com.example.core.Repository;
+import com.example.core.Validators; // Importação adicionada
 import com.example.core.databinding.FragmentLoginBinding;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class Login extends Fragment {
 
     private FragmentLoginBinding binding;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final Repository repo = new Repository();
+    private static final int RC_GOOGLE = 9001;
+    private GoogleSignInClient gsc;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Infla o layout usando View Binding
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        // Define os listeners usando o objeto binding
-        binding.btnEntrar.setOnClickListener(v -> validarOuProsseguir(v));
-        binding.tvForgotPasswordCompany.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.ForgetPassword);
-        });
-
-
-        binding.tvCadastro.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.Register);
-
-        });
-
-        return root;
+        return binding.getRoot();
     }
 
-    private void validarOuProsseguir(View v) {
-        String email = binding.edtEmail.getText() != null ? binding.edtEmail.getText().toString().trim() : "";
-        String senha = binding.edtSenha.getText() != null ? binding.edtSenha.getText().toString().trim() : "";
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                // .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        gsc = GoogleSignIn.getClient(requireActivity(), gso);
+
+        // Listeners
+        binding.btnEntrar.setOnClickListener(v -> loginEmailSenha());
+        binding.tvForgotPasswordCompany.setOnClickListener(v -> navigateToForgotPassword(v));
+        if (binding.btnGoogle != null) {
+            binding.btnGoogle.setOnClickListener(v -> startGoogleFlow());
+        }
+    }
+
+    // ===== E-mail/Senha =====
+    private void loginEmailSenha() {
+        clearErrors();
+        String email = get(binding.edtEmail);
+        String senha = get(binding.edtSenha);
 
         boolean ok = true;
-
-        // limpa estados anteriores
-        limparErro(binding.tilEmail);
-        limparErro(binding.tilSenha);
-        ocultarMensagem();
-
         if (TextUtils.isEmpty(email)) {
-            marcarErro(binding.tilEmail, "Informe seu e-mail");
+            error(binding.tilEmail, "Informe seu e-mail");
+            ok = false;
+        } else if (!Validators.isValidEmail(email)) {
+            error(binding.tilEmail, "E-mail inválido");
             ok = false;
         }
+
         if (TextUtils.isEmpty(senha)) {
-            marcarErro(binding.tilSenha, "Informe sua senha");
+            error(binding.tilSenha, "Informe sua senha");
             ok = false;
         }
 
         if (!ok) {
-            mostrarMensagem("Os campos devem ser preenchidos.");
+            mostrarMensagem("Corrija os campos em vermelho.");
             return;
         }
-        //deeplink porque a tela é de outro módulo
-        Uri deepLink = Uri.parse("app://Company/Home");
-        Navigation.findNavController(v).navigate(deepLink);
-        //lógica de navigation component
+
+        mAuth.signInWithEmailAndPassword(email, senha)
+                // .addOnSuccessListener(res -> goHome())
+                .addOnFailureListener(e -> error(binding.tilEmail, mapAuthLoginError(e)));
     }
 
-    private void marcarErro(TextInputLayout til, String msg) {
-        int red = ContextCompat.getColor(requireContext(), R.color.error_red);
+    // ===== Google =====
+    private void startGoogleFlow() {
+        Intent signInIntent = gsc.getSignInIntent();
+        startActivityForResult(signInIntent, RC_GOOGLE);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GOOGLE) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount acc = task.getResult(ApiException.class);
+                AuthCredential cred = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
+                mAuth.signInWithCredential(cred)
+                        .addOnSuccessListener(r -> {
+                            // repo.upsertFromAuth(r.getUser(), null)
+                        })
+                        .addOnFailureListener(e -> error(binding.tilEmail, "Falha no Google Sign-In (verifique SHA-1/SHA-256 e default_web_client_id)"));
+            } catch (ApiException e) {
+                // Tratamento de erro ou cancelamento
+            }
+        }
+    }
+
+    // ===== Navegação e Utils UI =====
+    private void navigateToForgotPassword(View v) {
+        Navigation.findNavController(v).navigate(R.id.ForgetPassword);
+    }
+
+    private String get(TextInputEditText e) {
+        return e.getText() == null ? "" : e.getText().toString().trim();
+    }
+
+    private void clearErrors() {
+        if (binding.tilEmail != null) binding.tilEmail.setError(null);
+        if (binding.tilSenha != null) binding.tilSenha.setError(null);
+        ocultarMensagem();
+    }
+
+    private void error(TextInputLayout til, String msg) {
+        if (til == null) return;
         til.setError(msg);
         til.setErrorIconDrawable(null);
-
+        int red = ContextCompat.getColor(requireContext(), R.color.error_red);
         til.setBoxStrokeColor(red);
         try {
             til.setBoxStrokeWidth(2);
             til.setBoxStrokeWidthFocused(2);
         } catch (Exception ignored) {}
-    }
-
-    private void limparErro(TextInputLayout til) {
-        til.setError(null);
-        til.setErrorEnabled(false);
     }
 
     private void mostrarMensagem(String s) {
@@ -103,10 +156,17 @@ public class Login extends Fragment {
         if (binding.tvFormMsg != null) binding.tvFormMsg.setVisibility(View.GONE);
     }
 
+    private String mapAuthLoginError(Exception e) {
+        String m = e.getMessage() == null ? "" : e.getMessage();
+        if (m.contains("no user record")) return "Usuário não encontrado";
+        if (m.contains("password is invalid")) return "Senha inválida";
+        if (m.contains("INVALID_EMAIL")) return "E-mail inválido";
+        return "Falha no login";
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Anula a referência do binding para evitar vazamento de memória
         binding = null;
     }
 }

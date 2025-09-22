@@ -1,15 +1,14 @@
-package com.example.zeta_mobile.company;
+package com.example.core;
 
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
-
+import com.google.firebase.auth.FirebaseUser;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CompanyRepository {
+public class Repository {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -41,11 +40,13 @@ public class CompanyRepository {
     }
 
     // Atualiza (merge) CNPJ e telefone.
-    public Task<Void> updateContact(String uid, String cnpj, String phone) {
-        Map<String, Object> m = new HashMap<>();
-        m.put("cnpj", cnpj);
-        m.put("phone", phone);
-        return db.collection("company").document(uid).set(m, SetOptions.merge());
-    }
+//    public Task<Void> updateContact(String uid, String cnpj, String phone) {
+//        Map<String, Object> m = new HashMap<>();
+//        m.put("cnpj", cnpj);
+//        m.put("phone", phone);
+    //arrumar logica
+//        //return db.collection("company").document(uid).set(m, SetOptions.merge());
+//        //return db.collection("worker").document(uid).set(m, SetOptions.merge());
+//    }
 
 }
