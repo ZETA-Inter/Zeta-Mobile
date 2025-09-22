@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+
     namespace = "com.example.zeta_mobile"
     compileSdk = 35
 
@@ -38,13 +39,22 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+<<<<<<< HEAD
+    //modularização -> todos os módulos
+    implementation(project(":core"))
+    implementation(project(":feature-produtor"))
+    implementation(project(":feature-fornecedor"))
+=======
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-auth")
     implementation ("com.google.firebase:firebase-firestore")
     implementation ("com.google.android.gms:play-services-auth:21.1.1")
+>>>>>>> e1638fe2c76521e65b4ba56a85c7199323a253ac
 }
