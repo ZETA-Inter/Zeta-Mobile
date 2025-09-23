@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.core.Repository;
 import com.example.zeta_mobile.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,7 +26,7 @@ public class LoginCompanyActivity extends AppCompatActivity {
     private ImageButton btnGoogle;
 
     private FirebaseAuth mAuth;
-    private final CompanyRepository repo = new CompanyRepository();
+    private final Repository repo = new Repository();
 
     private static final int RC_GOOGLE = 9001;
     private GoogleSignInClient gsc;

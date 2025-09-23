@@ -1,4 +1,4 @@
-package com.example.zeta_mobile.company;
+package com.example.core;
 
 import android.util.Patterns;
 
