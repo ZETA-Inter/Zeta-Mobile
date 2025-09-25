@@ -47,4 +47,18 @@
         <item name="cornerSizeBottomRight">28dp</item>
     </style>
 
+    <style name="ShapeAppearance.MyButton" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="StartStepPurpleButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/purple_custom</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MyButton</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
 </resources>

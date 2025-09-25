@@ -47,4 +47,13 @@
         <item name="cornerSizeBottomRight">28dp</item>
     </style>
 
+    <style name="ShapeAppearance.MyButton" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="StartStepPurpleButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/purple_custom</item>
+    </style>
+
 </resources>

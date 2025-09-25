@@ -2,10 +2,10 @@
     <!-- FUNDO DA TELA (atrás do card) -->
     <color name="bg_light">#F5F6FF</color>
 
-    <!-- “FOLHA” branca -->
+    <!-- "FOLHA" branca -->
     <color name="white">#FFFFFF</color>
 
-    <!-- BOTÃO “Entrar” -->
+    <!-- BOTÃO "Entrar" -->
     <color name="primary_dark">#0B355E</color>
 
     <!-- FUNDO DOS INPUTS (TextInputLayout filled) -->
@@ -17,8 +17,8 @@
     <color name="plan_card_bg">#D3DDE6</color> <!-- fundo dos cards (acinzentado/azulado) -->
 
     <!-- TEXTOS -->
-    <color name="text_primary">#043253</color>   <!-- Título “Login” -->
+    <color name="text_primary">#043253</color>   <!-- Título "Login" -->
     <color name="label_grey">#8A8F9C</color>     <!-- Labels acima dos campos -->
-    <color name="divider">#E3E6F1</color>        <!-- linhas finas ao lado de “Ou entre com” -->
-    <color name="link_blue">#3F51B5</color>      <!-- link “Cadastre-se” -->
+    <color name="divider">#E3E6F1</color>        <!-- linhas finas ao lado de "Ou entre com" -->
+    <color name="link_blue">#3F51B5</color>      <!-- link "Cadastre-se" -->
 </resources>

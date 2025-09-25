@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Zeta-Mobile</string>
 
-    <!-- contentDescription para acessibilidade -->
     <string name="sign_in_google">Entrar com Google</string>
     <string name="sign_in_facebook">Entrar com Facebook</string>
     <string name="sign_in_apple">Entrar com Apple</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
