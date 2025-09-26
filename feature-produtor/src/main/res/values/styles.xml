@@ -1,4 +1,10 @@
 <resources>
+
+    <style name="ShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="ShapeAppearance.TopRoundedLarge">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">40dp</item>
@@ -59,6 +65,5 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">16sp</item>
     </style>
-
 
 </resources>

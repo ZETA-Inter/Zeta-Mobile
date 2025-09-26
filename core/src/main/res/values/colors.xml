@@ -22,4 +22,6 @@
     <color name="label_grey">#8A8F9C</color>     <!-- Labels acima dos campos -->
     <color name="divider">#E3E6F1</color>        <!-- Linhas finas ao lado de Ou entre com -->
     <color name="link_blue">#3F51B5</color>      <!-- Link Cadastre se -->
+
+    <color name="purple_custom">#563887</color>
 </resources>
