@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_light"
-    tools:context="company.PaymentFailureCompany">
+    tools:context=".PaymentFailureWorkerIndependent">
 
     <ImageView
         android:id="@+id/imgLogo"

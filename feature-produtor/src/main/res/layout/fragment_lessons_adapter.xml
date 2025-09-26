@@ -13,14 +13,6 @@
         tools:layout_editor_absoluteX="-116dp"
         tools:layout_editor_absoluteY="0dp">
 
-        <TextView
-            android:id="@+id/textView15"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            tools:layout_editor_absoluteX="78dp"
-            tools:layout_editor_absoluteY="92dp" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/Cursos"
             android:layout_width="317dp"
@@ -101,6 +93,6 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-    [A step-by-step guide on creating an Android Fragment](https://www.youtube.com/watch?v=WGjEttJfX4U)
-    Este vídeo pode ajudar a entender como adicionar um Fragment a uma Activity em um projeto Android Studio.
-    http://googleusercontent.com/youtube_content/0
+<!--    [A step-by-step guide on creating an Android Fragment](https://www.youtube.com/watch?v=WGjEttJfX4U)-->
+<!--    Este vídeo pode ajudar a entender como adicionar um Fragment a uma Activity em um projeto Android Studio.-->
+<!--    http://googleusercontent.com/youtube_content/0-->

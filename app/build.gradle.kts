@@ -51,6 +51,7 @@ dependencies {
     implementation(project(":feature-produtor"))
     implementation(project(":feature-fornecedor"))
 
-
+    implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 }
