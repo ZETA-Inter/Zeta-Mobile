@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityLessonWorker">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textvView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="70dp"
+            android:text="Atividade"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/circle_actived2" />
+
+        <TextView
+            android:id="@+id/TextView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="68dp"
+            android:layout_marginTop="6dp"
+            android:text="Conteúdo"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/circle_inactived2" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Bem-estar Animal"
+            app:layout_constraintEnd_toStartOf="@id/icon_logo_boi2"
+            app:layout_constraintHorizontal_bias="0.529"
+            app:layout_constraintStart_toEndOf="@id/btComeback2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btComeback2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_curved_arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/icon_logo_boi2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_logo_boi"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/linhaVertical2"
+            android:layout_width="150dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="80dp"
+            android:background="@drawable/line_rounded"
+            app:layout_constraintEnd_toStartOf="@+id/circle_actived2"
+            app:layout_constraintHorizontal_bias="0.52"
+            app:layout_constraintStart_toEndOf="@+id/circle_inactived2"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btContinuar2"
+            style="@style/StartStepPurpleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="58dp"
+            android:layout_marginBottom="72dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="Continuar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/circle_inactived2"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="93dp"
+            android:layout_marginTop="76dp"
+            android:src="@drawable/circle_inactive"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <ImageView
+            android:id="@+id/circle_actived2"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginTop="76dp"
+            android:layout_marginEnd="96dp"
+            android:src="@drawable/circle_active"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <TextView
+            android:id="@+id/tvAtividade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="124dp"
+            android:text="Atividade 1:"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linhaVertical2" />
+
+        <TextView
+            android:id="@+id/txtPergunta"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Depois de entender como funciona o manejo animal, o que não devemos fazer?"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvAtividade" />
+
+        <RadioGroup
+            android:id="@+id/rgOpcoes"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtPergunta">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbOpcaoA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/radio_button_background"
+                android:buttonTint="@color/purple_custom"
+                android:padding="16dp"
+                android:text="Opção A" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbOpcaoB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/radio_button_background"
+                android:buttonTint="@color/purple_custom"
+                android:padding="16dp"
+                android:text="Opção B" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbOpcaoC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/radio_button_background"
+                android:buttonTint="@color/purple_custom"
+                android:padding="16dp"
+                android:text="Opção C" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbOpcaoD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/radio_button_background"
+                android:buttonTint="@color/purple_custom"
+                android:padding="16dp"
+                android:text="Opção D" />
+        </RadioGroup>
+
+        <FrameLayout
+            android:id="@+id/containerAI"
+            android:layout_width="50dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="52dp"
+            android:layout_marginEnd="139dp"
+            android:layout_marginBottom="72dp"
+            android:background="@drawable/bg_purple_container"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btContinuar2"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView9"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:contentDescription="Logo IA"
+                android:src="@drawable/ic_logo_ia_ultra" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
