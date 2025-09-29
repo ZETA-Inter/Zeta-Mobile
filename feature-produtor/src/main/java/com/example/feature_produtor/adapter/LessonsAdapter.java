@@ -61,6 +61,6 @@ public class LessonsAdapter extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lessons_adapter, container, false);
+        return inflater.inflate(R.layout.fragment_lessons_worker, container, false);
     }
 }

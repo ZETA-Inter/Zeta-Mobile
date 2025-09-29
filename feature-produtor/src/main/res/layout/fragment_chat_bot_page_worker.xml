@@ -1,14 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatBotPageWorker">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="39dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/voltarchat"
+            app:layout_constraintEnd_toStartOf="@+id/titulo_chat"
+            app:layout_constraintHorizontal_bias="0.126"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titulo_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Chatbot Zeta"
+            android:textColor="#333333"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="47dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/boichat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.86"
+            app:layout_constraintStart_toEndOf="@+id/titulo_chat"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Área de digitação -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerChat"
+            android:layout_width="406dp"
+            android:layout_height="565dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="82dp"
+            tools:listitem="@layout/fragment_chat_bot_item" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="651dp">
+
+            <EditText
+                android:id="@+id/editMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_bg"
+                android:hint="mensagem..."
+                android:inputType="text"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textColorHint="#888" />
+
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/btnenviarchat"
+                android:tint="#7B4DFF" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
