@@ -1,4 +1,10 @@
 <resources>
+
+    <style name="ShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="ShapeAppearance.TopRoundedLarge">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">40dp</item>
@@ -45,6 +51,15 @@
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeBottomLeft">28dp</item>
         <item name="cornerSizeBottomRight">28dp</item>
+    </style>
+
+    <style name="ShapeAppearance.MyButton" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="StartStepPurpleButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/purple_custom</item>
     </style>
 
 </resources>

@@ -89,7 +89,7 @@
                 android:layout_height="36dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/app_name"
-                android:src="@android:drawable/ic_menu_copy"/>
+                android:src="@drawable/ic_content_copy"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

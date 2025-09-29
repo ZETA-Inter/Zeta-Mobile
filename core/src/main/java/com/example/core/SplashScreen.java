@@ -62,9 +62,9 @@ public class SplashScreen extends Fragment {
             }
 
             // Opcional: finalizar a Activity que hospeda o Fragment
-            if (getActivity() != null) {
-                getActivity().finish();
-            }
+//            if (getActivity() != null) {
+//                getActivity().finish();
+//            }
         }, SPLASH_DELAY);
 
         return root;

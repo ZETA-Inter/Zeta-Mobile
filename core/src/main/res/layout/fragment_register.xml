@@ -11,7 +11,7 @@
     android:clipToPadding="false"
     tools:context=".Register">
 
-    <!-- “Folha” grande com cantos só no topo + sombra -->
+    <!-- "Folha" grande com cantos só no topo + sombra -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSheet"
         style="@style/NoStrokeCard"
@@ -260,7 +260,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <!-- “Já possui uma conta? Entre com ela.” -->
+                <!-- "Já possui uma conta? Entre com ela." -->
                 <TextView
                     android:id="@+id/tvJaConta"
                     android:layout_width="0dp"

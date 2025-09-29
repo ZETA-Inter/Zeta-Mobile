@@ -83,5 +83,9 @@ public class LessonsAdapter extends RecyclerView.Adapter<LessonsAdapter.LessonsV
             icon = itemView.findViewById(R.id.imageView3);
             quantModulos= itemView.findViewById(R.id.cursoQuantModulo);
         }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_lessons_worker, container, false);
     }
 }
