@@ -61,6 +61,6 @@ public class LessonsItem extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lessons_iten, container, false);
+        return inflater.inflate(R.layout.fragment_lessons_item, container, false);
     }
 }
