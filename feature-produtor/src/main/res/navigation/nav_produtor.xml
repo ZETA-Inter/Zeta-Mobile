@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/HomePageWorker"
-        android:name="com.example.feature_produtor.HomePageWorker">
+        android:name="com.example.feature_produtor.HomePageWorkerFragment">
         <deepLink
             android:id="@+id/HomePageWorkerDeepLink"
             app:uri="app://Worker/Home" />
@@ -82,6 +82,30 @@
         <deepLink
             android:id="@+id/TrainingPageWorkerDeepLink"
             app:uri="app://Worker/Training" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/StepsLessonWorker"
+        android:name="com.example.feature_produtor.StepsLessonWorker">
+        <deepLink
+            android:id="@+id/StepsLessonWorkerDeepLink"
+            app:uri="app://Worker/StepsLesson" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ContentLessonWorker"
+        android:name="com.example.feature_produtor.ContentLessonWorker">
+        <deepLink
+            android:id="@+id/ContentLessonWorkerDeepLink"
+            app:uri="app://Worker/ContentLesson" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ActivityLessonWorker"
+        android:name="com.example.feature_produtor.ActivityLessonWorker">
+        <deepLink
+            android:id="@+id/ActivityLessonWorkerDeepLink"
+            app:uri="app://Worker/ActivityLesson" />
     </fragment>
 
 </navigation>

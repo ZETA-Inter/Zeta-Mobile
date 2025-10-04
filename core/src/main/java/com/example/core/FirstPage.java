@@ -1,5 +1,6 @@
 package com.example.core;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +29,13 @@ public class FirstPage extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.Login)
         );
 
-        binding.btnProdutor.setOnClickListener(v ->
-                // Use o ID do fragmento de destino que você definiu no nav_core.xml
-                Navigation.findNavController(v).navigate(R.id.Login)
-        );
+        binding.btnProdutor.setOnClickListener(v -> {
+            // Use o ID do fragmento de destino que você definiu no nav_core.xml
+//                Navigation.findNavController(v).navigate(R.id.Login)
+
+            Uri deeplink = Uri.parse("app://Worker/Lessons");
+            Navigation.findNavController(v).navigate(deeplink);
+        });
 
         return root;
     }
