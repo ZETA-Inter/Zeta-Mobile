@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "407643507558",
-    "project_id": "zeta-mobile-59c5e",
-    "storage_bucket": "zeta-mobile-59c5e.firebasestorage.app"
+    "project_number": "34722684785",
+    "project_id": "dbzetamobile",
+    "storage_bucket": "dbzetamobile.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:407643507558:android:06ee05e73704232988d6a7",
+        "mobilesdk_app_id": "1:34722684785:android:404861a49edc2d2a5b60d0",
         "android_client_info": {
           "package_name": "com.example.zeta_mobile"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "407643507558-0mknrles1vsvlq4tvt1be8mcqb2t72be.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.zeta_mobile",
-            "certificate_hash": "b30c3b89e49b170d9061c875af9811f5be18740c"
-          }
-        },
-        {
-          "client_id": "407643507558-rall1dd6kssps2gq8bh7l96h6cesp6hs.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCMiwx6AYLvlxJ2r6fcWr2R2NPamm8o4Xk"
+          "current_key": "AIzaSyDER3L2i9BtB1iYu6A0pyygSv6KvuXxrG4"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "407643507558-rall1dd6kssps2gq8bh7l96h6cesp6hs.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
