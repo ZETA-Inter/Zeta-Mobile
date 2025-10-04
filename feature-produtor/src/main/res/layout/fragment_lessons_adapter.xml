@@ -17,9 +17,11 @@
             android:id="@+id/textView15"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="40dp"
             android:text="TextView"
-            tools:layout_editor_absoluteX="78dp"
-            tools:layout_editor_absoluteY="92dp" />
+            app:layout_constraintStart_toEndOf="@+id/txtCursos"
+            app:layout_constraintTop_toBottomOf="@+id/textInputEditText" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/Cursos"
@@ -64,6 +66,7 @@
             app:srcCompat="@drawable/iconnotific" />
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditText"
             android:layout_width="197dp"
             android:layout_height="42dp"
             android:layout_marginTop="28dp"
@@ -101,6 +104,3 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-    [A step-by-step guide on creating an Android Fragment](https://www.youtube.com/watch?v=WGjEttJfX4U)
-    Este vídeo pode ajudar a entender como adicionar um Fragment a uma Activity em um projeto Android Studio.
-    http://googleusercontent.com/youtube_content/0
