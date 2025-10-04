@@ -32,7 +32,7 @@ public class LessonsAdapter extends RecyclerView.Adapter<LessonsAdapter.LessonsV
     public LessonsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Infla o layout do item de curso que definimos anteriormente
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_lessons_iten, parent, false);
+                .inflate(R.layout.fragment_lessons_item, parent, false);
         return new LessonsViewHolder(view);
     }
 
@@ -81,11 +81,7 @@ public class LessonsAdapter extends RecyclerView.Adapter<LessonsAdapter.LessonsV
             title = itemView.findViewById(R.id.cursoTitulo);
             description = itemView.findViewById(R.id.cursoDescr);
             icon = itemView.findViewById(R.id.imageView3);
-            quantModulos= itemView.findViewById(R.id.cursoQuantModulo);
+            quantModulos = itemView.findViewById(R.id.cursoQuantModulo);
         }
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lessons_worker, container, false);
     }
 }
