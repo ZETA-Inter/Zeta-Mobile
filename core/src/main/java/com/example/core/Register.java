@@ -13,6 +13,8 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -26,12 +28,16 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.example.core.Repository; // Assegure-se de ter esta classe acessível
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends Fragment {
 
     private FragmentRegisterBinding binding;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final Repository repo = new Repository();
+    private TipoUsuario tipoAtual;
+
 
     @Nullable
     @Override
@@ -39,8 +45,43 @@ public class Register extends Fragment {
         binding = FragmentRegisterBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
+        }
+        else if (tipoAtual == null) {
+            // Lidar com erro: se o tipo não foi passado, volte ou use um padrão.
+            // Aqui, vamos apenas assumir que não pode ser nulo para o exemplo.
+            Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
+        }
+
+
+
         configurarJaPossuiConta();
-        binding.btnCadastrar.setOnClickListener(v -> cadastrar());
+        binding.btnCadastrar.setOnClickListener(v ->{
+
+            String nome = binding.tilNome.getEditText().getText().toString().trim();
+            String email = binding.tilEmail.getEditText().getText().toString().trim();
+            String telefone = binding.tilTelefone.getEditText().getText().toString().trim();
+            String cnpj = binding.tilCnpj.getEditText().getText().toString().trim();
+            String senha = binding.tilSenha.getEditText().getText().toString().trim();
+
+            Map<String, Object> dadosUsuario = new HashMap<>();
+            dadosUsuario.put("nome", nome);
+            dadosUsuario.put("email", email);
+            dadosUsuario.put("telefone", telefone);
+            dadosUsuario.put("cnpj",cnpj);
+            dadosUsuario.put("senha", senha);
+
+            AuthAdapter adapter = new AuthAdapter();
+
+            try {
+                adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         return root;
     }
@@ -69,41 +110,7 @@ public class Register extends Fragment {
         binding.tvJaConta.setHighlightColor(Color.TRANSPARENT);
     }
 
-    private void cadastrar() {
-        limparTodosErros();
-        ocultarMensagem();
 
-        String nome = get(binding.edtNome);
-        String email = get(binding.edtEmail);
-        String fone = get(binding.edtTelefone);
-        String cnpj = get(binding.edtCnpj);
-        String senha = get(binding.edtSenha);
-        String confirmarSenha = get(binding.edtConfirmar);
-
-        if (!validarCampos(nome, email, fone, cnpj, senha, confirmarSenha)) {
-            mostrarMensagem("Corrija os campos em vermelho.");
-            return;
-        }
-
-        // 1) Cria no Auth
-        mAuth.createUserWithEmailAndPassword(email, senha)
-                .addOnSuccessListener(res -> {
-                    // 2) Atualiza displayName no Auth
-                    res.getUser().updateProfile(new UserProfileChangeRequest.Builder()
-                            .setDisplayName(nome).build()
-                    );
-                    // 3) Upsert no Firestore com createdAt/lastLoginAt + cnpj/phone
-                    repo.upsertFromAuth(res.getUser(), null)
-                        //    .onSuccessTask(aVoid -> repo.updateContact(res.getUser().getUid(), cnpj, fone))
-                            .addOnSuccessListener(v -> {
-                                // 4) Próxima tela
-                                Uri deepLink = Uri.parse("app://WorkerIndependent/Plan");
-                                Navigation.findNavController(requireView()).navigate(deepLink);
-                            })
-                            .addOnFailureListener(e -> error(binding.tilEmail, "Falha ao salvar dados. Tente novamente."));
-                })
-                .addOnFailureListener(e -> error(binding.tilEmail, mapAuthCreateError(e)));
-    }
 
     private boolean validarCampos(String nome, String email, String fone, String cnpj, String senha, String confirmarSenha) {
         boolean ok = true;

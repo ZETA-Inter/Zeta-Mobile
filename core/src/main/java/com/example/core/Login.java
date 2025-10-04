@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -35,6 +37,8 @@ public class Login extends Fragment {
     private final Repository repo = new Repository();
     private static final int RC_GOOGLE = 9001;
     private GoogleSignInClient gsc;
+    private TipoUsuario tipoAtual;
+
 
     @Nullable
     @Override
@@ -47,6 +51,8 @@ public class Login extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        AuthAdapter adapter = new AuthAdapter();
+
         // Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 // .requestIdToken(getString(R.string.default_web_client_id))
@@ -54,42 +60,39 @@ public class Login extends Fragment {
                 .build();
         gsc = GoogleSignIn.getClient(requireActivity(), gso);
 
+        // --------------------- login com email e senha ---------------------
+
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
+        }
+        else if (tipoAtual == null) {
+            // Lidar com erro: se o tipo não foi passado, volte ou use um padrão.
+            // Aqui, vamos apenas assumir que não pode ser nulo para o exemplo.
+            Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
+        }
+
+        String email = String.valueOf(binding.tilEmail);
+        String senha = String.valueOf(binding.tilSenha);
+
+
         // Listeners
-        binding.btnEntrar.setOnClickListener(v -> loginEmailSenha());
+        binding.btnEntrar.setOnClickListener(v -> {
+            try {
+                adapter.login(tipoAtual, email, senha, requireContext());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         binding.tvForgotPasswordCompany.setOnClickListener(v -> navigateToForgotPassword(v));
         if (binding.btnGoogle != null) {
             binding.btnGoogle.setOnClickListener(v -> startGoogleFlow());
         }
-    }
 
-    // ===== E-mail/Senha =====
-    private void loginEmailSenha() {
-        clearErrors();
-        String email = get(binding.edtEmail);
-        String senha = get(binding.edtSenha);
-
-        boolean ok = true;
-        if (TextUtils.isEmpty(email)) {
-            error(binding.tilEmail, "Informe seu e-mail");
-            ok = false;
-        } else if (!Validators.isValidEmail(email)) {
-            error(binding.tilEmail, "E-mail inválido");
-            ok = false;
-        }
-
-        if (TextUtils.isEmpty(senha)) {
-            error(binding.tilSenha, "Informe sua senha");
-            ok = false;
-        }
-
-        if (!ok) {
-            mostrarMensagem("Corrija os campos em vermelho.");
-            return;
-        }
-
-        mAuth.signInWithEmailAndPassword(email, senha)
-                // .addOnSuccessListener(res -> goHome())
-                .addOnFailureListener(e -> error(binding.tilEmail, mapAuthLoginError(e)));
+        binding.tvCadastro.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.Register, bundle);
+        });
     }
 
     // ===== Google =====

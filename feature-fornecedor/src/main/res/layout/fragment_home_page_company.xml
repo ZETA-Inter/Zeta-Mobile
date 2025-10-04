@@ -5,69 +5,23 @@
     android:id="@+id/rootFornecedorHome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4F6FB">
+    android:background="@color/bg_light">
 
-    <!-- CONTEÚDO ROLÁVEL -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:padding="16dp"
         android:clipToPadding="false"
-        android:layout_marginBottom="96dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="120dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <!-- Header: avatar + busca + ícones -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgAvatar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_person_24"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Corner.Full" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    app:startIconDrawable="@drawable/ic_search_24">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edtSearch"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:hint="Pesquisar"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <ImageButton
-                    android:id="@+id/btnBell"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/content_desc_notifications"
-                    app:srcCompat="@drawable/ic_bell_24"/>
-
-                <ImageButton
-                    android:id="@+id/btnSettings"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/content_desc_settings"
-                    app:srcCompat="@drawable/ic_settings_24"/>
-            </LinearLayout>
 
             <!-- Título -->
             <TextView
@@ -75,32 +29,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Análise de desempenho"
-                android:textColor="#0C2233"
-                android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Cards de “Impacto do curso” -->
+            <!-- KPIs (carrossel) -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:scrollbars="none"
                 android:overScrollMode="never"
-                android:scrollbars="none">
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <!-- Card 1 (claro) -->
+                    <!-- Card KPI 1 (claro) -->
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardImpacto1"
+                        android:id="@+id/cardKpi1"
                         android:layout_width="180dp"
                         android:layout_height="120dp"
                         android:layout_marginEnd="12dp"
-                        app:cardUseCompatPadding="true"
                         app:cardCornerRadius="12dp"
+                        app:cardUseCompatPadding="true"
+                        app:cardBackgroundColor="@color/white"
                         app:cardElevation="4dp">
 
                         <LinearLayout
@@ -114,83 +69,83 @@
                                 android:layout_height="wrap_content"
                                 android:text="Impacto do curso"
                                 android:textStyle="bold"
-                                android:textColor="#0C2233"
-                                android:textSize="14sp"/>
+                                android:textSize="14sp"
+                                android:textColor="@color/black"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Acompanhe o desenvolvimento"
-                                android:textColor="#697586"
                                 android:textSize="12sp"
+                                android:textColor="@color/divider"
                                 android:layout_marginTop="2dp"/>
 
                             <TextView
-                                android:id="@+id/txtPercent1"
+                                android:id="@+id/txtKpi1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="62%"
-                                android:textColor="#0C2233"
+                                android:text="—"
                                 android:textStyle="bold"
                                 android:textSize="22sp"
-                                android:layout_gravity="start|bottom"
+                                android:textColor="@color/black"
                                 android:layout_marginTop="16dp"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Card 2 (selecionado escuro) -->
+                    <!-- Card KPI 2 (selecionado – fundo primário) -->
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardImpacto2"
+                        android:id="@+id/cardKpi2"
                         android:layout_width="180dp"
                         android:layout_height="120dp"
                         android:layout_marginEnd="12dp"
-                        app:cardUseCompatPadding="true"
                         app:cardCornerRadius="12dp"
+                        app:cardUseCompatPadding="true"
                         app:cardElevation="6dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="#062A43"
                             android:orientation="vertical"
-                            android:padding="12dp">
+                            android:padding="12dp"
+                            android:background="?attr/appColorPrimary">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Impacto do curso"
                                 android:textStyle="bold"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp"/>
+                                android:textSize="14sp"
+                                android:textColor="?attr/appColorOnPrimary"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Acompanhe o desenvolvimento"
-                                android:textColor="#C7D3E0"
                                 android:textSize="12sp"
+                                android:textColor="?attr/appColorOnPrimary"
+                                android:alpha="0.8"
                                 android:layout_marginTop="2dp"/>
 
                             <TextView
-                                android:id="@+id/txtPercent2"
+                                android:id="@+id/txtKpi2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="62%"
-                                android:textColor="#FFFFFF"
+                                android:text="—"
                                 android:textStyle="bold"
                                 android:textSize="22sp"
-                                android:layout_gravity="start|bottom"
+                                android:textColor="?attr/appColorOnPrimary"
                                 android:layout_marginTop="16dp"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Card 3 (claro) -->
+                    <!-- Card KPI 3 (claro) -->
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardImpacto3"
+                        android:id="@+id/cardKpi3"
                         android:layout_width="180dp"
                         android:layout_height="120dp"
-                        app:cardUseCompatPadding="true"
                         app:cardCornerRadius="12dp"
+                        app:cardUseCompatPadding="true"
+                        app:cardBackgroundColor="@color/white"
                         app:cardElevation="4dp">
 
                         <LinearLayout
@@ -204,26 +159,25 @@
                                 android:layout_height="wrap_content"
                                 android:text="Impacto do curso"
                                 android:textStyle="bold"
-                                android:textColor="#0C2233"
-                                android:textSize="14sp"/>
+                                android:textSize="14sp"
+                                android:textColor="@color/black"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Acompanhe o desenvolvimento"
-                                android:textColor="#697586"
                                 android:textSize="12sp"
+                                android:textColor="@color/divider"
                                 android:layout_marginTop="2dp"/>
 
                             <TextView
-                                android:id="@+id/txtPercent3"
+                                android:id="@+id/txtKpi3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="62%"
-                                android:textColor="#0C2233"
+                                android:text="—"
                                 android:textStyle="bold"
                                 android:textSize="22sp"
-                                android:layout_gravity="start|bottom"
+                                android:textColor="@color/black"
                                 android:layout_marginTop="16dp"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
@@ -231,56 +185,79 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <!-- Toggle (Ave / Bovino / Suíno) -->
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleGrupos"
+            <!-- PAINEL EXTERNO ARREDONDADO (com tamanho flexível) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/painelAreas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:singleSelection="true"
-                app:selectionRequired="true"
-                android:gravity="center">
+                app:cardCornerRadius="24dp"
+                app:cardUseCompatPadding="true"
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="6dp"
+                android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAve"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:text="Ave"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBovino"
-                    style="@style/Widget.MaterialComponents.Button.FilledButton"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:text="Bovino"/>
+                    <!-- Segmentação Ave/Bovino/Suíno -->
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleAreas"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true"
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSuino"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:text="Suíno"/>
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAve"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="Ave"
+                            app:iconPadding="0dp"
+                            app:backgroundTint="@color/bg_light"
+                            android:textColor="@color/primary_dark"/>
 
-            <!-- Espaço onde ficavam os gráficos (removidos) -->
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="12dp"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBovino"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="Bovino"
+                            app:backgroundTint="@color/bg_light"
+                            android:textColor="@color/primary_dark"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSuino"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="Suíno"
+                            app:backgroundTint="@color/bg_light"
+                            android:textColor="@color/primary_dark"/>
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <Space
+                        android:id="@+id/spaceConteudo"
+                        android:layout_width="match_parent"
+                        android:layout_height="260dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <!-- MENU INFERIOR (COMPONENTE INCLUÍDO) -->
-    <include
+    <!-- MENU INFERIOR (componente separado) -->
+    <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
         android:id="@+id/bottomNav"
-        layout="@layout/view_bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="88dp"
+        android:layout_height="96dp"
         android:layout_gravity="bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
