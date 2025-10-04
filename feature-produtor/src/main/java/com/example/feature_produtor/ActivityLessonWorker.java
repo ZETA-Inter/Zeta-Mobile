@@ -1,4 +1,4 @@
-package com.example.feature_fornecedor;
+package com.example.feature_produtor;
 
 import android.os.Bundle;
 
@@ -8,7 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class HomePageCompany extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link ActivityLessonWorker#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class ActivityLessonWorker extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -19,7 +24,7 @@ public class HomePageCompany extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public HomePageCompany() {
+    public ActivityLessonWorker() {
         // Required empty public constructor
     }
 
@@ -29,11 +34,11 @@ public class HomePageCompany extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePageCompany.
+     * @return A new instance of fragment ActivityLessonWorker.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePageCompany newInstance(String param1, String param2) {
-        HomePageCompany fragment = new HomePageCompany();
+    public static ActivityLessonWorker newInstance(String param1, String param2) {
+        ActivityLessonWorker fragment = new ActivityLessonWorker();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -54,6 +59,6 @@ public class HomePageCompany extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page_company, container, false);
+        return inflater.inflate(R.layout.fragment_activity_lesson_worker, container, false);
     }
 }

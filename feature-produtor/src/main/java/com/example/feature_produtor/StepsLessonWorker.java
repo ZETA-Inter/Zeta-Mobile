@@ -1,17 +1,27 @@
-package com.example.feature_fornecedor;
+package com.example.feature_produtor;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class HomePageCompany extends Fragment {
+import com.example.feature_produtor.databinding.FragmentStepsLessonWorkerBinding;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link StepsLessonWorker#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class StepsLessonWorker extends Fragment {
+
+    private FragmentStepsLessonWorkerBinding binding;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -19,7 +29,7 @@ public class HomePageCompany extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public HomePageCompany() {
+    public StepsLessonWorker() {
         // Required empty public constructor
     }
 
@@ -29,11 +39,11 @@ public class HomePageCompany extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePageCompany.
+     * @return A new instance of fragment StepsLessonWorker.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePageCompany newInstance(String param1, String param2) {
-        HomePageCompany fragment = new HomePageCompany();
+    public static StepsLessonWorker newInstance(String param1, String param2) {
+        StepsLessonWorker fragment = new StepsLessonWorker();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,7 +63,17 @@ public class HomePageCompany extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page_company, container, false);
+        binding = FragmentStepsLessonWorkerBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        NavController navController = Navigation.findNavController(binding.getRoot());
+
+        // Listeners
+        binding.btContinuar.setOnClickListener(v -> {
+            navController.navigate(R.id.ContentLessonWorker);
+        });
     }
 }
