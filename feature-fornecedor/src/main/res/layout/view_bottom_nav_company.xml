@@ -14,7 +14,7 @@
         android:layout_gravity="bottom"
         app:cardCornerRadius="28dp"
         app:cardElevation="6dp"
-        app:cardBackgroundColor="@color/common_white"/>
+        app:cardBackgroundColor="@color/white"/>
 
     <!-- Ícones laterais -->
     <LinearLayout
