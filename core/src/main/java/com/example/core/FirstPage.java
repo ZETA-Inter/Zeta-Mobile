@@ -1,10 +1,7 @@
 package com.example.core;
 
-<<<<<<< HEAD
-import android.content.Intent;
-=======
+
 import android.net.Uri;
->>>>>>> d79c11af5e5f5c2d95ef04002cc068c4d1b7de6d
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +26,6 @@ public class FirstPage extends Fragment {
         View root = binding.getRoot();
         // Navegação para o LoginFragment
 
-<<<<<<< HEAD
-
         binding.btnFornecedor.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("TIPO_USUARIO", TipoUsuario.COMPANY);
@@ -39,18 +34,10 @@ public class FirstPage extends Fragment {
         });
 
         binding.btnProdutor.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("TIPO_USUARIO", TipoUsuario.WORKER);
-            // Use o ID do fragmento de destino que você definiu no nav_core.xml
-            Navigation.findNavController(v).navigate(R.id.Login, bundle);
-=======
-        binding.btnProdutor.setOnClickListener(v -> {
-            // Use o ID do fragmento de destino que você definiu no nav_core.xml
-//                Navigation.findNavController(v).navigate(R.id.Login)
-
-            Uri deeplink = Uri.parse("app://Worker/Lessons");
-            Navigation.findNavController(v).navigate(deeplink);
->>>>>>> d79c11af5e5f5c2d95ef04002cc068c4d1b7de6d
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("TIPO_USUARIO", TipoUsuario.WORKER);
+                    // Use o ID do fragmento de destino que você definiu no nav_core.xml
+                    Navigation.findNavController(v).navigate(R.id.Login, bundle);
         });
 
         return root;
