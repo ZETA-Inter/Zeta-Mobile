@@ -68,24 +68,24 @@ public class Login extends Fragment {
             tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
         }
         else if (tipoAtual == null) {
-            // Lidar com erro: se o tipo não foi passado, volte ou use um padrão.
-            // Aqui, vamos apenas assumir que não pode ser nulo para o exemplo.
             Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
         }
 
-        String email = String.valueOf(binding.tilEmail);
-        String senha = String.valueOf(binding.tilSenha);
-
-
         // Listeners
         binding.btnEntrar.setOnClickListener(v -> {
-            try {
+            String email = binding.tilEmail.getEditText().getText().toString().trim();
+            String senha = binding.tilSenha.getEditText().getText().toString().trim();
+
+            if (validarCampos(email, senha)) {
+                // 3. SE VÁLIDO, TENTAR O LOGIN
                 adapter.login(tipoAtual, email, senha, requireContext());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } else {
+                mostrarMensagem("Corrija os campos em destaque.");
             }
         });
-        binding.tvForgotPasswordCompany.setOnClickListener(v -> navigateToForgotPassword(v));
+
+        binding.tvForgotPasswordCompany.setOnClickListener(this::navigateToForgotPassword);
+
         if (binding.btnGoogle != null) {
             binding.btnGoogle.setOnClickListener(v -> startGoogleFlow());
         }
@@ -119,6 +119,29 @@ public class Login extends Fragment {
                 // Tratamento de erro ou cancelamento
             }
         }
+    }
+
+    // Adicione este método ao final da sua classe Login
+    private boolean validarCampos(String email, String senha) {
+        boolean ok = true;
+        clearErrors(); // Limpa erros anteriores
+
+        if (TextUtils.isEmpty(email)) {
+            error(binding.tilEmail, "Informe seu e-mail");
+            ok = false;
+        }
+        // Assumindo que você tem a classe Validators acessível
+        else if (!Validators.isValidEmail(email)) {
+            error(binding.tilEmail, "E-mail inválido");
+            ok = false;
+        }
+
+        if (TextUtils.isEmpty(senha)) {
+            error(binding.tilSenha, "Informe sua senha");
+            ok = false;
+        }
+
+        return ok;
     }
 
     // ===== Navegação e Utils UI =====
