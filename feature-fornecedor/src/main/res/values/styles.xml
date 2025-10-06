@@ -53,4 +53,27 @@
         <item name="cornerSizeBottomRight">28dp</item>
     </style>
 
+
+    <style name="Widget.Zeta.SegmentButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:checkable">true</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/company_segment_stroke</item>
+        <item name="backgroundTint">@color/company_segment_bg</item>
+        <item name="android:textColor">@color/company_segment_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="rippleColor">@color/company_segment_ripple</item>
+        <item name="elevation">3dp</item>
+    </style>
+
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

@@ -37,38 +37,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/PaymentFailureWorkerIndependent"
-        android:name="com.example.feature_produtor.PaymentFailureWorkerIndependent">
-        <deepLink
-            android:id="@+id/PaymentFailureWorkerIndependentDeepLink"
-            app:uri="app://WorkerIndependent/PaymentFailure" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/PaymentWorkerIndependent"
-        android:name="com.example.feature_produtor.PaymentWorkerIndependent">
-        <deepLink
-            android:id="@+id/PaymentWorkerIndependentDeepLink"
-            app:uri="app://WorkerIndependent/Payment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/PaymentSuccessfulWorkerIndependent"
-        android:name="com.example.feature_produtor.PaymentSuccessfulWorkerIndependent">
-        <deepLink
-            android:id="@+id/PaymentSuccessfulWorkerIndependentDeepLink"
-            app:uri="app://WorkerIndependent/PaymentSuccessful" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/PlanWorkerIndependent"
-        android:name="com.example.feature_produtor.PlanWorkerIndependent">
-        <deepLink
-            android:id="@+id/PlanWorkerIndependentDeepLink"
-            app:uri="app://WorkerIndependent/Plan" />
-    </fragment>
-
-    <fragment
         android:id="@+id/SummarizeCourseWorker"
         android:name="com.example.feature_produtor.SummarizeCourseWorker">
         <deepLink

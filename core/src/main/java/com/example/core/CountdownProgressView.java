@@ -1,4 +1,4 @@
-package com.example.feature_produtor;
+package com.example.core;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 
 public class CountdownProgressView extends View { //tem que ser fragment

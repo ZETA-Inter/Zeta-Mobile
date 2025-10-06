@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDeepLinkRequest;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -58,7 +60,18 @@ public class SplashScreen extends Fragment {
                 navController.navigate(deepLink);
             } else {
                 // Navega para a página inicial (Primeira Página)
-                navController.navigate(R.id.FirstPage);
+                //navController.navigate(R.id.FirstPage);
+
+                // Mudando temporariamente para a página de inicial do fornecedor
+                NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                        .fromUri(Uri.parse("app://Company/Home"))
+                        .build();
+
+                NavOptions options = new NavOptions.Builder()
+                        .setPopUpTo(R.id.SplashScreen, true)
+                        .build();
+
+                navController.navigate(request, options);
             }
 
             // Opcional: finalizar a Activity que hospeda o Fragment
