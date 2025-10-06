@@ -23,6 +23,7 @@ public class AuthAdapter {
                         String uid = task.getResult().getUser().getUid();
                         // Removido o try/catch e o throw RuntimeException
                         cadastrarUsuario(uid, tipoUsuario, dadosUsuario, c);
+
                     }
                     else {
                         if (task.getException() != null) {

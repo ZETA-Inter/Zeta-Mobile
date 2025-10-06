@@ -88,6 +88,9 @@ public class Register extends Fragment {
 
             // 4. Chama o cadastro (sem try-catch, pois o AuthAdapter não lança exceções diretas)
             adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext());
+            Navigation.findNavController(v).navigate(R.id.Plan, bundle);
+
+
         });
 
         return root;
