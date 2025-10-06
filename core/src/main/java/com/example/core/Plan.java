@@ -10,11 +10,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.core.databinding.FragmentPlanBinding;
 import com.example.feature_produtor.databinding.FragmentPlanWorkerIndependentBinding;
 
 public class Plan extends Fragment {
 
-    private FragmentPlanWorkerIndependentBinding binding;
+    private FragmentPlanBinding binding;
 
     // 0 = nenhum, 1 = basic (FREE), 2 = plus (PAGO)
     private int selected = 0;
@@ -23,7 +24,7 @@ public class Plan extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        binding = FragmentPlanWorkerIndependentBinding.inflate(inflater, container, false);
+        binding = FragmentPlanBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         // Configura os listeners dos cards

@@ -1,12 +1,13 @@
-package com.example.core;
+package com.example.core.adapter;
 
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.core.TipoUsuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Map;
-import java.util.HashMap;
 
 public class AuthAdapter {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
