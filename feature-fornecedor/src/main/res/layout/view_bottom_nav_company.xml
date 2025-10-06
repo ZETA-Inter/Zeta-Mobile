@@ -1,90 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
-    android:padding="12dp">
+    android:layout_height="wrap_content"
+    android:minHeight="64dp"
+    android:paddingTop="28dp"
+    android:background="@android:color/transparent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    <!-- Barra branca arredondada -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/navContainer"
+    <!-- Fundo da barra (azul) -->
+    <View
+        android:id="@+id/barBg"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_gravity="bottom"
-        app:cardCornerRadius="28dp"
-        app:cardElevation="6dp"
-        app:cardBackgroundColor="@color/white"/>
+        android:background="@color/primary_dark" />
 
-    <!-- Ícones laterais -->
+    <!-- Contorno branco (atrás dos ícones) -->
+    <ImageView
+        android:id="@+id/whiteNotch"
+        android:layout_width="220dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:translationY="-6dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/contorno"
+        android:importantForAccessibility="no" />
+
+    <!-- Círculo azul móvel (mesmo tom da barra) -->
+    <ImageView
+        android:id="@+id/selectorBg"
+        android:layout_width="67dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:translationY="-6dp"
+        android:src="@drawable/bg_nav_home_circle"
+        android:adjustViewBounds="true" />
+
+    <!-- Ícones (fixos, sempre por cima) -->
     <LinearLayout
+        android:id="@+id/iconsRow"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="28dp">
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:background="@android:color/transparent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnAwards"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            app:cardCornerRadius="22dp"
-            app:cardUseCompatPadding="false"
-            app:cardBackgroundColor="@android:color/transparent">
+        <ImageButton
+            android:id="@+id/navTrophy"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@android:color/transparent"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_trophy_24"
+            app:tint="@android:color/white" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_trophy_24"
-                app:tint="@color/company_nav_icon_tint" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <View
+        <Space
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnTeam"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            app:cardCornerRadius="22dp"
-            app:cardUseCompatPadding="false"
-            app:cardBackgroundColor="@android:color/transparent">
+        <ImageButton
+            android:id="@+id/navHome"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@android:color/transparent"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_home_24"
+            app:tint="@android:color/white" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_users_24"
-                app:tint="@color/company_nav_icon_tint" />
-        </com.google.android.material.card.MaterialCardView>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/navPeople"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:padding="4dp"
+            app:tint="@android:color/white"
+            android:src="@drawable/ic_users_24" />
     </LinearLayout>
-
-    <!-- Botão Home central (círculo azul com ícone branco) -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnHome"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_gravity="center|bottom"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="38dp"
-        app:cardElevation="10dp">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/appColorPrimary">
-
-            <ImageView
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_home_24"
-                app:tint="?attr/appColorOnPrimary" />
-        </FrameLayout>
-    </com.google.android.material.card.MaterialCardView>
-
 </FrameLayout>
