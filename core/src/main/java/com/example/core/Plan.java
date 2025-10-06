@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.feature_produtor.R;
 import com.example.feature_produtor.databinding.FragmentPlanWorkerIndependentBinding;
 
 public class Plan extends Fragment {
