@@ -1,4 +1,4 @@
-package com.example.feature_produtor;
+package com.example.core;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -19,7 +19,7 @@ import com.example.feature_produtor.CountdownProgressView;
 
 import com.example.feature_produtor.databinding.FragmentPaymentWorkerIndependentBinding;
 
-public class PaymentWorkerIndependent extends Fragment {
+public class Payment extends Fragment {
 
     private static final long TOTAL_MS = 5 * 60 * 1000L; // 5 min
     private CountDownTimer timer;

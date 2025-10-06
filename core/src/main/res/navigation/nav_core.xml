@@ -35,9 +35,28 @@
         android:name="com.example.core.SendEmail">
     </fragment>
 
+    <fragment
+        android:id="@+id/PaymentFailure"
+        android:name="com.example.core.PaymentFailure">
 
+    </fragment>
 
+    <fragment
+        android:id="@+id/Payment"
+        android:name="com.example.core.Payment">
 
+    </fragment>
 
+    <fragment
+        android:id="@+id/PaymentSuccessful"
+        android:name="com.example.core.PaymentSuccessful">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/Plan"
+        android:name="com.example.core.Plan">
+
+    </fragment>
 
 </navigation>

@@ -1,6 +1,5 @@
-package com.example.feature_produtor;
+package com.example.core;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,7 @@ import androidx.navigation.Navigation;
 import com.example.feature_produtor.R;
 import com.example.feature_produtor.databinding.FragmentPlanWorkerIndependentBinding;
 
-public class PlanWorkerIndependent extends Fragment {
+public class Plan extends Fragment {
 
     private FragmentPlanWorkerIndependentBinding binding;
 
