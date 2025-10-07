@@ -30,14 +30,14 @@ public class FirstPage extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putSerializable("TIPO_USUARIO", TipoUsuario.COMPANY);
             // Use o ID do fragmento de destino que foi definido no nav_core.xml
-            Navigation.findNavController(v).navigate(R.id.Login, bundle);
+            Navigation.findNavController(v).navigate(R.id.Plan, bundle);
         });
 
         binding.btnProdutor.setOnClickListener(v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("TIPO_USUARIO", TipoUsuario.WORKER);
                     // Use o ID do fragmento de destino que você definiu no nav_core.xml
-                    Navigation.findNavController(v).navigate(R.id.Login, bundle);
+                    Navigation.findNavController(v).navigate(R.id.Plan, bundle);
         });
 
         return root;

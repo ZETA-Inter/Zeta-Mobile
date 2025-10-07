@@ -11,25 +11,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.feature_produtor.databinding.FragmentPaymentFailureWorkerIndependentBinding;
+import com.example.core.databinding.FragmentPaymentFailureBinding;
 
 public class PaymentFailure extends Fragment {
 
     // A classe de binding gerada para o seu layout
-    private FragmentPaymentFailureWorkerIndependentBinding binding;
+    private FragmentPaymentFailureBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Infla o layout usando o View Binding
-        binding = FragmentPaymentFailureWorkerIndependentBinding.inflate(inflater, container, false);
+        binding = FragmentPaymentFailureBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         View view = root;
 
         // Espera ~2.5s e volta para a tela de planos
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Navigation.findNavController(view).navigate(R.id.PlanWorkerIndependent);
+            Navigation.findNavController(view).navigate(R.id.Plan);
 
         }, 2500);
 

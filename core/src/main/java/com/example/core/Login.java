@@ -1,5 +1,6 @@
 package com.example.core;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -76,6 +77,10 @@ public class Login extends Fragment {
             if (validarCampos(email, senha)) {
                 // 3. SE VÁLIDO, TENTAR O LOGIN
                 adapter.login(tipoAtual, email, senha, requireContext());
+
+                String deeplink = tipoAtual == TipoUsuario.WORKER ? "app://Company/Home" : "app://Worker/Home";
+                Uri deepLinkUri = Uri.parse(deeplink);
+                Navigation.findNavController(v).navigate(deepLinkUri);
             } else {
                 mostrarMensagem("Corrija os campos em destaque.");
             }
