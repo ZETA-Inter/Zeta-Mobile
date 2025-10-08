@@ -95,8 +95,6 @@ public class Register extends Fragment {
             bundle.putSerializable("TIPO_USUARIO", tipoAtual);
             bundle.putString("Nome", nome);
             bundle.putString("Email", email);
-            bundle.putString("Telefone", telefone);
-            bundle.putString(campoDocumento, documento);
             Navigation.findNavController(v).navigate(R.id.Plan, bundle);
 
         });

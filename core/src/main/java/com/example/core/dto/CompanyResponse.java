@@ -1,20 +1,20 @@
 package com.example.core.dto;
 
-public class CompanyResponse {
+public class CompanyResponse extends UserResponse {
 
     private Integer id;
     private String name;
     private String email;
-    private  String cnpj;
     private String planName;
 
     public CompanyResponse() {}
 
-    public CompanyResponse(Integer id, String name, String email, String cnpj, String planName) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.cnpj = cnpj;
+    public CompanyResponse(Integer id, String name, String email) {
+        super(id, name, email);
+    }
+
+    public CompanyResponse(Integer id, String name, String email, String planName) {
+        super(id, name, email);
         this.planName = planName;
     }
 
@@ -40,14 +40,6 @@ public class CompanyResponse {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
     }
 
     public String getPlanName() {

@@ -1,6 +1,6 @@
 package com.example.core.dto;
 
-public class WorkerResponse {
+public class WorkerResponse extends UserResponse {
 
     private Integer id;
 
@@ -8,19 +8,18 @@ public class WorkerResponse {
 
     private String email;
 
-    private String cpf;
-
     private String planName;
 
     private String companyName;
 
     public WorkerResponse() {}
 
-    public WorkerResponse(Integer id, String name, String email, String cpf, String planName, String companyName) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.cpf = cpf;
+    public WorkerResponse(Integer id, String name, String email) {
+        super(id, name, email);
+    }
+
+    public WorkerResponse(Integer id, String name, String email, String planName, String companyName) {
+        super(id, name, email);
         this.planName = planName;
         this.companyName = companyName;
     }
@@ -47,14 +46,6 @@ public class WorkerResponse {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
     }
 
     public String getPlanName() {

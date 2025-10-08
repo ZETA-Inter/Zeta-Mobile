@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import com.example.core.adapter.PlanAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPlanBinding;
 import com.example.core.dto.PlanResponse;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -127,8 +130,64 @@ public class Plan extends Fragment {
 
         hideError();
 
-        bundle.putInt("plano_id", selected);
+        bundle.putInt("plan_id", selected);
 
+        showDurationCard(v);
+    }
+
+    private void showDurationCard(View v) {
+        // Infla o card
+        View cardView = LayoutInflater.from(getContext())
+                .inflate(R.layout.card_plan_duration, null, false);
+
+        MaterialCardView card = cardView.findViewById(R.id.cardDuration);
+
+        // Set valores do plano selecionado (exemplo)
+        ((TextView) cardView.findViewById(R.id.tvMensalValue))
+                .setText(String.format("R$%,.2f", selectedPlan.getValue()));
+        ((TextView) cardView.findViewById(R.id.tvSemestralValue))
+                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 6 * 0.9)));
+        ((TextView) cardView.findViewById(R.id.tvAnualValue))
+                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 12 * 0.8)));
+
+        // Adiciona cliques nas opções (exemplo)
+        cardView.findViewById(R.id.layoutMensal).setOnClickListener(view -> {
+            bundle.putString("duration", "mensal");
+            bundle.putDouble("amount", selectedPlan.getValue());
+            goToPayment(v);
+        });
+
+        cardView.findViewById(R.id.layoutSemestral).setOnClickListener(view -> {
+            bundle.putString("duration", "semestral");
+            bundle.putDouble("amount", (selectedPlan.getValue() * 6 * 0.9));
+            goToPayment(v);
+        });
+
+        cardView.findViewById(R.id.layoutAnual).setOnClickListener(view -> {
+            bundle.putString("duration", "anual");
+            bundle.putDouble("amount", (selectedPlan.getValue() * 12 * 0.8));
+            goToPayment(v);
+        });
+
+        binding.modalBackground.setVisibility(View.VISIBLE);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.gravity = android.view.Gravity.CENTER;
+
+        binding.rootLayout.addView(cardView, params);
+
+        // Fechar card ao clicar no fundo
+        binding.modalBackground.setOnClickListener(view -> {
+            binding.modalBackground.setVisibility(View.GONE);
+            binding.rootLayout.removeView(cardView);
+        });
+
+    }
+
+    private void goToPayment(View v) {
         if (selectedPlan.getValue() == 0) {
             Navigation.findNavController(v).navigate(R.id.PaymentSuccessful, bundle);
         } else {

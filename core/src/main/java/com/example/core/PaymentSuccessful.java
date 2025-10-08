@@ -48,8 +48,9 @@ public class PaymentSuccessful extends Fragment {
 
 //        String nome = bundle.getString("Nome");
 //        String email = bundle.getString("Email");
-//        String telefone = bundle.getString("Telefone");
-
+//        Integer planId = bundle.getInt("plan_id");
+//        String duration = bundle.getString("duration");
+//        Double amount = bundle.getDouble("amount");
 //        createUser();
 
         // espera ~3s e vai para a Home da empresa
