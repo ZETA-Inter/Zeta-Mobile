@@ -15,10 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.feature_fornecedor.ranking.RankingAdapter;
 import com.example.feature_fornecedor.ranking.RankingApi;
 import com.example.feature_fornecedor.ranking.RankingEntry;
 import com.example.feature_fornecedor.ranking.RetrofitClient;
-import com.example.feature_fornecedor.ranking.ui.RankingAdapter;
+import com.example.feature_fornecedor.ranking.RankingAdapter;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 import com.google.android.material.imageview.ShapeableImageView;
 
