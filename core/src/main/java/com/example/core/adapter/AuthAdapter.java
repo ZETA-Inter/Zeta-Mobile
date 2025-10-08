@@ -5,11 +5,9 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.core.Plan;
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
-import com.example.core.dto.UserResponse;
-import com.example.core.dto.WorkerResponse;
+import com.example.core.dto.response.UserResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Map;

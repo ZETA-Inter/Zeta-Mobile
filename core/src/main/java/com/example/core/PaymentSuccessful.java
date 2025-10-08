@@ -19,8 +19,9 @@ import androidx.navigation.Navigation;
 
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPaymentSuccessfulBinding;
-import com.example.core.dto.CompanyResponse;
-import com.example.core.dto.WorkerResponse;
+import com.example.core.dto.request.PlanInfoRequest;
+import com.example.core.dto.response.CompanyResponse;
+import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
 
@@ -55,12 +56,12 @@ public class PaymentSuccessful extends Fragment {
             tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
         }
 
-//        String nome = bundle.getString("Nome");
-//        String email = bundle.getString("Email");
-//        Integer planId = bundle.getInt("plan_id");
-//        String duration = bundle.getString("duration");
-//        Double amount = bundle.getDouble("amount");
-//        createUser();
+        String nome = bundle.getString("Nome");
+        String email = bundle.getString("Email");
+        Integer planId = bundle.getInt("plan_id");
+        String duration = bundle.getString("duration");
+        Double amount = bundle.getDouble("amount");
+        createUser(nome, email, planId, duration, amount);
 
         // espera ~3s e vai para a Home da empresa
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -72,7 +73,7 @@ public class PaymentSuccessful extends Fragment {
         return root;
     }
 
-    public void createUser() {
+    public void createUser(String nome, String email, Integer planId, String duration, Double amount) {
         //Definir a URL
         String url = "https://api-postgresql-zeta-fide.onrender.com";
 
@@ -89,12 +90,14 @@ public class PaymentSuccessful extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        PlanInfoRequest planInfo = new PlanInfoRequest(planId, duration, amount);
+
         // Criar a interface para a API
         ApiPostgresClient postgresClient = retrofit.create(ApiPostgresClient.class);
 
         // Chamar o método da API
         if (tipoAtual == TipoUsuario.WORKER) {
-            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest());
+            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest(nome, email, planInfo, null));
             call.enqueue(new Callback<WorkerResponse>() {
                 @Override
                 public void onResponse(Call<WorkerResponse> call, Response<WorkerResponse> response) {
@@ -128,7 +131,7 @@ public class PaymentSuccessful extends Fragment {
             });
 
         } else {
-            Call<CompanyResponse> call = postgresClient.createCompany(new CompanyRequest());
+            Call<CompanyResponse> call = postgresClient.createCompany(new CompanyRequest(nome, email, planInfo));
             call.enqueue(new Callback<CompanyResponse>() {
                 @Override
                 public void onResponse(Call<CompanyResponse> call, Response<CompanyResponse> response) {

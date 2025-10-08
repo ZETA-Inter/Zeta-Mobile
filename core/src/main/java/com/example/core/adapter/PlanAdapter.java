@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.R;
-import com.example.core.dto.PlanResponse;
+import com.example.core.dto.response.PlanResponse;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;

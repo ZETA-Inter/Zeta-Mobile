@@ -1,5 +1,7 @@
 package com.example.core.dto.request;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.time.LocalDate;
 
 public class WorkerRequest {
@@ -7,19 +9,16 @@ public class WorkerRequest {
     private String name;
 
     private String email;
-
-    private String cpf;
-
-    private Integer planId;
+    @SerializedName("plan_info")
+    private PlanInfoRequest planInfo;
 
     private Integer companyId;
 
     public WorkerRequest() {}
-    public WorkerRequest(String name, String email, String cpf, Integer planId, Integer companyId) {
+    public WorkerRequest(String name, String email, PlanInfoRequest planInfo, Integer companyId) {
         this.name = name;
         this.email = email;
-        this.cpf = cpf;
-        this.planId = planId;
+        this.planInfo = planInfo;
         this.companyId = companyId;
     }
 
@@ -39,20 +38,12 @@ public class WorkerRequest {
         this.email = email;
     }
 
-    public String getCpf() {
-        return cpf;
+    public PlanInfoRequest getPlanInfo() {
+        return planInfo;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public Integer getPlanId() {
-        return planId;
-    }
-
-    public void setPlanId(Integer planId) {
-        this.planId = planId;
+    public void setPlanInfo(PlanInfoRequest planInfo) {
+        this.planInfo = planInfo;
     }
 
     public Integer getCompanyId() {

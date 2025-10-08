@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.R;
-import com.example.core.dto.PlanResponse;
+import com.example.core.dto.response.PlanResponse;
 
 import java.util.List;
 

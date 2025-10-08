@@ -1,4 +1,4 @@
-package com.example.core.dto;
+package com.example.core.dto.response;
 
 public class CompanyResponse extends UserResponse {
 

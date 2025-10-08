@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.core.adapter.PlanAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPlanBinding;
-import com.example.core.dto.PlanResponse;
+import com.example.core.dto.response.PlanResponse;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;

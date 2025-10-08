@@ -1,23 +1,28 @@
 package com.example.core.dto.request;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CompanyRequest {
 
     private String name;
 
     private String email;
 
-    private String cnpj;
-
     private String imageUrl;
 
-    private Integer planId;
-
-    public CompanyRequest(String name, String email, String cnpj, String imageUrl, Integer planId) {
+    @SerializedName("plan_info")
+    private PlanInfoRequest planInfo;
+    public CompanyRequest(String name, String email, String imageUrl, PlanInfoRequest planInfo) {
         this.name = name;
         this.email = email;
-        this.cnpj = cnpj;
         this.imageUrl = imageUrl;
-        this.planId = planId;
+        this.planInfo = planInfo;
+    }
+
+    public CompanyRequest(String name, String email, PlanInfoRequest planInfo) {
+        this.name = name;
+        this.email = email;
+        this.planInfo = planInfo;
     }
 
     public CompanyRequest() {}
@@ -38,14 +43,6 @@ public class CompanyRequest {
         this.email = email;
     }
 
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -54,11 +51,11 @@ public class CompanyRequest {
         this.imageUrl = imageUrl;
     }
 
-    public Integer getPlanId() {
-        return planId;
+    public PlanInfoRequest getPlanInfo() {
+        return planInfo;
     }
 
-    public void setPlanId(Integer planId) {
-        this.planId = planId;
+    public void setPlanInfo(PlanInfoRequest planInfo) {
+        this.planInfo = planInfo;
     }
 }

@@ -1,9 +1,9 @@
 package com.example.core.client;
 
-import com.example.core.dto.CompanyResponse;
-import com.example.core.dto.PlanResponse;
-import com.example.core.dto.UserResponse;
-import com.example.core.dto.WorkerResponse;
+import com.example.core.dto.response.CompanyResponse;
+import com.example.core.dto.response.PlanResponse;
+import com.example.core.dto.response.UserResponse;
+import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
 
@@ -14,7 +14,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface ApiPostgresClient {
 
