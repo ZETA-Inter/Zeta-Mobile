@@ -1,12 +1,17 @@
 package com.example.core;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,6 +19,8 @@ import androidx.navigation.Navigation;
 
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPaymentSuccessfulBinding;
+import com.example.core.dto.CompanyResponse;
+import com.example.core.dto.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
 
@@ -21,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -84,11 +93,73 @@ public class PaymentSuccessful extends Fragment {
         ApiPostgresClient postgresClient = retrofit.create(ApiPostgresClient.class);
 
         // Chamar o método da API
-        Call<?> call;
         if (tipoAtual == TipoUsuario.WORKER) {
-            call = postgresClient.createWorker(new WorkerRequest());
+            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest());
+            call.enqueue(new Callback<WorkerResponse>() {
+                @Override
+                public void onResponse(Call<WorkerResponse> call, Response<WorkerResponse> response) {
+                    if (response.isSuccessful()) {
+                        WorkerResponse worker = response.body();
+
+                        try {
+                        // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
+                        SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("user_id", worker.getId());
+                        editor.putString("name", worker.getName());
+                        editor.putString("email", worker.getEmail());
+                        editor.putString("tipo_usuario", tipoAtual.name());
+                        editor.apply();
+
+                        } catch (Exception ex) {
+                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
+                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
+                        Log.d("SESSION", "Usuário salvo: " + worker.getName() + " (ID: " + worker.getId() + ")");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<WorkerResponse> call, Throwable throwable) {
+                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
+                }
+            });
+
         } else {
-            call = postgresClient.createCompany(new CompanyRequest());
+            Call<CompanyResponse> call = postgresClient.createCompany(new CompanyRequest());
+            call.enqueue(new Callback<CompanyResponse>() {
+                @Override
+                public void onResponse(Call<CompanyResponse> call, Response<CompanyResponse> response) {
+                    if (response.isSuccessful()) {
+                        CompanyResponse company = response.body();
+
+                        try {
+                            // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
+                            SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt("user_id", company.getId());
+                            editor.putString("name", company.getName());
+                            editor.putString("email", company.getEmail());
+                            editor.putString("tipo_usuario", tipoAtual.name());
+                            editor.apply();
+
+                        } catch (Exception ex) {
+                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
+                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
+                        Log.d("SESSION", "Usuário salvo: " + company.getName() + " (ID: " + company.getId() + ")");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CompanyResponse> call, Throwable throwable) {
+                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
