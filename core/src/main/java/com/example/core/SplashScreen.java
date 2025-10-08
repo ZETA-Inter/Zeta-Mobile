@@ -64,7 +64,7 @@ public class SplashScreen extends Fragment {
 
                 // Mudando temporariamente para a página de inicial do fornecedor
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse("app://Company/Home"))
+                        .fromUri(Uri.parse("app://Company/WorkerListPageCompany"))
                         .build();
 
                 NavOptions options = new NavOptions.Builder()
