@@ -71,6 +71,8 @@ public class Plan extends Fragment {
     }
 
     private void list_plans_api() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         //Definir a URL
         String url = "https://api-postgresql-zeta-fide.onrender.com";
 
@@ -97,6 +99,8 @@ public class Plan extends Fragment {
             @Override
             public void onResponse(Call<List<PlanResponse>> call, Response<List<PlanResponse>> response) {
                 if (response.isSuccessful()) {
+                    binding.progressBar.setVisibility(View.GONE);
+
                     List<PlanResponse> plans = response.body();
 
                     // Carrega o adapter do RecyclerView
@@ -138,7 +142,7 @@ public class Plan extends Fragment {
     private void showDurationCard(View v) {
         // Infla o card
         View cardView = LayoutInflater.from(getContext())
-                .inflate(R.layout.card_plan_duration, null, false);
+                .inflate(R.layout.card_plan_duration, binding.rootLayout, false);
 
         MaterialCardView card = cardView.findViewById(R.id.cardDuration);
 
@@ -146,37 +150,37 @@ public class Plan extends Fragment {
         ((TextView) cardView.findViewById(R.id.tvMensalValue))
                 .setText(String.format("R$%,.2f", selectedPlan.getValue()));
         ((TextView) cardView.findViewById(R.id.tvSemestralValue))
-                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 6 * 0.9)));
+                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 5.5)));
         ((TextView) cardView.findViewById(R.id.tvAnualValue))
-                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 12 * 0.8)));
+                .setText(String.format("R$%,.2f", (selectedPlan.getValue() * 10)));
 
         // Adiciona cliques nas opções (exemplo)
-        cardView.findViewById(R.id.layoutMensal).setOnClickListener(view -> {
+        cardView.findViewById(R.id.cardMensal).setOnClickListener(view -> {
             bundle.putString("duration", "mensal");
             bundle.putDouble("amount", selectedPlan.getValue());
             goToPayment(v);
         });
 
-        cardView.findViewById(R.id.layoutSemestral).setOnClickListener(view -> {
+        cardView.findViewById(R.id.cardSemestral).setOnClickListener(view -> {
             bundle.putString("duration", "semestral");
-            bundle.putDouble("amount", (selectedPlan.getValue() * 6 * 0.9));
+            bundle.putDouble("amount", (selectedPlan.getValue() * 5.5));
             goToPayment(v);
         });
 
-        cardView.findViewById(R.id.layoutAnual).setOnClickListener(view -> {
+        cardView.findViewById(R.id.cardAnual).setOnClickListener(view -> {
             bundle.putString("duration", "anual");
-            bundle.putDouble("amount", (selectedPlan.getValue() * 12 * 0.8));
+            bundle.putDouble("amount", (selectedPlan.getValue() * 10));
             goToPayment(v);
         });
 
         binding.modalBackground.setVisibility(View.VISIBLE);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
         );
         params.gravity = android.view.Gravity.CENTER;
-
+        params.setMargins(20,0,20,0);
         binding.rootLayout.addView(cardView, params);
 
         // Fechar card ao clicar no fundo
