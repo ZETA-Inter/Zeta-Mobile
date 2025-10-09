@@ -1,5 +1,6 @@
 package com.example.core;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,12 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.example.core.R;
-import com.example.core.Repository;
-import com.example.core.Validators; // Importação adicionada
+import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -79,6 +77,10 @@ public class Login extends Fragment {
             if (validarCampos(email, senha)) {
                 // 3. SE VÁLIDO, TENTAR O LOGIN
                 adapter.login(tipoAtual, email, senha, requireContext());
+
+                String deeplink = tipoAtual == TipoUsuario.WORKER ? "app://Worker/Home" : "app://Company/Home";
+                Uri deepLinkUri = Uri.parse(deeplink);
+                Navigation.findNavController(v).navigate(deepLinkUri);
             } else {
                 mostrarMensagem("Corrija os campos em destaque.");
             }

@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentRegisterBinding;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -88,8 +90,12 @@ public class Register extends Fragment {
 
             // 4. Chama o cadastro (sem try-catch, pois o AuthAdapter não lança exceções diretas)
             adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext());
-            Navigation.findNavController(v).navigate(R.id.Plan, bundle);
 
+            // 5. Navega para a tela de escolha do plano
+            bundle.putSerializable("TIPO_USUARIO", tipoAtual);
+            bundle.putString("Nome", nome);
+            bundle.putString("Email", email);
+            Navigation.findNavController(v).navigate(R.id.Plan, bundle);
 
         });
 
