@@ -13,26 +13,27 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.example.feature_produtor.CountdownProgressView;
+import com.example.core.databinding.FragmentPaymentBinding;
 
-import com.example.feature_produtor.databinding.FragmentPaymentWorkerIndependentBinding;
 
 public class Payment extends Fragment {
 
     private static final long TOTAL_MS = 5 * 60 * 1000L; // 5 min
     private CountDownTimer timer;
     private boolean finishedOrNavigated = false;
-    private FragmentPaymentWorkerIndependentBinding binding;
-    private CountdownProgressView countdownProgressView;
+    private FragmentPaymentBinding binding;
+
+    private Bundle bundle;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentPaymentWorkerIndependentBinding.inflate(inflater, container, false);
+        binding = FragmentPaymentBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -41,14 +42,7 @@ public class Payment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // carrega o fragment do timer
-        if (savedInstanceState == null) {
-           // countdownProgressView = new CountdownProgressView();
-            getChildFragmentManager()
-                    .beginTransaction()
-                  //  .replace(R.id.timerContainer, countdownProgressView)
-                    .commit();
-        }
+        bundle = getArguments();
 
         String pixCode = binding.tvPixCode.getText().toString();
         binding.btnCopy.setOnClickListener(v -> {
@@ -56,6 +50,7 @@ public class Payment extends Fragment {
                     .getSystemService(Context.CLIPBOARD_SERVICE);
             cm.setPrimaryClip(ClipData.newPlainText("PIX", pixCode));
             Toast.makeText(requireContext(), "Código copiado", Toast.LENGTH_SHORT).show();
+            onPaymentSuccess(v);
         });
 
         startCountdown();
@@ -65,9 +60,9 @@ public class Payment extends Fragment {
         timer = new CountDownTimer(TOTAL_MS, 1000L) {
             @Override
             public void onTick(long msLeft) {
-                float frac = (float) msLeft / (float) TOTAL_MS;
-                if (countdownProgressView != null) {
-                  //  countdownProgressView.updateTimer(frac, format(msLeft));
+                float frac = (float) msLeft / TOTAL_MS;
+                if (binding.countdownProgressView != null) {
+                    binding.countdownProgressView.updateTimer(frac, format(msLeft));
                 }
             }
 
@@ -93,15 +88,17 @@ public class Payment extends Fragment {
         if (timer != null) timer.cancel();
 
         Navigation.findNavController(v)
-                .navigate(R.id.PaymentSuccessfulWorkerIndependent);
+                .navigate(R.id.PaymentSuccessful, bundle);
     }
 
     private void goToFailureThenBack(View v) {
         finishedOrNavigated = true;
         if (timer != null) timer.cancel();
 
+        bundle.remove("plano_id");
+
         Navigation.findNavController(v)
-                .navigate(R.id.PaymentFailureWorkerIndependent);
+                .navigate(R.id.PaymentFailure);
     }
 
     @Override
@@ -109,6 +106,5 @@ public class Payment extends Fragment {
         super.onDestroyView();
         if (timer != null) timer.cancel();
         binding = null;
-        countdownProgressView = null;
     }
 }

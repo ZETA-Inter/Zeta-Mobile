@@ -10,8 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-
-public class CountdownProgressView extends View { //tem que ser fragment
+public class CountdownProgressView extends View {
 
     private final Paint trackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -68,7 +67,6 @@ public class CountdownProgressView extends View { //tem que ser fragment
         canvas.drawText(centerText, getWidth()/2f, cy, textPaint);
     }
 
-    /** 0..1 (1 = cheio). */
     public void setProgressFraction(float f) {
         this.fraction = Math.max(0f, Math.min(1f, f));
         invalidate();
@@ -77,5 +75,10 @@ public class CountdownProgressView extends View { //tem que ser fragment
     public void setCenterText(String t) {
         this.centerText = t;
         invalidate();
+    }
+
+    public void updateTimer(float fraction, String text) {
+        setProgressFraction(fraction);
+        setCenterText(text);
     }
 }
