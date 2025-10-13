@@ -52,14 +52,17 @@ public class HomePageCompany extends Fragment {
             NavController nav = NavHostFragment.findNavController(this);
             bottom.bindNavController(
                     nav,
-                    R.id.RankingPageCompany,   // troféu
+                    R.id.RankingPageCompany,   // troféu (awards)
                     R.id.HomePageCompany,      // home
-                    R.id.WorkerListPageCompany // pessoas
+                    R.id.WorkerListPageCompany // pessoas (team)
             );
-            v.post(() -> bottom.setCurrentItem(CompanyBottomNavView.Item.HOME, false));
+
+            // marca a aba atual SEM navegar (apenas muda o ícone para preenchido)
+            bottom.setActive(CompanyBottomNavView.Item.HOME, false);
         }
         return v;
     }
+
 
 
     @Override
