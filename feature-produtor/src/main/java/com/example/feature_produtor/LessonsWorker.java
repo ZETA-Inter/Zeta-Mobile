@@ -9,6 +9,8 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.example.feature_produtor.adapter.*;
 import com.example.feature_produtor.api.*;
 import com.example.feature_produtor.model.postegres.Program;
+import com.google.android.material.textfield.TextInputEditText;
 
 
 import java.util.ArrayList;
@@ -34,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLessonClickListener {
 
     private ImageView perfil;
-    private SearchView searchView;
+    private TextInputEditText searchView;
     private ImageView notificacao;
     private ImageView config;
     private RecyclerView recyclerCursos;
@@ -131,18 +134,21 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
 
     private void setupSearchListener() {
         if (searchView != null) {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            searchView.addTextChangedListener(new TextWatcher() {
                 @Override
-                public boolean onQueryTextSubmit(String query) {
-                    // Opcional: filtro é feito em onQueryTextChange
-                    return false;
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    // Não é necessário usar aqui
                 }
 
                 @Override
-                public boolean onQueryTextChange(String newText) {
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
                     // Chamamos o filtro sempre que o texto muda
-                    filterPrograms(newText);
-                    return true;
+                    filterPrograms(s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // Também não é necessário usar aqui
                 }
             });
         }
