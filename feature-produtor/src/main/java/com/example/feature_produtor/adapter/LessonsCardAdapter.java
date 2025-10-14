@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.Program;
+import com.example.feature_produtor.model.postegres.Program; // Importa a classe Program correta
 
 
 public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.LessonsViewHolder> {
@@ -40,13 +40,13 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LessonsViewHolder holder, int position) {
-        Class currentClass = getItem(position);
-        holder.bind(currentClass, listener);
+        Program currentProgram = getItem(position); // Usando Program
+        holder.bind(currentProgram, listener);
     }
 
     public static class LessonsViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView title;
+        private final TextView title;
         private final TextView description;
         private final ImageView img;
         private final Context context;
@@ -60,14 +60,14 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
             img = itemView.findViewById(R.id.imageView3);
         }
 
-        public void bind(final Class item, final OnLessonClickListener listener) {
-            title.setText(item.getTitle());
+        public void bind(final Program item, final OnLessonClickListener listener) { // Usando Program
+            // Atualizado para usar getName() e getDescription() de Program
+            title.setText(item.getName());
             description.setText(item.getDescription());
 
-//            // 1. Lógica para obter a URL da imagem
-//            String imageUrl = getImageUrlFromClass(item);
+            // Lógica para carregar a imagem (se houver, precisa do Glide/Picasso)
+//            String imageUrl = getImageUrlFromProgram(item);
 //
-//            // 2. Usando o GLIDE para carregar a imagem da URL
 //            if (imageUrl != null && !imageUrl.isEmpty()) {
 //                Glide.with(context)
 //                        .load(imageUrl)
@@ -78,29 +78,30 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
         }
 
 
-//        private String getImageUrlFromClass(Class item) {
+//        private String getImageUrlFromProgram(Program item) {
+//            // Implemente a lógica para obter a URL da imagem de Program aqui, se necessário.
 //            return null;
-        //metodo para pegar a imagem que não está na classe class
 //        }
     }
 
 
 
-    private static class LessonsItemDiffCallback extends DiffUtil.ItemCallback<Class> {
+    private static class LessonsItemDiffCallback extends DiffUtil.ItemCallback<Program> { // Usando Program
         @Override
-        public boolean areItemsTheSame(@NonNull Class oldItem, @NonNull Class newItem) {
+        public boolean areItemsTheSame(@NonNull Program oldItem, @NonNull Program newItem) { // Usando Program
 
             if (oldItem.getId() == null || newItem.getId() == null) {
-                return oldItem.getTitle().equals(newItem.getTitle());
+                // Alternativa se o ID for nulo, compara pelo nome
+                return oldItem.getName().equals(newItem.getName());
             }
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Class oldItem, @NonNull Class newItem) {
-            return oldItem.getTitle().equals(newItem.getTitle()) &&
+        public boolean areContentsTheSame(@NonNull Program oldItem, @NonNull Program newItem) { // Usando Program
+            // Comparando nome e descrição
+            return oldItem.getName().equals(newItem.getName()) &&
                     oldItem.getDescription().equals(newItem.getDescription());
-            // oldItem.getImageUrl().equals(newItem.getImageUrl());
         }
     }
 }

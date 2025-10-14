@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textViewTitulo" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/icon_home"
                 android:layout_width="77dp"
                 android:layout_height="81dp"
                 android:layout_marginTop="16dp"

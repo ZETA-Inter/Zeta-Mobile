@@ -74,10 +74,6 @@ public class ContentLessonWorker extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         NavController navController = Navigation.findNavController(binding.getRoot());
 
-        // Listeners
-        binding.btContinuar.setOnClickListener(v -> {
-            navController.navigate(R.id.ActivityLessonWorker);
-        });
     }
 
 }

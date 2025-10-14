@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model;
+package com.example.feature_produtor.model.mongo;
 
 public class Law {
 

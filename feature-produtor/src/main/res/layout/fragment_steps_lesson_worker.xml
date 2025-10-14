@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView11"
+            android:id="@+id/config"
             android:layout_width="47dp"
             android:layout_height="46dp"
             android:layout_marginTop="20dp"
@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/iconconfig" />
 
         <ImageView
-            android:id="@+id/imageView12"
+            android:id="@+id/icon_notifi"
             android:layout_width="47dp"
             android:layout_height="46dp"
             android:layout_marginTop="20dp"
@@ -46,7 +46,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView13"
+            android:id="@+id/perfil"
             android:layout_width="61dp"
             android:layout_height="51dp"
             android:layout_marginTop="20dp"
@@ -57,11 +57,11 @@
             app:srcCompat="@drawable/perfil" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="92dp"
             android:layout_marginEnd="259dp"
             android:text="Etapas do Curso"
             android:textSize="20sp"
@@ -69,36 +69,37 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.386"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView13" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btContinuar"
+            android:id="@+id/btComeçar"
             style="@style/StartStepPurpleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="132dp"
             android:layout_marginEnd="268dp"
+            android:background="#563887"
+            android:fontFamily="@font/spartan_semibold"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Começar"
+            app:backgroundTint="#563887"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/stepsRV"
-            android:layout_width="394dp"
-            android:layout_height="514dp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/recycler_etapas"
+            android:layout_width="409dp"
+            android:layout_height="515dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btContinuar"
-            app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/fragment_steps_lesson_item" />
+            app:layout_constraintTop_toBottomOf="@+id/btComeçar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

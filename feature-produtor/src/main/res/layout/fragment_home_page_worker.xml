@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDF6FF"
+    android:background="#F6F7FF"
     tools:context=".HomePageWorkerFragment">
 
     <ScrollView
@@ -16,10 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -44,7 +40,7 @@
                 android:id="@+id/icon_perfil"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="28dp"
                 android:src="@drawable/perfil"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toTopOf="parent"
@@ -52,9 +48,10 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/box_ia"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_width="233dp"
+                android:layout_height="47dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/ia_barra"
                 app:layout_constraintBottom_toBottomOf="@id/icon_perfil"
                 app:layout_constraintEnd_toStartOf="@id/icon_notificacao"
@@ -64,14 +61,25 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="24dp"
                     android:text="IA"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:id="@+id/icon_configuracoes"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/iconconfig"
+                app:layout_constraintBottom_toBottomOf="@id/icon_perfil"
+                app:layout_constraintEnd_toStartOf="@id/guideline_end"
+                app:layout_constraintTop_toTopOf="@id/icon_perfil"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/icon_notificacao"
@@ -84,25 +92,15 @@
                 app:layout_constraintTop_toTopOf="@id/icon_perfil"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/icon_configuracoes"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/iconconfig"
-                app:layout_constraintBottom_toBottomOf="@id/icon_perfil"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintTop_toTopOf="@id/icon_perfil"
-                tools:ignore="ContentDescription" />
-
             <TextView
                 android:id="@+id/text_ola_usuario"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Olá, Usuário"
+                android:textColor="#043253"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/icon_configuracoes"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/icon_perfil" />
 
@@ -110,12 +108,11 @@
                 android:id="@+id/text_subtitulo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:text="Acompanhe seu progresso e comece novas jornadas"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@id/text_ola_usuario"
-                app:layout_constraintStart_toStartOf="@id/text_ola_usuario"
+                android:textColor="#808080"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toStartOf="@id/guideline_end"
+                app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/text_ola_usuario" />
 
             <TextView
@@ -124,6 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Desempenho"
+                android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
@@ -138,28 +136,21 @@
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/text_desempenho">
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline_center_cards"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="190dp" />
-
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_metas"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="8dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/guideline_center_cards"
+                    app:layout_constraintEnd_toStartOf="@+id/card_curso"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:padding="16dp">
 
                         <TextView
@@ -167,6 +158,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Progresso de metas"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -178,7 +171,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/text_progresso_metas" />
+                            app:layout_constraintTop_toBottomOf="@id/text_progresso_metas"/>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -186,17 +179,16 @@
                     android:id="@+id/card_curso"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/guideline_center_cards"
+                    app:layout_constraintStart_toEndOf="@+id/card_metas"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:padding="16dp">
 
                         <TextView
@@ -204,6 +196,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Progresso de curso"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -215,9 +209,10 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/text_progresso_curso" />
+                            app:layout_constraintTop_toBottomOf="@id/text_progresso_curso"/>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -226,70 +221,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Escolha seu tipo de conteúdo"
+                android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/layout_desempenho_cards" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_filter_buttons"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/text_escolha_conteudo"
-                >
-
-                <TextView
-                    android:id="@+id/button_filter_treinamento"
-                    style="@style/FilterButtonStyle"
-                    android:layout_width="0dp"
-                    android:text="Treinamento"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/button_filter_leis"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:id="@+id/button_filter_leis"
-                    style="@style/FilterButtonStyle"
-                    android:layout_width="0dp"
-                    android:text="Leis"
-                    app:layout_constraintStart_toEndOf="@id/button_filter_treinamento"
-                    app:layout_constraintEnd_toStartOf="@id/button_filter_regras"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:id="@+id/button_filter_regras"
-                    style="@style/FilterButtonStyle"
-                    android:layout_width="0dp"
-                    android:text="Regras"
-                    app:layout_constraintStart_toEndOf="@id/button_filter_leis"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            ... (código anterior)
-
             <TextView
                 android:id="@+id/text_cursos_andamento"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="111dp"
                 android:text="Cursos em andamento"
+                android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/layout_filter_buttons" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_escolha_conteudo" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_cursos_andamento"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:clipToPadding="false"
                 android:orientation="horizontal"
                 android:paddingStart="16dp"
@@ -299,7 +254,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_cursos_andamento"
-                tools:listitem="@layout/fragment_lessons_iten" />
+                tools:itemCount="2"
+                tools:orientation="horizontal" />
 
             <TextView
                 android:id="@+id/text_novos_conteudos"
@@ -307,6 +263,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Novos conteúdos"
+                android:textColor="#070707"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
@@ -316,7 +273,7 @@
                 android:id="@+id/recycler_novos_conteudos"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:clipToPadding="false"
                 android:orientation="horizontal"
                 android:paddingStart="16dp"
@@ -326,12 +283,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_novos_conteudos"
-                tools:listitem="@layout/fragment_lessons_iten" />
+                tools:itemCount="3"
+                tools:orientation="horizontal" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_tipo_conteudo"
+                android:layout_width="374dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="432dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-    ...
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_bar_container"

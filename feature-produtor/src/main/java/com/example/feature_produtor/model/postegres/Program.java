@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model;
+package com.example.feature_produtor.model.postegres;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,9 +8,7 @@ public class Program {
     private String name;
     private String description;
 
-    @SerializedName("quantity_modules")
-    private Integer quantityModules;
-    private Segment segment2Response;
+    private Segment segmentResponse;
 
 
     public Program() {
@@ -41,19 +39,13 @@ public class Program {
         this.description = description;
     }
 
-    public Integer getQuantityModules() {
-        return quantityModules;
-    }
 
-    public void setQuantityModules(Integer quantityModules) {
-        this.quantityModules = quantityModules;
-    }
 
     public Segment getSegment() {
-        return segment2Response;
+        return segmentResponse;
     }
 
-    public void setSegment(Segment segment2Response) {
-        this.segment2Response = segment2Response;
+    public void setSegment(Segment segmentResponse) {
+        this.segmentResponse = segmentResponse;
     }
 }

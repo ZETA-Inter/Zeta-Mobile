@@ -26,15 +26,13 @@
         <deepLink
             android:id="@+id/LessonsWorkerDeepLink"
             app:uri="app://Worker/Lessons" />
+
+        <argument
+            android:name="contentType"
+            app:argType="string"
+            android:defaultValue="all" />
     </fragment>
 
-    <fragment
-        android:id="@+id/ModulePageWorker"
-        android:name="com.example.feature_produtor.ModulePageWorker">
-        <deepLink
-            android:id="@+id/ModulePageWorkerDeepLink"
-            app:uri="app://Worker/Module" />
-    </fragment>
 
     <fragment
         android:id="@+id/PaymentFailureWorkerIndependent"
@@ -98,14 +96,32 @@
         <deepLink
             android:id="@+id/ContentLessonWorkerDeepLink"
             app:uri="app://Worker/ContentLesson" />
+
+        <argument
+            android:name="classId"
+            android:defaultValue="default_id" />
     </fragment>
 
     <fragment
-        android:id="@+id/ActivityLessonWorker"
-        android:name="com.example.feature_produtor.ActivityLessonWorker">
+        android:id="@+id/TestWorker"
+        android:name="com.example.feature_produtor.TestWorker">
         <deepLink
-            android:id="@+id/ActivityLessonWorkerDeepLink"
-            app:uri="app://Worker/ActivityLesson" />
+            android:id="@+id/TestWorkerDeepLink"
+            app:uri="app://Worker/TestWorker" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PerfilWorker"
+        android:name="com.example.feature_produtor.PerfilWorker">
+        <deepLink
+            android:id="@+id/PerfilWorkerDeepLink"
+            app:uri="app://Worker/PerfilWorker" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatBotWorker"
+        android:name="com.example.feature_produtor.ChatbotPageWorker">
+
     </fragment>
 
 </navigation>

@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model;
+package com.example.feature_produtor.model.mongo;
 
 public class LessonsItem {
     private final String id;
@@ -25,10 +25,5 @@ public class LessonsItem {
     public int getQuantModulos() {
         return quantModulos;
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            // Inflate the layout for this fragment
-            return inflater.inflate(R.layout.fragment_lessons_item, container, false);
-        }
     }
+}

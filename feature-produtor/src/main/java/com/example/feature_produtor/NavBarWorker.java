@@ -1,64 +1,54 @@
 package com.example.feature_produtor;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NavBarWorker#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.feature_produtor.R;
+
 public class NavBarWorker extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public NavBarWorker() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NavBarWorker.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NavBarWorker newInstance(String param1, String param2) {
-        NavBarWorker fragment = new NavBarWorker();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private FrameLayout navAtividades, navHome, navMetas;
+    private FrameLayout selectedItem;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onViewCreated(@Nullable View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        navAtividades = view.findViewById(R.id.nav_atividades_container);
+        navHome = view.findViewById(R.id.nav_home_container);
+        navMetas = view.findViewById(R.id.nav_metas_container);
+
+        View.OnClickListener listener = v -> selectItem((FrameLayout) v);
+
+        navAtividades.setOnClickListener(listener);
+        navHome.setOnClickListener(listener);
+        navMetas.setOnClickListener(listener);
+    }
+
+    private void selectItem(FrameLayout newItem) {
+        if (selectedItem != null) {
+            // Volta o anterior
+            selectedItem.setBackground(null);
+            ObjectAnimator.ofFloat(selectedItem, "translationY", 0f).start();
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_nav_bar_worker, container, false);
+        newItem.setBackgroundResource(R.drawable.nav_item_select);
+        ObjectAnimator.ofFloat(newItem, "translationY", -20f).start();
+        selectedItem = newItem;
+
+        // Navegação por ID
+        int id = newItem.getId();
+        if (id == R.id.nav_home_container) {
+            Navigation.findNavController(requireView()).navigate(R.id.HomePageWorker);
+        } else if (id == R.id.nav_atividades_container) {
+            Navigation.findNavController(requireView()).navigate(R.id.LessonsWorker);
+        } else if (id == R.id.nav_metas_container) {
+            Navigation.findNavController(requireView()).navigate(R.id.GoalsPageWorker);
+        }
     }
 }

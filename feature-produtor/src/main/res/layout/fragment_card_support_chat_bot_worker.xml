@@ -16,13 +16,13 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="389dp"
+            android:layout_height="wrap_content"
             android:padding="24dp">
 
             <TextView
                 android:id="@+id/textViewTitulo"
-                android:layout_width="327dp"
-                android:layout_height="121dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/inter_medium"
                 android:gravity="center"
@@ -31,33 +31,31 @@
                 android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.466"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonContinuar"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="244dp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="#0F5ECB"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Continuar sem chatbot"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 app:cornerRadius="100dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontalChainStyle="packed"
-                app:layout_constraintHorizontal_bias="0.011"
+                app:strokeColor="#FF4747"
+                app:layout_constraintEnd_toStartOf="@+id/buttonTrocar"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:strokeColor="#FF4747" />
+                app:layout_constraintTop_toBottomOf="@id/textViewTitulo"
+                app:layout_constraintWidth_percent="0.45" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonTrocar"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="244dp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="#0F5ECB"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Troque de plano"
@@ -65,10 +63,9 @@
                 android:textSize="12sp"
                 app:cornerRadius="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.988"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintStart_toEndOf="@id/buttonContinuar"
+                app:layout_constraintTop_toBottomOf="@id/textViewTitulo"
+                app:layout_constraintWidth_percent="0.45" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

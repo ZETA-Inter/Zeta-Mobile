@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model;
+package com.example.feature_produtor.model.mongo;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;

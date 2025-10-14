@@ -2,152 +2,193 @@ package com.example.feature_produtor;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.feature_produtor.model.mongo.Content;
 
-
-import com.example.feature_produtor.adapter.LessonsAdapter;
-import com.example.feature_produtor.model.LessonsItem;
-
-import java.util.ArrayList;
 import java.util.List;
 
+import com.example.feature_produtor.adapter.*;
+import com.example.feature_produtor.model.postegres.Program;
+import com.example.feature_produtor.model.postegres.Segment;
 
-public class HomePageWorkerFragment extends Fragment implements LessonsAdapter.OnLessonClickListener { // Removemos a interface do FilterAdapter
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-//ATENÇÃO ESSA CLASSE POSSUI APENAS UM MOLDE DE COMO SERIA A CONFIURAÇÃO DA TELA
-// ESSE CODIGO NÃO TEM CONGURENCIA NENHUMA COM OS BANCOS
+import com.example.feature_produtor.api.*;
+
+
+
+public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapter.OnLessonClickListener, FilterAdapter.OnSegmentClickListener{
+
+    private ImageView perfil;
+    private ImageView boxIa;
+    private ImageView iconConfig;
+    private RecyclerView recyclerTipoConteudo;
     private RecyclerView recyclerCursosAndamento;
-    //private RecyclerView recyclerNovosConteudos;
 
-    private LessonsAdapter cursosAndamentoAdapter;
-    //private LessonsAdapter novosConteudosAdapter;
+    private LessonsCardAdapter lessonsCardAdapter;
+    private FilterAdapter filterAdapter;
 
-   //filtros
-    private TextView buttonTreinamento;
-    private TextView buttonLeis;
-    private TextView buttonRegras;
+    private ApiPostgres apiPostgres;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_page_worker, container, false);
 
+        // 1. Inicializando variáveis
+        perfil=view.findViewById(R.id.icon_perfil);
+        boxIa=view.findViewById(R.id.box_ia);
+        iconConfig=view.findViewById(R.id.icon_configuracoes);
+        recyclerCursosAndamento=view.findViewById(R.id.recycler_cursos_andamento);
+        recyclerTipoConteudo =view.findViewById(R.id.recycler_tipo_conteudo);
 
-        // 1. Inicializa Views dos Filtros
-        buttonTreinamento = view.findViewById(R.id.button_filter_treinamento);
-        buttonLeis = view.findViewById(R.id.button_filter_leis);
-        buttonRegras = view.findViewById(R.id.button_filter_regras);
 
-        // Inicializa RecyclerViews
-        recyclerCursosAndamento = view.findViewById(R.id.recycler_cursos_andamento);
-        //recyclerNovosConteudos = view.findViewById(R.id.recycler_novos_conteudos);
+        // 2. Iniciando os Adapters
+        lessonsCardAdapter = new LessonsCardAdapter(this,getContext());
+        filterAdapter = new FilterAdapter(this);
 
-        //setupCursosAndamentoRecyclerView();
-        // setupNovosConteudosRecyclerView();
+        // 3. Configurando RecyclerViews
+        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        recyclerCursosAndamento.setAdapter(lessonsCardAdapter);
 
-        //chama click de filtros
-        //setupFilterButtons();
+        // Configurando RecyclerView de filtro
+        recyclerTipoConteudo.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        recyclerTipoConteudo.setAdapter(filterAdapter);
 
+
+        // 4. Iniciando Retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api-postgresql-zeta-fide.onrender.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        apiPostgres = retrofit.create(ApiPostgres.class);
+
+
+        // 5. Fazendo chamada para a API (recycler cursos andamento)
+        Call<List<Program>> call = apiPostgres.getAllPrograms();
+
+        call.enqueue(new Callback<List<Program>>() {
+            @Override
+            public void onResponse(Call<List<Program>> call, Response<List<Program>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Program> lessons = response.body();
+                    lessonsCardAdapter.submitList(lessons);
+
+                } else {
+                    Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Program>> call, Throwable t) {
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
+        Call<List<Segment>> segmentCall = apiPostgres.getAllSegments();
+
+        segmentCall.enqueue(new Callback<List<Segment>>() {
+            @Override
+            public void onResponse(Call<List<Segment>> call, Response<List<Segment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Segment> segmentsTypes = response.body();
+                    filterAdapter.submitList(segmentsTypes);
+                } else {
+                    Toast.makeText(getContext(), "Erro ao carregar filtros: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Segment>> call, Throwable t) {
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        setupClickListeners();
         return view;
+
     }
 
-    // LÓGICA DOS BOTÕES DE FILTRO
+    private void setupClickListeners() {
+        perfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.PerfilWorker);
+            }
+        });
 
-//    private void setupFilterButtons() {
-//        // Usa o mesmo listener para os 3 botões, mas passa o texto do botão como categoria
-//        View.OnClickListener filterClickListener = v -> {
-//            String filterName = ((TextView) v).getText().toString();
-//            navigateToFilteredList(filterName);
-//        };
-//
-//        buttonTreinamento.setOnClickListener(filterClickListener);
-//        buttonLeis.setOnClickListener(filterClickListener);
-//        buttonRegras.setOnClickListener(filterClickListener);
-//    }
-//
-//    private void navigateToFilteredList(String filterName) {
-//        Bundle bundle = new Bundle();
-//        bundle.putString("FILTER_CATEGORY", filterName);
-//
-//        Toast.makeText(getContext(), "Navegando para: " + filterName, Toast.LENGTH_SHORT).show();
-//
-//        try {
-//
-//            //NavHostFragment.findNavController(this).navigate(R.id.action_home_to_filtered_list, bundle);
-//        } catch (Exception e) {
-//            Toast.makeText(getContext(), "Erro de navegação: Verifique o NavGraph.", Toast.LENGTH_LONG).show();
-//        }
-//    }
-//
+        boxIa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.ChatBotWorker);
+
+            }
+        });
+
+        iconConfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Navigation.findNavController(v).navigate(R.id.);
+
+            }
+        });
 
 
-
-    // MÉTODOS DE SETUP DE RECYCLERVIEW
-
-
-//    private void setupCursosAndamentoRecyclerView() {
-//
-//        //List<LessonsItem> initialList = getCursosEmAndamentoData();
-//
-//        //
-//        cursosAndamentoAdapter = new LessonsAdapter(initialList, this);
-//        recyclerCursosAndamento.setAdapter(cursosAndamentoAdapter);
-//
-//        //Horizontal
-//        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//    }
-
-    // Configuração para a seção "Novos Conteúdos"
-//    private void setupNovosConteudosRecyclerView() {
-//        List<LessonsItem> initialList = getNovosConteudosData();
-//
-//        novosConteudosAdapter = new LessonsAdapter(initialList, this);
-//        recyclerNovosConteudos.setAdapter(novosConteudosAdapter);
-//
-//        recyclerNovosConteudos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//    }
-
-    //Logica mongo (molde, ainda será desenvolvido)
-
-//    private List<LessonsItem> getCursosEmAndamentoData() {
-//        // Lógica de pegar dados do MongoDB para "Cursos em Andamento"
-//        List<LessonsItem> list = new ArrayList<>();
-//
-//        // Exemplo MOCK:
-//        list.add(new LessonsItem("C1", "Transporte Seguro", "Todo cuidado é bom", R.drawable.ic_caminhao, 3));
-//        list.add(new LessonsItem("C2", "Primeiros Socorros", "Essencial para o trabalho", R.drawable.ic_medico, 5));
-//
-//        return list;
-//    }
-//
-//    private List<LessonsItem> getNovosConteudosData() {
-//        // Lógica de pegar dados do MongoDB para "Novos Conteúdos"
-//        List<LessonsItem> list = new ArrayList<>();
-//
-//        // Exemplo MOCK:
-//        list.add(new LessonsItem("N1", "Novidade da Semana", "Breve descrição do novo curso", R.drawable.ic_estrela, 1));
-//
-//        return list;
-//    }
-
+    }
 
 
     @Override
-    public void onLessonClick(LessonsItem item) {
-        navigateToCourseDetail(item);
+    public void onLessonClick(Program item) {
+        // Criar um Bundle para empacotar o id
+        Bundle bundle = new Bundle();
+
+        //Adicionar infos do curso (Program) ao Bundle.
+        Integer programId = item.getId(); // Renomeado para 'programId' para maior clareza
+        bundle.putString("programId", String.valueOf(programId));
+
+        //Navega para o destino, passando o Bundle como argumento
+        // Assumindo que 'ContentLessonWorker' mostra os detalhes/etapas do curso (Program)
+        if(getView() != null) {
+            Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
+        }
+
     }
 
-    private void navigateToCourseDetail(LessonsItem course) {
 
-        NavHostFragment.findNavController(this).navigate(R.id.LessonsWorker);
+    @Override
+    public void onSegmentClick(Segment nome) {
+        // Criar um Bundle para empacotar o id
+        Bundle bundle = new Bundle();
+
+        //Adicionar tipo ao Bundle.
+        String filterType = nome.getName();
+        bundle.putString("segment", filterType);
+
+        // Opcional: Feedback visual imediato
+        Toast.makeText(getContext(), "Filtrando por: " + filterType, Toast.LENGTH_SHORT).show();
+
+        //Navega para o destino, passando o Bundle como argumento
+        Navigation.findNavController(getView()).navigate(R.id.LessonsWorker, bundle);
+
 
     }
 }

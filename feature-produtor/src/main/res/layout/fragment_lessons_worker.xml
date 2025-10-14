@@ -13,18 +13,21 @@
         tools:layout_editor_absoluteX="-116dp"
         tools:layout_editor_absoluteY="0dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/Cursos"
-            android:layout_width="406dp"
-            android:layout_height="470dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txtPesquisa3"
+            android:layout_width="197dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/spartan"
+            android:hint="Pesquisar"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintHorizontal_bias="0.453"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtDescubra"
-            tools:listitem="@layout/fragment_lessons_item" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/perfil3"
             android:layout_width="61dp"
             android:layout_height="51dp"
             android:layout_marginTop="20dp"
@@ -42,12 +45,12 @@
             android:layout_marginTop="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/imageView6"
+            app:layout_constraintStart_toEndOf="@+id/icon_notifica"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/iconconfig" />
 
         <ImageView
-            android:id="@+id/imageView6"
+            android:id="@+id/icon_notifica"
             android:layout_width="47dp"
             android:layout_height="46dp"
             android:layout_marginTop="20dp"
@@ -56,23 +59,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/iconnotific" />
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="231dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/search_view_bg"
-            android:iconifiedByDefault="false"
-            android:imeOptions="actionSearch"
-            android:queryHint="Pesquisar"
-            app:searchIcon="@drawable/lupa"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -101,8 +87,15 @@
             app:layout_constraintHorizontal_bias="0.196"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtCursos" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cursos"
+            android:layout_width="409dp"
+            android:layout_height="552dp"
+            android:layout_marginTop="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtDescubra" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--    [A step-by-step guide on creating an Android Fragment](https://www.youtube.com/watch?v=WGjEttJfX4U)-->
-<!--    Este vídeo pode ajudar a entender como adicionar um Fragment a uma Activity em um projeto Android Studio.-->
-<!--    http://googleusercontent.com/youtube_content/0-->
+
