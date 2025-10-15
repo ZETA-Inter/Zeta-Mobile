@@ -23,8 +23,20 @@ public interface ApiPostgresClient {
     @GET("api/workers/findEmail/{email}")
     Call<UserResponse> findWorkerByEmail(@Path("email") String email);
 
+    @GET("/api/workers/findById/{id}")
+    Call<WorkerResponse> findWorkerById(@Path("id") int id);
+
     @GET("api/companies/find-email/{email}")
     Call<UserResponse> findCompanyByEmail(@Path("email") String email);
+
+    @GET("/api/workers/listActualProgramsById/{id}")
+    Call<WorkerResponse> findProgramById(@Path("id") String id);
+
+    @GET("/api/workers/listActualProgramsById/{id}")
+    Call<WorkerResponse> findLessonsProgressById(@Path("id") String id);
+
+    @GET("/api/goals/progress-goals/{workerId}")
+    Call<WorkerResponse> findProgressGoalsById(@Path("workerId") String workerId);
 
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);

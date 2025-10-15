@@ -15,7 +15,7 @@
         android:background="#FBFBFB">
 
         <TextView
-            android:id="@+id/cursoDescr"
+            android:id="@+id/description"
             android:layout_width="139dp"
             android:layout_height="26dp"
             android:fontFamily="@font/spartan_semibold"

@@ -1,12 +1,12 @@
-// Crie este novo arquivo: Worker.java
+// Arquivo: com/example/feature_fornecedor/ListPage/Worker.java
+
 package com.example.feature_fornecedor.ListPage;
 
 import com.google.gson.annotations.SerializedName;
 
-// Plain Old Java Object (POJO) para representar os dados do trabalhador
 public class Worker {
 
-    @SerializedName("id") // Garante que o campo JSON "id" seja mapeado para esta variável
+    @SerializedName("id")
     private int id;
 
     @SerializedName("name")
@@ -21,7 +21,11 @@ public class Worker {
     @SerializedName("companyName")
     private String companyName;
 
-    // Crie os Getters para todos os campos (essencial para o Adapter)
+    // CORREÇÃO: Adicionado o campo que faltava para corresponder ao JSON
+    @SerializedName("image_url")
+    private String imageUrl;
+
+    // Getters
     public int getId() {
         return id;
     }
@@ -40,5 +44,9 @@ public class Worker {
 
     public String getCompanyName() {
         return companyName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

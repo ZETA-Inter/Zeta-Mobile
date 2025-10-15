@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="370dp"
@@ -14,7 +13,7 @@
         android:background="#FBFBFB">
 
         <TextView
-            android:id="@+id/cursoDescr"
+            android:id="@+id/description"
             android:layout_width="139dp"
             android:layout_height="26dp"
             android:fontFamily="@font/spartan_semibold"

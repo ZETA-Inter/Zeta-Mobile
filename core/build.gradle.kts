@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.constraintlayout)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

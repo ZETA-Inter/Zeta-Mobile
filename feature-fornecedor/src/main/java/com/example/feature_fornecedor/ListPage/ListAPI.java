@@ -1,14 +1,14 @@
+// Arquivo: com/example/feature_fornecedor/ListPage/ListAPI.java
+
 package com.example.feature_fornecedor.ListPage;
 
-import com.google.gson.JsonElement;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Url;
+import retrofit2.http.Path;
 
 public interface ListAPI {
-    @GET("api/workers/list")
-    Call<List<Worker>> getAllWorker();
+
+    @GET("workers/listByCompanyId/{id}")
+    Call<List<Worker>> getWorkersByCompany(@Path("id") String companyId);
 }

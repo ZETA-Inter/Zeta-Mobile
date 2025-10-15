@@ -79,7 +79,7 @@ public class LessonsAdapter extends RecyclerView.Adapter<LessonsAdapter.LessonsV
             super(itemView);
             // Referência aos IDs do seu fragment_lessons_iten.xml
             title = itemView.findViewById(R.id.cursoTitulo);
-            description = itemView.findViewById(R.id.cursoDescr);
+            description = itemView.findViewById(R.id.description);
             icon = itemView.findViewById(R.id.imageView3);
             quantModulos = itemView.findViewById(R.id.cursoQuantModulo);
         }
