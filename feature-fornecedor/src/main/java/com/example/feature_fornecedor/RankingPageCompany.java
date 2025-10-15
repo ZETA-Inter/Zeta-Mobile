@@ -68,17 +68,20 @@ public class RankingPageCompany extends Fragment {
         rv.setAdapter(adapter);
 
         CompanyBottomNavView bottom = v.findViewById(R.id.bottomNav);
-        NavController nav = NavHostFragment.findNavController(this);
-        bottom.bindNavController(
-                nav,
-                R.id.RankingPageCompany,
-                R.id.HomePageCompany,
-                R.id.WorkerListPageCompany
-        );
-        bottom.post(() -> bottom.setCurrentItem(CompanyBottomNavView.Item.AWARDS, false));
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    R.id.RankingPageCompany,
+                    R.id.HomePageCompany,
+                    R.id.WorkerListPageCompany
+            );
+            bottom.setActive(CompanyBottomNavView.Item.AWARDS, false);
+        }
 
         fetchRanking();
     }
+
 
     private void fetchRanking() {
         RankingApi api = RetrofitClient.get().create(RankingApi.class);

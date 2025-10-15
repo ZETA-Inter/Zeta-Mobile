@@ -7,5 +7,8 @@
     <string name="sign_in_apple">Entrar com Apple</string>
 
     <string name="default_web_client_id">407643507558-rall1dd6kssps2gq8bh7l96h6cesp6hs.apps.googleusercontent.com</string>
+    <string name="nav_awards">nav_awards</string>
+    <string name="nav_home">nav_home</string>
+    <string name="nav_team">nav_team</string>
 
 </resources>
