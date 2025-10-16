@@ -1,0 +1,18 @@
+<resources>
+    <!-- Paleta base -->
+    <attr name="appColorPrimary" format="color"/>
+    <attr name="appColorOnPrimary" format="color"/>
+    <attr name="appColorSecondary" format="color"/>
+    <attr name="appColorBackground" format="color"/>
+    <attr name="appColorSurface" format="color"/>
+    <attr name="appColorOnSurface" format="color"/>
+    <attr name="appColorBorder" format="color"/>
+
+    <!-- Paleta específica do PRODUTOR (chat) -->
+    <attr name="appWorkerChatQuestion" format="color"/>
+    <attr name="appWorkerChatAnswer" format="color"/>
+
+    <!-- Exemplos de componentes -->
+    <attr name="bottomNavContainerColor" format="color"/>
+    <attr name="bottomNavIconTint" format="color"/>
+</resources>

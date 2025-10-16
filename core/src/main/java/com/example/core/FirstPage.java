@@ -1,6 +1,6 @@
 package com.example.core;
 
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +22,20 @@ public class FirstPage extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentFirstPageBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         // Navegação para o LoginFragment
-        binding.btnFornecedor.setOnClickListener(v ->
-                // Use o ID do fragmento de destino que foi definido no nav_core.xml
-                Navigation.findNavController(v).navigate(R.id.Login)
-        );
+
+        binding.btnFornecedor.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("TIPO_USUARIO", TipoUsuario.COMPANY);
+            // Use o ID do fragmento de destino que foi definido no nav_core.xml
+            Navigation.findNavController(v).navigate(R.id.Login, bundle);
+        });
 
         binding.btnProdutor.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("TIPO_USUARIO", TipoUsuario.WORKER);
             // Use o ID do fragmento de destino que você definiu no nav_core.xml
-//                Navigation.findNavController(v).navigate(R.id.Login)
-
-            Uri deeplink = Uri.parse("app://Worker/Lessons");
-            Navigation.findNavController(v).navigate(deeplink);
+            Navigation.findNavController(v).navigate(R.id.Login, bundle);
         });
 
         return root;
