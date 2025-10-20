@@ -1,4 +1,4 @@
-package com.example.feature_fornecedor.ui.bottomnav;
+package com.example.feature_produtor.ui.bottomnav;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,45 +10,46 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 
-import com.example.feature_fornecedor.R;
+import com.example.feature_produtor.R;
 
-public class CompanyBottomNavView extends FrameLayout {
+public class WorkerBottomNavView extends FrameLayout {
 
-    public enum Item { AWARDS, HOME, TEAM }
+    public enum Item { LESSONS, HOME, GOALS }
 
-    private ImageView btnAwards, btnHome, btnTeam;
+    private ImageView btnLessons, btnHome, btnGoals;
 
     @Nullable private NavController navController;
-    private int destAwards, destHome, destTeam;
+    private int destLessons, destHome, destGoals;
     private Item current = Item.HOME;
 
     // PNGs no /res/drawable (troque os nomes pelos seus arquivos)
-    private final int AWARDS_OUTLINE = R.drawable.ic_awards_outline;  // ex.: trofeu_contorno.png
-    private final int AWARDS_FILLED  = R.drawable.ic_awards_filled;   // ex.: trofeu_preenchido.png
+    private final int LESSONS_OUTLINE = R.drawable.ic_lessons_outline;  // ex.: trofeu_contorno.png
+    private final int LESSONS_FILLED = R.drawable.ic_lessons_filled;   // ex.: trofeu_preenchido.png
 
     private final int HOME_OUTLINE   = R.drawable.ic_home_outline;
     private final int HOME_FILLED    = R.drawable.ic_home_filled;
 
-    private final int TEAM_OUTLINE   = R.drawable.ic_team_outline;
-    private final int TEAM_FILLED    = R.drawable.ic_team_filled;
+    private final int GOALS_OUTLINE = R.drawable.ic_goals_outline;
+    private final int GOALS_FILLED    = R.drawable.ic_goals_filled;
 
-    public CompanyBottomNavView(Context c) { this(c, null); }
-    public CompanyBottomNavView(Context c, @Nullable AttributeSet a) {
+
+    public WorkerBottomNavView(Context c) { this(c, null); }
+    public WorkerBottomNavView(Context c, @Nullable AttributeSet a) {
         super(c, a);
         init();
     }
 
     private void init() {
         // Layout simplificado: só a pílula azul e 3 ícones
-        inflate(getContext(), R.layout.view_bottom_nav_company, this);
+        inflate(getContext(), R.layout.view_bottom_nav_worker, this);
 
-        btnAwards = findViewById(R.id.btnLessons);
+        btnLessons = findViewById(R.id.btnLessons);
         btnHome   = findViewById(R.id.btnHome);
-        btnTeam   = findViewById(R.id.btnGoals);
+        btnGoals   = findViewById(R.id.btnGoals);
 
-        btnAwards.setOnClickListener(v -> setActive(Item.AWARDS, true));
+        btnLessons.setOnClickListener(v -> setActive(Item.LESSONS, true));
         btnHome.setOnClickListener(v   -> setActive(Item.HOME,   true));
-        btnTeam.setOnClickListener(v   -> setActive(Item.TEAM,   true));
+        btnGoals.setOnClickListener(v   -> setActive(Item.GOALS,   true));
 
         // Acomoda os system insets (gesture/nav bar)
         ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
@@ -64,11 +65,11 @@ public class CompanyBottomNavView extends FrameLayout {
     }
 
     /** Integra com o NavController (opcional). */
-    public void bindNavController(NavController nav, int awardsDestId, int homeDestId, int teamDestId) {
+    public void bindNavController(NavController nav, int lessonsDestId, int homeDestId, int goalsDestId) {
         this.navController = nav;
-        this.destAwards = awardsDestId;
+        this.destLessons = lessonsDestId;
         this.destHome   = homeDestId;
-        this.destTeam   = teamDestId;
+        this.destGoals   = goalsDestId;
     }
 
     /** Troca a aba ativa; se navigate=true, navega após trocar o ícone. */
@@ -89,21 +90,21 @@ public class CompanyBottomNavView extends FrameLayout {
 
     private void applyIcons(Item selected) {
         // awards
-        btnAwards.setImageResource(selected == Item.AWARDS ? AWARDS_FILLED : AWARDS_OUTLINE);
-        btnAwards.setSelected(selected == Item.AWARDS);
+        btnLessons.setImageResource(selected == Item.LESSONS ? LESSONS_FILLED : LESSONS_OUTLINE);
+        btnLessons.setSelected(selected == Item.LESSONS);
 
         // home
         btnHome.setImageResource(selected == Item.HOME ? HOME_FILLED : HOME_OUTLINE);
         btnHome.setSelected(selected == Item.HOME);
 
         // team
-        btnTeam.setImageResource(selected == Item.TEAM ? TEAM_FILLED : TEAM_OUTLINE);
-        btnTeam.setSelected(selected == Item.TEAM);
+        btnGoals.setImageResource(selected == Item.GOALS ? GOALS_FILLED : GOALS_OUTLINE);
+        btnGoals.setSelected(selected == Item.GOALS);
     }
 
     private void navigateTo(Item item) {
         if (navController == null) return;
-        int dest = (item == Item.AWARDS) ? destAwards : (item == Item.TEAM) ? destTeam : destHome;
+        int dest = (item == Item.LESSONS) ? destLessons : (item == Item.GOALS) ? destGoals : destHome;
         if (dest == 0) return;
         try {
             if (navController.getCurrentDestination() == null

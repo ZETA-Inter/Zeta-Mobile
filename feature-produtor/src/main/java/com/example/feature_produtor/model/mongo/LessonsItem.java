@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model;
+package com.example.feature_produtor.model.mongo;
 
 public class LessonsItem {
     private final String id;
@@ -24,5 +24,6 @@ public class LessonsItem {
 
     public int getQuantModulos() {
         return quantModulos;
+
     }
 }
