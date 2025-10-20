@@ -17,29 +17,29 @@ import retrofit2.http.Path;
 
 public interface ApiPostgresClient {
 
-    @GET("api/plans/list_plans")
+    @GET("api/plans/list-plans")
     Call<List<PlanResponse>> listPlans();
 
-    @GET("api/workers/findEmail/{email}")
+    @GET("api/workers/find-email/{email}")
     Call<UserResponse> findWorkerByEmail(@Path("email") String email);
 
-    @GET("/api/workers/findById/{id}")
+    @GET("api/workers/find-by-id/{id}")
     Call<WorkerResponse> findWorkerById(@Path("id") int id);
 
-    @GET("/api/companies/find-id/{id}")
+    @GET("api/companies/find-id/{id}")
     Call<CompanyResponse> findCompanyById(@Path("id") int id);
 
 
     @GET("api/companies/find-email/{email}")
     Call<UserResponse> findCompanyByEmail(@Path("email") String email);
 
-    @GET("/api/workers/listActualProgramsById/{id}")
+    @GET("api/workers/list-actual-programs-by-id/{id}")
     Call<WorkerResponse> findProgramById(@Path("id") String id);
 
-    @GET("/api/workers/listActualProgramsById/{id}")
+    @GET("api/workers/list-actual-programs-by-id/{id}")
     Call<WorkerResponse> findLessonsProgressById(@Path("id") String id);
 
-    @GET("/api/goals/progress-goals/{workerId}")
+    @GET("api/goals/progress-goals/{workerId}")
     Call<WorkerResponse> findProgressGoalsById(@Path("workerId") String workerId);
 
     @POST("api/workers/create")

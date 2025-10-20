@@ -45,7 +45,7 @@ public final class RetrofitClient {
                     String baseUrl = ensureSlash(context.getString(R.string.core_api_base_url));
                     final String tokenPref = context.getString(R.string.core_api_token);
 
-                    Log.d("TOKEN_DEBUG", "Token configurado: " + context.getString(R.string.core_api_token));
+                    Log.d("TOKEN_DEBUG", "Token configurado: " + tokenPref);
 
 
                     OkHttpClient client = new OkHttpClient.Builder()
@@ -55,10 +55,12 @@ public final class RetrofitClient {
                                     Request.Builder b = original.newBuilder()
                                             .header("Accept", "application/json");
                                     if (tokenPref != null && !tokenPref.trim().isEmpty()) {
-                                        b.header("Authorization", tokenPref.trim());
+                                        b.header("Authorization", "Bearer " + tokenPref.trim());
                                     }
-                                    return chain.proceed(b.method(original.method(), original.body()).build());
-                                }
+
+                                    Request request = b.method(original.method(), original.body()).build();
+                                    Log.d("Retrofit", "Headers enviados: " + request.headers());
+                                    return chain.proceed(request);                                }
                             })
                             .connectTimeout(30, TimeUnit.SECONDS)
                             .readTimeout(30, TimeUnit.SECONDS)

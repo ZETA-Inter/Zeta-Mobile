@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface RankingApi {
-    @GET("companies/ranking")
+    @GET("api/companies/ranking")
     Call<JsonElement> getCompanyRanking(@Query("companyId") int companyId);
 
 }
