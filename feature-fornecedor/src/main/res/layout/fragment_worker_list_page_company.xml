@@ -1,14 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootWorkerListCompany"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WorkerListPageCompany">
+    android:background="@color/bg_light"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    tools:context="com.example.feature_fornecedor.WorkerListPageCompany">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <!-- SCROLL PARA O CONTEÚDO PRINCIPAL -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollWorkers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="44dp"
+            android:paddingBottom="16dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- HEADER (perfil, busca, ícones) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- ÍCONE DE PERFIL -->
+                    <ImageView
+                        android:id="@+id/imgProfile"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:padding="10dp"
+                        android:src="@drawable/perfil"/>
+
+                    <!-- BARRA DE PESQUISA -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/black"
+                        app:strokeWidth="1dp"
+                        app:cardBackgroundColor="@color/input_fill">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="14dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Pesquisar"
+                                android:textSize="16sp"
+                                android:textColor="@color/label_grey"/>
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:src="@drawable/lupa"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- ÍCONE DE NOTIFICAÇÃO -->
+                    <ImageButton
+                        android:id="@+id/btnBell"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/iconnotific"/>
+
+                    <!-- ÍCONE DE CONFIGURAÇÕES -->
+                    <ImageButton
+                        android:id="@+id/btnSettings"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/iconconfig"/>
+                </LinearLayout>
+
+                <!-- TÍTULO DA SEÇÃO -->
+                <TextView
+                    android:id="@+id/txtTitleWorkers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Lista de Produtores"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <!-- LISTA DE WORKERS -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/item_worker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    tools:listitem="@layout/item_worker" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- MENU INFERIOR -->
+        <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:elevation="0dp"/>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

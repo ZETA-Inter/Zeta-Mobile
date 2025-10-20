@@ -63,7 +63,18 @@ public class HomePageCompany extends Fragment {
         return v;
     }
 
-
-
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    R.id.RankingPageCompany,    // troféu
+                    R.id.HomePageCompany,       // home
+                    R.id.WorkerListPageCompany  // pessoas
+            );
+        }
+    }
 }

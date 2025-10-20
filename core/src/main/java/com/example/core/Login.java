@@ -69,13 +69,11 @@ public class Login extends Fragment {
             Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
         }
 
-        // Listeners
         binding.btnEntrar.setOnClickListener(v -> {
             String email = binding.tilEmail.getEditText().getText().toString().trim();
             String senha = binding.tilSenha.getEditText().getText().toString().trim();
 
             if (validarCampos(email, senha)) {
-                // 3. SE VÁLIDO, TENTAR O LOGIN
                 adapter.login(tipoAtual, email, senha, requireContext());
 
                 String deeplink = tipoAtual == TipoUsuario.COMPANY ? "app://Company/Home" : "app://Worker/Home" ;

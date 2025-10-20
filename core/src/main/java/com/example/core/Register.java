@@ -56,50 +56,119 @@ public class Register extends Fragment {
         configurarJaPossuiConta();
 
         // 1. IMPLEMENTAÇÃO DA VALIDAÇÃO E FLUXO DE CADASTRO
-        binding.btnCadastrar.setOnClickListener(v ->{
+        binding.btnCadastrar.setOnClickListener(v -> {
             limparTodosErros();
             ocultarMensagem();
 
-            // 1. Coleta de dados
             String nome = binding.tilNome.getEditText().getText().toString().trim();
             String email = binding.tilEmail.getEditText().getText().toString().trim();
             String telefone = binding.tilTelefone.getEditText().getText().toString().trim();
             String senha = binding.tilSenha.getEditText().getText().toString().trim();
             String confirmarSenha = binding.tilConfirmar.getEditText().getText().toString().trim();
-
-            // Tratamento do CPF/CNPJ (assumindo que tilCnpj está sendo usado para ambos)
             String documento = binding.tilCnpj.getEditText().getText().toString().trim();
-            String campoDocumento = tipoAtual == TipoUsuario.WORKER ? "CPF" : "CNPJ";
+            String campoDocumento = (tipoAtual == TipoUsuario.WORKER) ? "CPF" : "CNPJ";
 
-
-            // 2. CHAMA A VALIDAÇÃO: Se falhar, o método retorna e o cadastro não é iniciado
             if (!validarCampos(nome, email, telefone, documento, senha, confirmarSenha, campoDocumento)) {
                 mostrarMensagem("Preencha todos os campos corretamente.");
                 return;
             }
 
-            // 3. Prepara o mapa de dados (SÓ ENVIAMOS DADOS, NUNCA A SENHA)
             Map<String, Object> dadosUsuario = new HashMap<>();
             dadosUsuario.put("Nome", nome);
             dadosUsuario.put("Email", email);
             dadosUsuario.put("Telefone", telefone);
-            // Usa a chave correta (CPF ou CNPJ) no mapa
             dadosUsuario.put(campoDocumento, documento);
 
             AuthAdapter adapter = new AuthAdapter();
 
-            // 4. Chama o cadastro (sem try-catch, pois o AuthAdapter não lança exceções diretas)
-            adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext());
-
-            // 5. Navega para a tela de escolha do plano
-            bundle.putSerializable("TIPO_USUARIO", tipoAtual);
-            bundle.putString("Nome", nome);
-            bundle.putString("Email", email);
-            Navigation.findNavController(v).navigate(R.id.Plan, bundle);
-
+            adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext(),
+                    new AuthAdapter.Listener() {
+                        @Override public void onSuccess(String uid) {
+                            salvarNoBackend(nome, email, documento, tipoAtual, v);
+                        }
+                        @Override public void onError(String message) {
+                            mostrarMensagem(message != null ? message : "Falha no cadastro");
+                        }
+                    });
         });
-
         return root;
+    }
+
+    private void salvarNoBackend(String nome, String email, String documento,
+                                 TipoUsuario tipo, View clickView) {
+        // pegue o serviço central (use a variante do seu RetrofitClient: com ou sem Context)
+        com.example.core.client.ApiPostgresClient api =
+                com.example.core.network.RetrofitClient.getApiService(requireContext()); // ou getInstance(requireContext()).create(...)
+
+        if (tipo == TipoUsuario.COMPANY) {
+            // --- Company ---
+            com.example.core.dto.request.CompanyRequest req =
+                    new com.example.core.dto.request.CompanyRequest();
+            req.setName(nome);
+            req.setEmail(email);
+            // se tiver planInfo/imageUrl, preencha aqui
+
+            api.createCompany(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.CompanyResponse>() {
+                @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
+                                                 @NonNull retrofit2.Response<com.example.core.dto.response.CompanyResponse> resp) {
+                    if (resp.isSuccessful() && resp.body() != null) {
+                        Integer companyId = resp.body().getId();
+                        if (companyId != null) {
+                            requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
+                                    .edit()
+                                    .putInt("company_id", companyId)
+                                    .apply();
+                        }
+                        navegarParaPlanos(tipo, nome, email, clickView);
+                    } else {
+                        mostrarMensagem("Não foi possível salvar a empresa na API.");
+                    }
+                }
+                @Override public void onFailure(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
+                                                @NonNull Throwable t) {
+                    mostrarMensagem("Falha na API (empresa): " + t.getMessage());
+                }
+            });
+
+        } else {
+            // --- Worker ---
+            com.example.core.dto.request.WorkerRequest req =
+                    new com.example.core.dto.request.WorkerRequest();
+            req.setName(nome);
+            req.setEmail(email);
+            // se o seu WorkerRequest tiver CPF/cnpj/campo doc, ponha aqui:
+            // req.setCpf(documento);
+
+            api.createWorker(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.WorkerResponse>() {
+                @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
+                                                 @NonNull retrofit2.Response<com.example.core.dto.response.WorkerResponse> resp) {
+                    if (resp.isSuccessful() && resp.body() != null) {
+                        Integer workerId = resp.body().getId();
+                        if (workerId != null) {
+                            requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
+                                    .edit()
+                                    .putInt("user_id", workerId) // você já usa essa chave para worker
+                                    .apply();
+                        }
+                        navegarParaPlanos(tipo, nome, email, clickView);
+                    } else {
+                        mostrarMensagem("Não foi possível salvar o produtor na API.");
+                    }
+                }
+                @Override public void onFailure(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
+                                                @NonNull Throwable t) {
+                    mostrarMensagem("Falha na API (produtor): " + t.getMessage());
+                }
+            });
+        }
+    }
+
+    private void navegarParaPlanos(TipoUsuario tipo, String nome, String email, View clickView) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("TIPO_USUARIO", tipo);
+        bundle.putString("Nome", nome);
+        bundle.putString("Email", email);
+        Navigation.findNavController(clickView).navigate(R.id.Plan, bundle);
     }
 
     private void configurarJaPossuiConta() {
