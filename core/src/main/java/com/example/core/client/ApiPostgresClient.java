@@ -26,6 +26,10 @@ public interface ApiPostgresClient {
     @GET("/api/workers/findById/{id}")
     Call<WorkerResponse> findWorkerById(@Path("id") int id);
 
+    @GET("/api/companies/find-id/{id}")
+    Call<CompanyResponse> findCompanyById(@Path("id") int id);
+
+
     @GET("api/companies/find-email/{email}")
     Call<UserResponse> findCompanyByEmail(@Path("email") String email);
 

@@ -59,10 +59,10 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramV
 
         public ProgramViewHolder(View view, ProgramAdapter.OnItemClickListener listener) {
             super(view);
-            name = view.findViewById(com.example.feature_fornecedor.R.id.name);
+            // 🔧 Corrigido: IDs agora correspondem ao seu XML item_lessons_worker
+            name = view.findViewById(com.example.core.R.id.cursoTitulo);
             description = view.findViewById(com.example.core.R.id.description);
             this.clickListener = listener;
         }
-
     }
 }

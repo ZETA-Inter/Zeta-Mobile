@@ -85,25 +85,29 @@ public class RankingPageCompany extends Fragment {
 
 
     private void fetchRanking() {
-        RankingApi api = RetrofitClient.get().create(RankingApi.class);
+        // Usa o RetrofitClient central do módulo :core
+        com.example.feature_fornecedor.ranking.RankingApi api =
+                com.example.core.network.RetrofitClient
+                        .getInstance(requireContext())
+                        .create(com.example.feature_fornecedor.ranking.RankingApi.class);
 
-        final String FULL_URL = "https://api-postgresql-zeta-fide.onrender.com/api/companies/ranking?companyId=1";
-
-        api.getCompanyRanking(FULL_URL).enqueue(new retrofit2.Callback<com.google.gson.JsonElement>() {
+        // Faz a requisição (exemplo: companyId fixo = 1 — depois substitua pelo dinâmico)
+        api.getCompanyRanking(1).enqueue(new retrofit2.Callback<com.google.gson.JsonElement>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<com.google.gson.JsonElement> call,
                                    @NonNull retrofit2.Response<com.google.gson.JsonElement> resp) {
+
                 if (!resp.isSuccessful() || resp.body() == null) {
-                    // erro HTTP ou corpo vazio
                     bindPodium(null, null, null);
-                    adapter.submit(new java.util.ArrayList<>(), 4);
+                    adapter.submit(new ArrayList<>(), 4);
                     return;
                 }
 
-                java.util.List<RankingEntry> all = mapJsonToEntries(resp.body());
+                // Converte o JSON em objetos RankingEntry
+                List<RankingEntry> all = mapJsonToEntries(resp.body());
 
-                // ordena: se houver 'position', usa; senão, por pontos desc
-                java.util.Collections.sort(all, (a, b) -> {
+                // Ordena a lista (por posição se existir, senão por pontos desc)
+                Collections.sort(all, (a, b) -> {
                     if (a.position != null && b.position != null) return Integer.compare(a.position, b.position);
                     if (a.position != null) return -1;
                     if (b.position != null) return 1;
@@ -112,6 +116,7 @@ public class RankingPageCompany extends Fragment {
                     return Integer.compare(pb, pa);
                 });
 
+                // Define top 3
                 RankingEntry first  = findByPosition(all, 1);
                 RankingEntry second = findByPosition(all, 2);
                 RankingEntry third  = findByPosition(all, 3);
@@ -119,28 +124,32 @@ public class RankingPageCompany extends Fragment {
                 if (second == null && all.size() > 1) second = all.get(1);
                 if (third == null && all.size() > 2)  third  = all.get(2);
 
+                // Atualiza o pódio
                 bindPodium(first, second, third);
 
-                java.util.List<RankingEntry> rest = new java.util.ArrayList<>();
+                // Separa o restante da lista
+                List<RankingEntry> rest = new ArrayList<>();
                 for (RankingEntry e : all) {
                     boolean isTop3 = (e == first) || (e == second) || (e == third)
                             || (e.position != null && (e.position == 1 || e.position == 2 || e.position == 3));
                     if (!isTop3) rest.add(e);
                 }
                 if (rest.isEmpty() && all.size() > 3) {
-                    rest = new java.util.ArrayList<>(all.subList(3, all.size()));
+                    rest = new ArrayList<>(all.subList(3, all.size()));
                 }
 
                 adapter.submit(rest, 4);
             }
 
             @Override
-            public void onFailure(@NonNull retrofit2.Call<com.google.gson.JsonElement> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull retrofit2.Call<com.google.gson.JsonElement> call,
+                                  @NonNull Throwable t) {
                 bindPodium(null, null, null);
-                adapter.submit(new java.util.ArrayList<>(), 4);
+                adapter.submit(new ArrayList<>(), 4);
             }
         });
     }
+
 
     /** Encontra item por posição (1,2,3...) */
     @Nullable

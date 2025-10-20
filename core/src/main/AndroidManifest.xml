@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".ProfileWorker"
+            android:name=".Profile"
             android:exported="false" />
     </application>
 

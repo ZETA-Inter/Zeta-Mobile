@@ -1,32 +1,38 @@
 // Arquivo: com/example/feature_fornecedor/ListPage/ListAdapter.java
-
 package com.example.feature_fornecedor.ListPage;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.feature_fornecedor.R;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
-    private List<Worker> workers;
-    private Context context;
-    private AdapterView.OnItemClickListener listener;
+    private final List<Worker> workers;
+    private final Context context;
+    private OnWorkerClickListener listener;
 
-    public interface OnItemClickListener {
-        void onItemClick(String workerId); // Use o tipo de dado do seu ID (String, int, etc.)
+    // interface custom para RecyclerView
+    public interface OnWorkerClickListener {
+        void onItemClick(Worker worker);
     }
 
-    public ListAdapter(List<Worker> workers, Context context, AdapterView.OnItemClickListener listener){
-        this.workers = workers;
+    public ListAdapter(@NonNull List<Worker> workers, @NonNull Context context, @NonNull OnWorkerClickListener listener){
+        this.workers = new ArrayList<>(workers);
         this.context = context;
+        this.listener = listener;
+    }
+
+    public void setOnWorkerClickListener(OnWorkerClickListener listener) {
         this.listener = listener;
     }
 
@@ -34,14 +40,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     @Override
     public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_worker, parent, false);
-        // CORREÇÃO: Passe o listener para o ViewHolder no momento da criação
         return new ListViewHolder(view, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-        Worker worker = workers.get(position);
-        holder.bind(worker);
+        holder.bind(workers.get(position));
     }
 
     @Override
@@ -49,26 +53,25 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         return workers.size();
     }
 
-    public void updateData(List<Worker> newWorkers) {
+    public void updateData(@NonNull List<Worker> newWorkers) {
         this.workers.clear();
         this.workers.addAll(newWorkers);
         notifyDataSetChanged();
     }
 
+    static class ListViewHolder extends RecyclerView.ViewHolder {
+        private final TextView name;
+        private final TextView email;
+        private OnWorkerClickListener clickListener;
 
-    public static class ListViewHolder extends RecyclerView.ViewHolder {
-        private TextView name;
-        private TextView email;
-        private AdapterView.OnItemClickListener clickListener;
-
-        public ListViewHolder(View view, AdapterView.OnItemClickListener listener){
-            super(view);
-            name = view.findViewById(R.id.name);
-            email = view.findViewById(R.id.email);
+        ListViewHolder(@NonNull View itemView, OnWorkerClickListener listener){
+            super(itemView);
+            name = itemView.findViewById(R.id.name);
+            email = itemView.findViewById(R.id.email);
             this.clickListener = listener;
         }
 
-        public void bind(final Worker worker) {
+        void bind(@NonNull final Worker worker) {
             name.setText(worker.getName());
             email.setText(worker.getEmail());
 

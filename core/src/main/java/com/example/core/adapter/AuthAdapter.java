@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.response.UserResponse;
@@ -26,29 +28,31 @@ public class AuthAdapter {
 
     private Retrofit retrofit;
 
+    // no AuthAdapter
+    public interface Listener {
+        void onSuccess(String uid);
+        void onError(String message);
+    }
+
+
     // 1. O método 'cadastrar' agora espera que a validação de CPF/CNPJ tenha sido feita no Fragment
-    public void cadastrar(String email, String senha, TipoUsuario tipoUsuario, Map<String, Object> dadosUsuario, Context c) {
-        // Toda a lógica de validação de CPF/CNPJ foi removida daqui.
-
-        mAuth.createUserWithEmailAndPassword(email, senha)
-                .addOnCompleteListener(task ->{
-                    if (task.isSuccessful()){
-                        String uid = task.getResult().getUser().getUid();
-                        // Removido o try/catch e o throw RuntimeException
-                        cadastrarUsuario(uid, tipoUsuario, dadosUsuario, c);
-
-                    }
-                    else {
-                        if (task.getException() != null) {
-                            Log.e("FIREBASE_AUTH", "Falha na criação da conta: " + task.getException().getMessage());
-                            String mensagemErro = "Falha no Cadastro: " + task.getException().getLocalizedMessage();
-                            Toast.makeText(c, mensagemErro, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(c, "Erro desconhecido ao cadastrar.", Toast.LENGTH_SHORT).show();
-                        }
+    public void cadastrar(String email, String senha, TipoUsuario tipo,
+                          Map<String, Object> dadosUsuario, Context ctx,
+                          Listener listener) {
+        FirebaseAuth.getInstance()
+                .createUserWithEmailAndPassword(email, senha)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String uid = task.getResult().getUser() != null ? task.getResult().getUser().getUid() : null;
+                        // salve no Firestore se você já fazia isso...
+                        listener.onSuccess(uid);
+                    } else {
+                        String msg = task.getException() != null ? task.getException().getMessage() : "Erro no cadastro";
+                        listener.onError(msg);
                     }
                 });
     }
+
 
 
     private void cadastrarUsuario(String uid, TipoUsuario tipoUsuario, Map<String, Object> dadosUsuario, Context c) {
@@ -129,55 +133,33 @@ public class AuthAdapter {
     }
 
     private void fetchUserFromBackend(String email, TipoUsuario tipoUsuario, Context c) {
-        String url = "https://api-postgresql-zeta-fide.onrender.com";
+        ApiPostgresClient api = com.example.core.network.RetrofitClient.getApiService(c);
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS) // tempo para conectar
-                .readTimeout(30, TimeUnit.SECONDS)    // tempo para esperar resposta
-                .writeTimeout(20, TimeUnit.SECONDS)   // tempo para enviar dados
-                .build();
+        Call<UserResponse> call = (tipoUsuario == TipoUsuario.WORKER)
+                ? api.findWorkerByEmail(email)
+                : api.findCompanyByEmail(email);
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(url)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        call.enqueue(new retrofit2.Callback<UserResponse>() {
+            @Override public void onResponse(@NonNull Call<UserResponse> call,
+                                             @NonNull retrofit2.Response<UserResponse> resp) {
+                if (resp.isSuccessful() && resp.body() != null) {
+                    UserResponse user = resp.body();
 
-        ApiPostgresClient postgresClient = retrofit.create(ApiPostgresClient.class);
-
-        Call<UserResponse> call = tipoUsuario == TipoUsuario.WORKER ?
-                postgresClient.findWorkerByEmail(email) :
-                postgresClient.findCompanyByEmail(email);
-
-        call.enqueue(new Callback<UserResponse>() {
-            @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.isSuccessful()) {
-                    UserResponse user = response.body();
-
-                    try {
-                        SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt("user_id", user.getId());
-                        editor.putString("name", user.getName());
-                        editor.putString("email", user.getEmail());
-                        editor.putString("tipo_usuario", tipoUsuario.name());
-                        editor.apply();
-
-                    } catch (Exception ex) {
-                        Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
-                        Toast.makeText(c, "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
-                    }
+                    SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                    prefs.edit()
+                            .putInt("user_id", user.getId()) // para worker; se for company, considere "company_id"
+                            .putString("name", user.getName())
+                            .putString("email", user.getEmail())
+                            .putString("tipo_usuario", tipoUsuario.name())
+                            .apply();
 
                     Toast.makeText(c, "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
-                    Log.d("SESSION", "Usuário salvo: " + user.getName() + " (ID: " + user.getId() + ")");
+                } else {
+                    Toast.makeText(c, "Erro ao buscar usuário: " + resp.code(), Toast.LENGTH_SHORT).show();
                 }
             }
-
-            @Override
-            public void onFailure(Call<UserResponse> call, Throwable throwable) {
-                throwable.printStackTrace();
-                Toast.makeText(c, "Erro ao carregar User infos", Toast.LENGTH_SHORT).show();
+            @Override public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
+                Toast.makeText(c, "Falha de rede: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

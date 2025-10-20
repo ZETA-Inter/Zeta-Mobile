@@ -1,9 +1,9 @@
 // Arquivo: com/example/feature_fornecedor/WorkerListPageCompany.java
-
 package com.example.feature_fornecedor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,14 +14,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.feature_fornecedor.ListPage.ListAdapter;
 import com.example.feature_fornecedor.ListPage.ListAPI;
 import com.example.feature_fornecedor.ListPage.Worker;
-import java.util.ArrayList; // Importar ArrayList
+import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
+
+import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,65 +39,81 @@ public class WorkerListPageCompany extends Fragment {
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
 
+    private static final String DL_WORKER = "app.internal://profile/worker/";
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_worker_list_page_company, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.fragment_worker_list_page_company, container, false);
+
+        CompanyBottomNavView bottom = v.findViewById(R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    R.id.RankingPageCompany,   // troféu (awards)
+                    R.id.HomePageCompany,      // home
+                    R.id.WorkerListPageCompany // pessoas (team)
+            );
+
+            bottom.setActive(CompanyBottomNavView.Item.TEAM, false);
+        }
+
+        return v;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView workers = view.findViewById(R.id.item_worker);
-        workers.setAdapter(listAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // 1) RecyclerView da tela
+        recyclerView = view.findViewById(R.id.item_worker);
 
+        // 2) Adapter com clique para navegar por URI (sem depender do :core)
+        listAdapter = new ListAdapter(new ArrayList<>(), requireContext(), worker -> {
+            // worker aqui deve ser um objeto Worker
+            String workerId = String.valueOf(worker.getId());
+
+            // Navegação via deeplink interno (NavController.resolve URI)
+            Uri uri = Uri.parse(DL_WORKER + workerId);
+            Navigation.findNavController(view).navigate(uri);
+        });
+
+        // 3) Layout + adapter
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(listAdapter);
 
-        // 2. Chamar a API para buscar os dados
+        // 4) Buscar dados da API
         listWorkers();
-
-
-        workers.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.ProfileWorker));
     }
 
     private void listWorkers() {
-        String BASE_URL = "https://api-postgresql-zeta-fide.onrender.com/api/";
+        ListAPI listAPI = com.example.core.network.RetrofitClient
+                .getInstance(requireContext()) // versão que lê URL/token de resources
+                .create(ListAPI.class);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
 
-        ListAPI listAPI = retrofit.create(ListAPI.class);
-        String companyId = null;
-
-        SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int company_id = prefs.getInt("user_id", -1);
-        if (company_id == -1){
+
+        if (company_id == -1) {
             Toast.makeText(requireContext(), "Erro ao buscar dados da empresa", Toast.LENGTH_SHORT).show();
-            companyId = null;
+            return;
         }
-        else {
-            companyId = String.valueOf(company_id);
-        }
+        String companyId = String.valueOf(company_id);
 
-        Call<List<Worker>> call = listAPI.getWorkersByCompany(companyId);
-
-        call.enqueue(new Callback<List<Worker>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Worker>> call, @NonNull Response<List<Worker>> response) {
+        listAPI.getWorkersByCompany(companyId).enqueue(new Callback<List<Worker>>() {
+            @Override public void onResponse(@NonNull Call<List<Worker>> call, @NonNull Response<List<Worker>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Worker> workers = response.body();
-                    listAdapter.updateData(workers);
+                    listAdapter.updateData(response.body());
                 } else {
-                    Log.e("API_ERROR", "Resposta não foi bem-sucedida. Código: " + response.code() + ", Mensagem: " + response.message());
+                    Log.e("API_ERROR", "HTTP " + response.code() + " - " + response.message());
                 }
             }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Worker>> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "Falha na chamada à API: ", t);
+            @Override public void onFailure(@NonNull Call<List<Worker>> call, @NonNull Throwable t) {
+                Log.e("API_FAILURE", "getWorkersByCompany", t);
             }
         });
     }
