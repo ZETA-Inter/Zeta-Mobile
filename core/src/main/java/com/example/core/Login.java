@@ -78,7 +78,7 @@ public class Login extends Fragment {
                 // 3. SE VÁLIDO, TENTAR O LOGIN
                 adapter.login(tipoAtual, email, senha, requireContext());
 
-                String deeplink = tipoAtual == TipoUsuario.WORKER ? "app://Worker/Home" : "app://Company/Home";
+                String deeplink = tipoAtual == TipoUsuario.COMPANY ? "app://Company/Home" : "app://Worker/Home" ;
                 Uri deepLinkUri = Uri.parse(deeplink);
                 Navigation.findNavController(v).navigate(deepLinkUri);
             } else {

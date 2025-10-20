@@ -5,6 +5,8 @@ import com.example.feature_produtor.model.mongo.Content;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
+
 import java.util.List;
 
 public interface ApiMongo {
@@ -19,5 +21,7 @@ public interface ApiMongo {
     @GET("list_all_contents")
     Call<List<Content>> getAllContents();
 
+    @GET("pegarDescricaoPorId/{stepId}")
+    Call<Class> getDescription(@Path("stepId") int stepId);
 }
 

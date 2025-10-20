@@ -1,8 +1,14 @@
 package com.example.feature_produtor;
 
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,16 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.example.core.TipoUsuario;
 import com.example.feature_produtor.model.mongo.Content;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.example.feature_produtor.adapter.*;
 import com.example.feature_produtor.model.postegres.Program;
 import com.example.feature_produtor.model.postegres.Segment;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,8 +38,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import com.example.feature_produtor.api.*;
-
-
+import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 
 public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapter.OnLessonClickListener, FilterAdapter.OnSegmentClickListener{
 
@@ -42,6 +52,8 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
     private FilterAdapter filterAdapter;
 
     private ApiPostgres apiPostgres;
+    private ImageView iconNotificacao;
+
 
 
     @Override
@@ -49,12 +61,36 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_page_worker, container, false);
 
+
+
+        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
+                    com.example.feature_produtor.R.id.HomePageWorker,       // home
+                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
+            );
+
+
+            bottom.setActive(WorkerBottomNavView.Item.HOME, false);
+        }
+
+
+
+
         // 1. Inicializando variáveis
         perfil=view.findViewById(R.id.icon_perfil);
-        boxIa=view.findViewById(R.id.box_ia);
+        boxIa=view.findViewById(R.id.boxIA);
         iconConfig=view.findViewById(R.id.icon_configuracoes);
+        iconNotificacao= view.findViewById(R.id.icon_notificacao);
         recyclerCursosAndamento=view.findViewById(R.id.recycler_cursos_andamento);
         recyclerTipoConteudo =view.findViewById(R.id.recycler_tipo_conteudo);
+
+
+
+
 
 
         // 2. Iniciando os Adapters
@@ -69,11 +105,27 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
         recyclerTipoConteudo.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
         recyclerTipoConteudo.setAdapter(filterAdapter);
 
+        String token = "TokenUserZeta1234";
+
+        // Configura o OkHttpClient com o Interceptor para adicionar o cabeçalho Authorization
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Tempo para estabelecer a conexão (30s)
+                .readTimeout(30, TimeUnit.SECONDS)    // Tempo para ler a resposta (30s)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(chain -> {
+                    Request request = chain.request().newBuilder()
+                            .addHeader("Authorization", "Bearer " + token)
+                            .build();
+                    return chain.proceed(request);
+                })
+                .build();
+
 
         // 4. Iniciando Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api-postgresql-zeta-fide.onrender.com/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
 
         apiPostgres = retrofit.create(ApiPostgres.class);
@@ -132,14 +184,14 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
         perfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.PerfilWorker);
+                Navigation.findNavController(v).navigate(R.id.Profileworker);
             }
         });
 
         boxIa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.ChatBotWorker);
+                Navigation.findNavController(v).navigate(R.id.ChatBotPageWorker);
 
             }
         });
@@ -151,9 +203,20 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
 
             }
         });
+        iconNotificacao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (getView() != null) {
+
+                    Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
+                }
+            }
+        });
 
 
     }
+
 
 
     @Override
@@ -168,7 +231,7 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
         //Navega para o destino, passando o Bundle como argumento
         // Assumindo que 'ContentLessonWorker' mostra os detalhes/etapas do curso (Program)
         if(getView() != null) {
-            Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
+            Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker, bundle);
         }
 
     }
@@ -183,7 +246,7 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
         String filterType = nome.getName();
         bundle.putString("segment", filterType);
 
-        // Opcional: Feedback visual imediato
+        //tiar depois de testes
         Toast.makeText(getContext(), "Filtrando por: " + filterType, Toast.LENGTH_SHORT).show();
 
         //Navega para o destino, passando o Bundle como argumento
@@ -191,4 +254,7 @@ public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapt
 
 
     }
+
+
+
 }

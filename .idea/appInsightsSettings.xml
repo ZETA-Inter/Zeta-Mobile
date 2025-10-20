@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.zeta_mobile" />
-                  <option name="mobileSdkAppId" value="1:407643507558:android:06ee05e73704232988d6a7" />
-                  <option name="projectId" value="zeta-mobile-59c5e" />
-                  <option name="projectNumber" value="407643507558" />
+                  <option name="mobileSdkAppId" value="1:34722684785:android:404861a49edc2d2a5b60d0" />
+                  <option name="projectId" value="dbzetamobile" />
+                  <option name="projectNumber" value="34722684785" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -3,9 +3,12 @@ package com.example.feature_produtor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.example.feature_produtor.adapter.*;
 import com.example.feature_produtor.api.*;
 import com.example.feature_produtor.model.postegres.Program;
+import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.textfield.TextInputEditText;
 
 
@@ -50,7 +54,24 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lessons_worker, container, false); // Assegure-se que o nome do layout está correto
+        View view = inflater.inflate(R.layout.fragment_lessons_worker, container, false);
+
+
+        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
+                    com.example.feature_produtor.R.id.HomePageWorker,       // home
+                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
+            );
+
+
+            bottom.setActive(WorkerBottomNavView.Item.HOME, false);
+        }
+
+
 
 
         perfil = view.findViewById(R.id.perfil3);
@@ -117,12 +138,14 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     private void setupClickListeners() {
 
         perfil.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.PerfilWorker);
+            Navigation.findNavController(v).navigate(R.id.Profileworker);
         });
 
 
         notificacao.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
+            if (getView() != null) {
+                Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
+            }
         });
 
         config.setOnClickListener(v -> {
@@ -194,7 +217,9 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
         // Assumindo que o destino é uma tela de detalhes do curso
         if(getView() != null) {
             // Substitua 'StepsLessonWorker' pelo destino correto para ver as etapas do curso
-            Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
+            Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker, bundle);
         }
     }
+
+
 }

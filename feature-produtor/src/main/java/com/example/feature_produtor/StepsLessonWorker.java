@@ -2,8 +2,12 @@ package com.example.feature_produtor;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +24,7 @@ import android.widget.Toast;
 import com.example.feature_produtor.adapter.*;
 import com.example.feature_produtor.api.*;
 import com.example.feature_produtor.model.postegres.Segment;
+import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.textfield.TextInputEditText;
 
 
@@ -116,7 +121,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         perfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.PerfilWorker);
+                Navigation.findNavController(v).navigate(R.id.Profileworker);
             }
         });
 
@@ -189,17 +194,29 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
     @Override
     public void onStepClick(Segment item) {
-        // Criar um Bundle para empacotar o id
         Bundle bundle = new Bundle();
-
-        //Adicionar infos do curso ao Bundle.
         Integer lessonId = item.getId();
-        bundle.putString("stepId", String.valueOf(lessonId));
 
-        //Navega para o destino, passando o Bundle como argumento
-        // É importante garantir que getView() não seja null aqui, mas para um Fragment em onStepClick, geralmente está ok.
+        // ENVIANDO como INT
+        bundle.putInt("stepId", lessonId);
+
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
+                    com.example.feature_produtor.R.id.HomePageWorker,       // home
+                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
+            );
         }
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_produtor"
     app:startDestination="@id/HomePageWorker">
 
@@ -70,26 +71,33 @@
             android:defaultValue="default_id" />
     </fragment>
 
+
     <fragment
-        android:id="@+id/TestWorker"
-        android:name="com.example.feature_produtor.TestWorker">
-        <deepLink
-            android:id="@+id/TestWorkerDeepLink"
-            app:uri="app://Worker/TestWorker" />
+        android:id="@+id/Profileworker"
+        android:name="com.example.feature_produtor.Profileworker">
+
     </fragment>
 
     <fragment
-        android:id="@+id/PerfilWorker"
-        android:name="com.example.feature_produtor.PerfilWorker">
-        <deepLink
-            android:id="@+id/PerfilWorkerDeepLink"
-            app:uri="app://Worker/PerfilWorker" />
+        android:id="@+id/ChatBotPageWorker"
+        android:name="com.example.feature_produtor.ChatBotPageWorker">
     </fragment>
 
     <fragment
-        android:id="@+id/ChatBotWorker"
-        android:name="com.example.feature_produtor.ChatbotPageWorker">
-
+        android:id="@+id/EditProfile"
+        android:name="com.example.feature_produtor.EditProfile">
     </fragment>
+
+    <fragment
+        android:id="@+id/ActivityLessonWorker"
+        android:name="com.example.feature_produtor.ActivityLessonWorker">
+    </fragment>
+
+    <dialog
+        android:id="@+id/CardNotificacao" android:name="com.example.feature_produtor.CardNotificacao"
+        tools:layout="@layout/fragment_card_notificacao"/>
+
+
+
 
 </navigation>
