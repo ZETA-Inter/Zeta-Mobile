@@ -62,4 +62,8 @@
         <item name="backgroundTint">@color/purple_custom</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.CornerSizeCircle" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

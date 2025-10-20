@@ -56,7 +56,10 @@
     <fragment
         android:id="@+id/Plan"
         android:name="com.example.core.Plan">
-
     </fragment>
 
+    <activity
+        android:id="@+id/ProfileWorker"
+        android:name="com.example.core.Profile">
+    </activity>
 </navigation>

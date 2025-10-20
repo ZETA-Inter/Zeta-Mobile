@@ -1,4 +1,4 @@
-package com.example.feature_fornecedor.ranking.ui;
+package com.example.feature_fornecedor.ranking;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
