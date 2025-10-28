@@ -110,7 +110,6 @@ public class Register extends Fragment {
                     new com.example.core.dto.request.CompanyRequest();
             req.setName(nome);
             req.setEmail(email);
-            // se tiver planInfo/imageUrl, preencha aqui
 
             api.createCompany(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.CompanyResponse>() {
                 @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
@@ -149,6 +148,7 @@ public class Register extends Fragment {
             req.setName(nome);
             req.setEmail(email);    
             req.setCpf(documento);
+            req.setCompanyId(null);
 
             api.createWorker(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.WorkerResponse>() {
                 @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
@@ -158,7 +158,7 @@ public class Register extends Fragment {
                         if (workerId != null) {
                             requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
                                     .edit()
-                                    .putInt("user_id", workerId) // você já usa essa chave para worker
+                                    .putString("user_id", String.valueOf(workerId))
                                     .apply();
                         }
                         navegarParaPlanos(tipo, nome, email, clickView);

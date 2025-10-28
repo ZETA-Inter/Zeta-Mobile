@@ -7,13 +7,10 @@ import java.time.LocalDate;
 public class WorkerRequest {
 
     private String name;
-
     private String email;
     @SerializedName("plan_info")
     private PlanInfoRequest planInfo;
-
     private String cpf;
-
     private Integer companyId;
 
     public WorkerRequest() {}
@@ -42,6 +39,10 @@ public class WorkerRequest {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public String getCpf() {
+        return cpf;
     }
 
     public PlanInfoRequest getPlanInfo() {
