@@ -1,4 +1,5 @@
 package com.example.core;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.core.adapter.AuthAdapter;
+import com.example.core.adapter.AuthAdapter.LoginListener; // Importa a interface LoginListener do Adapter
 import com.example.core.databinding.FragmentLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +35,8 @@ public class Login extends Fragment {
     private FragmentLoginBinding binding;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final Repository repo = new Repository();
+    // Instanciamos o Adapter para ser usado nos listeners
+    private final AuthAdapter adapter = new AuthAdapter();
     private static final int RC_GOOGLE = 9001;
     private GoogleSignInClient gsc;
     private TipoUsuario tipoAtual;
@@ -49,7 +53,8 @@ public class Login extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        AuthAdapter adapter = new AuthAdapter();
+        // O AuthAdapter já está instanciado como campo de classe (this.adapter), podemos remover esta linha.
+        // AuthAdapter adapter = new AuthAdapter();
 
         // Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -58,7 +63,7 @@ public class Login extends Fragment {
                 .build();
         gsc = GoogleSignIn.getClient(requireActivity(), gso);
 
-        // --------------------- login com email e senha ---------------------
+        // --------------------- Definição do Tipo de Usuário ---------------------
 
         Bundle bundle = getArguments();
 
@@ -69,16 +74,29 @@ public class Login extends Fragment {
             Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
         }
 
+        // --------------------- Login com Email e Senha (FLUXO ASSÍNCRONO CORRIGIDO) ---------------------
+
         binding.btnEntrar.setOnClickListener(v -> {
             String email = binding.tilEmail.getEditText().getText().toString().trim();
             String senha = binding.tilSenha.getEditText().getText().toString().trim();
 
             if (validarCampos(email, senha)) {
-                adapter.login(tipoAtual, email, senha, requireContext());
+                // Chama o método login com o NOVO LoginListener (5 argumentos)
+                adapter.login(tipoAtual, email, senha, requireContext(), new LoginListener() {
+                    @Override
+                    public void onSuccess() {
+                        // Navegação APENAS após o sucesso de autenticação E o salvamento do ID na sessão
+                        String deeplink = tipoAtual == TipoUsuario.COMPANY ? "app://Company/Home" : "app://Worker/Home" ;
+                        Uri deepLinkUri = Uri.parse(deeplink);
+                        Navigation.findNavController(v).navigate(deepLinkUri);
+                    }
 
-                String deeplink = tipoAtual == TipoUsuario.WORKER ? "app://Worker/Home" : "app://Company/Home";
-                Uri deepLinkUri = Uri.parse(deeplink);
-                Navigation.findNavController(v).navigate(deepLinkUri);
+                    @Override
+                    public void onFailure(String errorMsg) {
+                        // Exibe a mensagem de erro retornada pelo AuthAdapter
+                        mostrarMensagem(errorMsg);
+                    }
+                });
             } else {
                 mostrarMensagem("Corrija os campos em destaque.");
             }
@@ -112,7 +130,11 @@ public class Login extends Fragment {
                 AuthCredential cred = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
                 mAuth.signInWithCredential(cred)
                         .addOnSuccessListener(r -> {
-                            // repo.upsertFromAuth(r.getUser(), null)
+                            // TODO: Implementar a busca do Worker/Company real e usar um LoginListener aqui também
+                            // O fluxo ideal é chamar um novo método no AuthAdapter: adapter.loginSocial(tipoAtual, r.getUser().getUid(), requireContext(), new LoginListener() {...});
+
+                            // AQUI DEVE ENTRAR A CHAMADA AO ADAPTER COM O CALLBACK DE NAVEGAÇÃO
+                            Toast.makeText(requireContext(), "Login social com sucesso. Implemente a busca do perfil!", Toast.LENGTH_LONG).show();
                         })
                         .addOnFailureListener(e -> error(binding.tilEmail, "Falha no Google Sign-In (verifique SHA-1/SHA-256 e default_web_client_id)"));
             } catch (ApiException e) {

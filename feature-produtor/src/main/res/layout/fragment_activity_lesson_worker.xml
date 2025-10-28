@@ -74,19 +74,6 @@
             app:layout_constraintStart_toEndOf="@+id/circle_inactived2"
             app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btContinuar2"
-            style="@style/StartStepPurpleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="58dp"
-            android:layout_marginBottom="72dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Continuar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <ImageView
             android:id="@+id/circle_inactived2"
             android:layout_width="12dp"
@@ -125,7 +112,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Depois de entender como funciona o manejo animal, o que não devemos fazer?"
+            android:text="Pergunta será carregada aqui..."
             android:textAlignment="center"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -133,57 +120,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvAtividade" />
 
-        <RadioGroup
-            android:id="@+id/rgOpcoes"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_answers"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/btContinuar2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtPergunta">
+            app:layout_constraintTop_toBottomOf="@+id/txtPergunta"
+            tools:listitem="@layout/item_activity_answer" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbOpcaoA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/radio_button_background"
-                android:buttonTint="@color/purple_custom"
-                android:padding="16dp"
-                android:text="Opção A" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbOpcaoB"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/radio_button_background"
-                android:buttonTint="@color/purple_custom"
-                android:padding="16dp"
-                android:text="Opção B" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbOpcaoC"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/radio_button_background"
-                android:buttonTint="@color/purple_custom"
-                android:padding="16dp"
-                android:text="Opção C" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbOpcaoD"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/radio_button_background"
-                android:buttonTint="@color/purple_custom"
-                android:padding="16dp"
-                android:text="Opção D" />
-        </RadioGroup>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btContinuar2"
+            style="@style/StartStepPurpleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="58dp"
+            android:layout_marginBottom="72dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="Continuar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <FrameLayout
             android:id="@+id/containerAI"

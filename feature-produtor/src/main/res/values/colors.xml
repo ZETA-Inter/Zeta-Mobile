@@ -24,4 +24,10 @@
     <color name="link_blue">#3F51B5</color>      <!-- Link Cadastre se -->
 
     <color name="purple_custom">#563887</color>
+
+
+    <color name="correct_green">#4CAF50</color>
+    <color name="wrong_red">#F44336</color>
+    <color name="default_background_color">#F0F0F0</color>
+
 </resources>

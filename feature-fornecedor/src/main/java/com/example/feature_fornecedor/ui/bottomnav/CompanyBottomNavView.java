@@ -2,7 +2,6 @@ package com.example.feature_fornecedor.ui.bottomnav;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -43,9 +42,9 @@ public class CompanyBottomNavView extends FrameLayout {
         // Layout simplificado: só a pílula azul e 3 ícones
         inflate(getContext(), R.layout.view_bottom_nav_company, this);
 
-        btnAwards = findViewById(R.id.btnAwards);
+        btnAwards = findViewById(R.id.btnLessons);
         btnHome   = findViewById(R.id.btnHome);
-        btnTeam   = findViewById(R.id.btnTeam);
+        btnTeam   = findViewById(R.id.btnGoals);
 
         btnAwards.setOnClickListener(v -> setActive(Item.AWARDS, true));
         btnHome.setOnClickListener(v   -> setActive(Item.HOME,   true));

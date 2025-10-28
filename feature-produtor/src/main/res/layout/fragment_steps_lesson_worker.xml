@@ -11,26 +11,15 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView11"
-            android:layout_width="47dp"
-            android:layout_height="46dp"
+            android:id="@+id/perfil"
+            android:layout_width="61dp"
+            android:layout_height="51dp"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.958"
+            app:layout_constraintHorizontal_bias="0.045"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iconconfig" />
-
-        <ImageView
-            android:id="@+id/imageView12"
-            android:layout_width="47dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.829"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iconnotific" />
+            app:srcCompat="@drawable/perfil" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/txtPesquisa"
@@ -46,59 +35,88 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView13"
-            android:layout_width="61dp"
-            android:layout_height="51dp"
+            android:id="@+id/icon_notifi"
+            android:layout_width="47dp"
+            android:layout_height="46dp"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.045"
+            app:layout_constraintHorizontal_bias="0.829"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/perfil" />
+            app:srcCompat="@drawable/iconnotific" />
+
+        <ImageView
+            android:id="@+id/config"
+            android:layout_width="47dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.958"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/iconconfig" />
 
         <TextView
-            android:id="@+id/nome_worker"
+            android:id="@+id/titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="36dp"
-            android:layout_marginEnd="259dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="104dp"
+            android:fontFamily="@font/poppins_semibold"
             android:text="Etapas do Curso"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.386"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView13" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btContinuar"
+            android:id="@+id/btComeçar"
             style="@style/StartStepPurpleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="268dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="120dp"
+            android:fontFamily="@font/spartan_semibold"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Começar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:backgroundTint="#563887"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nome_worker" />
+            app:layout_constraintTop_toTopOf="@+id/descricao" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/stepsRV"
-            android:layout_width="394dp"
-            android:layout_height="514dp"
+            android:id="@+id/recycler_etapas"
+            android:layout_width="357dp"
+            android:layout_height="318dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintHorizontal_bias="0.863"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btContinuar"
-            app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/fragment_steps_lesson_item" />
+            app:layout_constraintTop_toTopOf="@+id/btComeçar"
+            app:layout_constraintVertical_bias="0.211" />
+
+        <TextView
+            android:id="@+id/descricao"
+            android:layout_width="315dp"
+            android:layout_height="97dp"
+            android:layout_marginTop="68dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="titulo"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titulo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="121dp"
+        android:layout_gravity="bottom"
+        android:elevation="0dp" />
+
 </FrameLayout>

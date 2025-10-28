@@ -61,7 +61,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramV
             super(view);
             // 🔧 Corrigido: IDs agora correspondem ao seu XML item_lessons_worker
             name = view.findViewById(com.example.core.R.id.cursoTitulo);
-            description = view.findViewById(com.example.core.R.id.description);
+            description = view.findViewById(com.example.core.R.id.cursoDescr);
             this.clickListener = listener;
         }
     }
