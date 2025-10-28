@@ -41,6 +41,7 @@ public class AuthAdapter {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = task.getResult().getUser() != null ? task.getResult().getUser().getUid() : null;
+                        cadastrarUsuario(uid, tipo, dadosUsuario,  ctx);
                         listener.onSuccess(uid);
                     } else {
                         String msg = task.getException() != null ? task.getException().getMessage() : "Erro no cadastro";
