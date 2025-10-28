@@ -12,10 +12,12 @@ public class WorkerRequest {
     @SerializedName("plan_info")
     private PlanInfoRequest planInfo;
 
+    private String cpf;
+
     private Integer companyId;
 
     public WorkerRequest() {}
-    public WorkerRequest(String name, String email, PlanInfoRequest planInfo, Integer companyId) {
+    public WorkerRequest(String name, String email, String cpf, PlanInfoRequest planInfo, Integer companyId) {
         this.name = name;
         this.email = email;
         this.planInfo = planInfo;
@@ -36,6 +38,14 @@ public class WorkerRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public PlanInfoRequest getPlanInfo() {
