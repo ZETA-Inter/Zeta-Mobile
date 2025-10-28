@@ -114,7 +114,7 @@ public class WorkerListPageCompany extends Fragment {
 
 
     private void listWorkers() {
-        ListAPI listAPI = com.example.core.network.RetrofitClient
+        ListAPI listAPI = com.example.core.network.RetrofitClientPostgres
                 .getInstance(requireContext())
                 .create(ListAPI.class);
 

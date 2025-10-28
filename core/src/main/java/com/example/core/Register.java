@@ -148,8 +148,7 @@ public class Register extends Fragment {
                     new com.example.core.dto.request.WorkerRequest();
             req.setName(nome);
             req.setEmail(email);
-            // se o seu WorkerRequest tiver CPF/cnpj/campo doc, ponha aqui:
-            // req.setCpf(documento);
+            req.setCpf(documento);
 
             api.createWorker(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.WorkerResponse>() {
                 @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
