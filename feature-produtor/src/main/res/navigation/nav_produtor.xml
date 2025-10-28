@@ -93,6 +93,13 @@
         android:name="com.example.feature_produtor.ActivityLessonWorker">
     </fragment>
 
+    <fragment
+        android:id="@+id/FlashCardStudy"
+        android:name="com.example.feature_produtor.FlashCardStudy">
+    </fragment>
+
+
+
     <dialog
         android:id="@+id/CardNotificacao" android:name="com.example.feature_produtor.CardNotificacao"
         tools:layout="@layout/fragment_card_notificacao"/>

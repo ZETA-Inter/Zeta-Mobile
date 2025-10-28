@@ -1,260 +1,263 @@
 package com.example.feature_produtor;
 
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.Toast;
-
-import com.example.core.TipoUsuario;
-import com.example.feature_produtor.model.mongo.Content;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import com.example.feature_produtor.adapter.*;
+import com.example.core.network.RetrofitClientPostgres;
+import com.example.feature_produtor.adapter.FilterAdapter;
+import com.example.feature_produtor.adapter.LessonsCardAdapter;
 import com.example.feature_produtor.model.postegres.Program;
 import com.example.feature_produtor.model.postegres.Segment;
+import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
+import com.example.feature_produtor.api.ApiPostgres;
+// Importação do Diálogo (Mantenha se estiver no mesmo pacote, ou ajuste o caminho)
+import com.example.feature_produtor.ResultCardDialogFragment;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-import com.example.feature_produtor.api.*;
-import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 
-public class HomePageWorkerFragment extends Fragment implements LessonsCardAdapter.OnLessonClickListener, FilterAdapter.OnSegmentClickListener{
+public class HomePageWorkerFragment extends Fragment
+        implements LessonsCardAdapter.OnLessonClickListener,
+        FilterAdapter.OnSegmentClickListener {
 
-    private ImageView perfil;
-    private ImageView boxIa;
-    private ImageView iconConfig;
-    private RecyclerView recyclerTipoConteudo;
-    private RecyclerView recyclerCursosAndamento;
+    private static final String TAG = "HomePageWorkerFragment";
 
+    private ImageView perfil, boxIa, iconConfig, iconNotificacao;
+    private RecyclerView recyclerTipoConteudo, recyclerCursosAndamento;
     private LessonsCardAdapter lessonsCardAdapter;
     private FilterAdapter filterAdapter;
+    private ApiPostgres apiService;
 
-    private ApiPostgres apiPostgres;
-    private ImageView iconNotificacao;
+    // --- CICLO DE VIDA E INICIALIZAÇÃO ---
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-
+        apiService = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_home_page_worker, container, false);
 
+        initViews(view);
+        setupBottomNav(view);
+        setupRecyclers();
+        setupClickListeners();
+        fetchData();
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // ** PONTO CRUCIAL: Exibe o diálogo ao retornar da tela de FlashCard/Quiz **
+        checkAndShowResultDialog();
+    }
+
+    // --- LÓGICA DO DIÁLOGO DE RESULTADOS ---
+    private void checkAndShowResultDialog() {
+        Bundle args = getArguments();
+
+        // Verifica se há argumentos de resultados (acertos/erros)
+        if (args != null && args.containsKey("acertos_count")) {
+
+            Log.d(TAG, "Argumentos de resultado encontrados. Exibindo diálogo.");
+
+            String cursoNome = args.getString("curso_nome", "Curso Finalizado");
+            int acertos = args.getInt("acertos_count", 0);
+            int erros = args.getInt("erros_count", 0);
+
+            try {
+                // Cria e exibe o diálogo (DESCOMENTADO E ATIVO)
+                ResultCardDialogFragment dialog =
+                        ResultCardDialogFragment.newInstance(cursoNome, acertos, erros);
+
+                // Usa getChildFragmentManager() para DialogFragment dentro de um Fragmento
+                dialog.show(getChildFragmentManager(), "ResultDialog");
+            } catch (Exception e) {
+                Log.e(TAG, "Erro ao tentar mostrar ResultCardDialogFragment. Certifique-se que a classe existe e está importada.", e);
+                Toast.makeText(getContext(), "Erro ao mostrar resultados: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+            // Limpa os argumentos APÓS USAR. ESSENCIAL para que o diálogo não apareça
+            // novamente em rotações ou retornos futuros sem novos resultados.
+            getArguments().clear();
+        } else {
+            Log.d(TAG, "Nenhum argumento de resultado encontrado.");
+        }
+    }
 
 
-        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
+    // --- MÉTODOS DE SETUP E LÓGICA ---
+
+    private void initViews(View view) {
+        perfil = view.findViewById(R.id.icon_perfil);
+        boxIa = view.findViewById(R.id.boxIA);
+        iconConfig = view.findViewById(R.id.icon_configuracoes);
+        iconNotificacao = view.findViewById(R.id.icon_notificacao);
+        recyclerCursosAndamento = view.findViewById(R.id.recycler_cursos_andamento);
+        recyclerTipoConteudo = view.findViewById(R.id.recycler_tipo_conteudo);
+    }
+
+    private void setupBottomNav(View view) {
+        WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
             bottom.bindNavController(
                     nav,
-                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
-                    com.example.feature_produtor.R.id.HomePageWorker,       // home
-                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
+                    R.id.LessonsWorker,
+                    R.id.HomePageWorker,
+                    R.id.GoalsPageWorker
             );
-
-
             bottom.setActive(WorkerBottomNavView.Item.HOME, false);
         }
+    }
 
-
-
-
-        // 1. Inicializando variáveis
-        perfil=view.findViewById(R.id.icon_perfil);
-        boxIa=view.findViewById(R.id.boxIA);
-        iconConfig=view.findViewById(R.id.icon_configuracoes);
-        iconNotificacao= view.findViewById(R.id.icon_notificacao);
-        recyclerCursosAndamento=view.findViewById(R.id.recycler_cursos_andamento);
-        recyclerTipoConteudo =view.findViewById(R.id.recycler_tipo_conteudo);
-
-
-
-
-
-
-        // 2. Iniciando os Adapters
-        lessonsCardAdapter = new LessonsCardAdapter(this,getContext());
+    private void setupRecyclers() {
+        lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
         filterAdapter = new FilterAdapter(this);
 
-        // 3. Configurando RecyclerViews
-        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        recyclerCursosAndamento.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerCursosAndamento.setAdapter(lessonsCardAdapter);
 
-        // Configurando RecyclerView de filtro
-        recyclerTipoConteudo.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        recyclerTipoConteudo.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerTipoConteudo.setAdapter(filterAdapter);
+    }
 
-        String token = "TokenUserZeta1234";
+    private void fetchData() {
+        fetchPrograms();
+        fetchSegments();
+    }
 
-        // Configura o OkHttpClient com o Interceptor para adicionar o cabeçalho Authorization
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS) // Tempo para estabelecer a conexão (30s)
-                .readTimeout(30, TimeUnit.SECONDS)    // Tempo para ler a resposta (30s)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(chain -> {
-                    Request request = chain.request().newBuilder()
-                            .addHeader("Authorization", "Bearer " + token)
-                            .build();
-                    return chain.proceed(request);
-                })
-                .build();
-
-
-        // 4. Iniciando Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api-postgresql-zeta-fide.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-
-        apiPostgres = retrofit.create(ApiPostgres.class);
-
-
-        // 5. Fazendo chamada para a API (recycler cursos andamento)
-        Call<List<Program>> call = apiPostgres.getAllPrograms();
-
-        call.enqueue(new Callback<List<Program>>() {
+    private void fetchPrograms() {
+        apiService.getAllPrograms().enqueue(new Callback<List<Program>>() {
             @Override
-            public void onResponse(Call<List<Program>> call, Response<List<Program>> response) {
+            public void onResponse(@NonNull Call<List<Program>> call,
+                                   @NonNull Response<List<Program>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Program> lessons = response.body();
-                    lessonsCardAdapter.submitList(lessons);
+                    List<Program> allPrograms = response.body();
+
+                    List<Program> inProgressPrograms = allPrograms.stream()
+                            .filter(p -> p.getProgressPercentage() < 100)
+                            .collect(Collectors.toList());
+
+                    // Opcional: List<Program> completedPrograms = allPrograms.stream()
+                    //     .filter(p -> p.getProgressPercentage() >= 100)
+                    //     .collect(Collectors.toList());
+
+                    lessonsCardAdapter.submitList(inProgressPrograms);
 
                 } else {
-                    Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Program>> call, Throwable t) {
-                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-
-        Call<List<Segment>> segmentCall = apiPostgres.getAllSegments();
-
-        segmentCall.enqueue(new Callback<List<Segment>>() {
-            @Override
-            public void onResponse(Call<List<Segment>> call, Response<List<Segment>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Segment> segmentsTypes = response.body();
-                    filterAdapter.submitList(segmentsTypes);
-                } else {
-                    Toast.makeText(getContext(), "Erro ao carregar filtros: " + response.code(), Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Erro ao carregar cursos: Código " + response.code());
+                    Toast.makeText(getContext(),
+                            "Erro ao carregar cursos: " + response.code(),
+                            Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Segment>> call, Throwable t) {
-                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onFailure(@NonNull Call<List<Program>> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro de conexão (Cursos): " + t.getMessage(), t);
+                Toast.makeText(getContext(),
+                        "Erro de conexão (Cursos): " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
+    }
 
+    private void fetchSegments() {
+        apiService.getAllSegments().enqueue(new Callback<List<Segment>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Segment>> call,
+                                   @NonNull Response<List<Segment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    filterAdapter.submitList(response.body());
+                } else {
+                    Log.e(TAG, "Erro ao carregar filtros: Código " + response.code());
+                    Toast.makeText(getContext(),
+                            "Erro ao carregar filtros: " + response.code(),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
 
-        setupClickListeners();
-        return view;
-
+            @Override
+            public void onFailure(@NonNull Call<List<Segment>> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro de conexão (Filtros): " + t.getMessage(), t);
+                Toast.makeText(getContext(),
+                        "Erro de conexão (Filtros): " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setupClickListeners() {
-        perfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.Profileworker);
-            }
-        });
+        NavController nav = NavHostFragment.findNavController(this);
 
-        boxIa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.ChatBotPageWorker);
-
-            }
-        });
-
-        iconConfig.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Navigation.findNavController(v).navigate(R.id.);
-
-            }
-        });
-        iconNotificacao.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (getView() != null) {
-
-                    Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
-                }
-            }
-        });
-
-
+        perfil.setOnClickListener(v -> nav.navigate(R.id.Profileworker));
+        boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotPageWorker));
+        iconConfig.setOnClickListener(v -> nav.navigate(R.id.FlashCardStudy));
+        iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
     }
 
-
+    // --- MÉTODOS DA INTERFACE (LISTENERS) ---
 
     @Override
     public void onLessonClick(Program item) {
-        // Criar um Bundle para empacotar o id
+
+        int progress = item.getProgressPercentage();
+
         Bundle bundle = new Bundle();
+        bundle.putInt("programId", item.getId());
 
-        //Adicionar infos do curso (Program) ao Bundle.
-        Integer programId = item.getId(); // Renomeado para 'programId' para maior clareza
-        bundle.putString("programId", String.valueOf(programId));
-
-        //Navega para o destino, passando o Bundle como argumento
-        // Assumindo que 'ContentLessonWorker' mostra os detalhes/etapas do curso (Program)
-        if(getView() != null) {
-            Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker, bundle);
+        if (getView() == null) {
+            Toast.makeText(getContext(), "Erro de navegação. Fragmento não anexado.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        if (progress >= 100) {
+            Toast.makeText(getContext(), "Revisando: " + item.getName(), Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
+        } else {
+            NavHostFragment.findNavController(this).navigate(R.id.StepsLessonWorker, bundle);
+        }
     }
-
 
     @Override
     public void onSegmentClick(Segment nome) {
-        // Criar um Bundle para empacotar o id
         Bundle bundle = new Bundle();
+        bundle.putString("segment", nome.getName());
 
-        //Adicionar tipo ao Bundle.
-        String filterType = nome.getName();
-        bundle.putString("segment", filterType);
-
-        //tiar depois de testes
-        Toast.makeText(getContext(), "Filtrando por: " + filterType, Toast.LENGTH_SHORT).show();
-
-        //Navega para o destino, passando o Bundle como argumento
-        Navigation.findNavController(getView()).navigate(R.id.LessonsWorker, bundle);
-
-
+        Toast.makeText(getContext(), "Filtrando por: " + nome.getName(), Toast.LENGTH_SHORT).show();
+        if (getView() != null) {
+            NavHostFragment.findNavController(this).navigate(R.id.LessonsWorker, bundle);
+        }
     }
-
-
-
 }

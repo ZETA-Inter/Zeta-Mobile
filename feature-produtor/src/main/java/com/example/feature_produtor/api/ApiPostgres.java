@@ -16,16 +16,14 @@ import retrofit2.http.Path;
 
 public interface ApiPostgres {
     // lista todos os cursos (program)
-    @GET("api/programs/listAll")
+    @GET("/api/programs/list-all")
     Call<List<Program>> getAllPrograms();
 
-    // lista todos os segmento (segment)
-    @GET("api/segments/listAll")
-    Call<List<Segment>> getAllSegments();
+    @GET("/api/programs/find-id/{id}")
+    Call<Program> getProgramById(@Path("id") Integer id);
 
-//    @POST("api/image/create")
-//    Call<W> updateUserImage(
-//            @Path("userId") int userId,
-//            @Body Image body
-//    );
+    @GET("/api/segments/list_segments")
+    Call<List<Segment>> getAllSegments();
 }
+
+

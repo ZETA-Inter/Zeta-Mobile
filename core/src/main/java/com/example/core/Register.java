@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 
 import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentRegisterBinding;
+import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -98,7 +99,7 @@ public class Register extends Fragment {
                                  TipoUsuario tipo, View clickView) {
         // pegue o serviço central (use a variante do seu RetrofitClient: com ou sem Context)
         com.example.core.client.ApiPostgresClient api =
-                com.example.core.network.RetrofitClient.getApiService(requireContext()); // ou getInstance(requireContext()).create(...)
+                RetrofitClientPostgres.getApiService(requireContext()); // ou getInstance(requireContext()).create(...)
 
         if (tipo == TipoUsuario.COMPANY) {
             // --- Company ---

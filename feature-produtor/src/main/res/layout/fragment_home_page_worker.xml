@@ -37,8 +37,8 @@
 
         <ImageView
             android:id="@+id/icon_perfil"
-            android:layout_width="57dp"
-            android:layout_height="45dp"
+            android:layout_width="58dp"
+            android:layout_height="46dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/perfil"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
@@ -47,8 +47,8 @@
 
         <ImageView
             android:id="@+id/icon_configuracoes"
-            android:layout_width="49dp"
-            android:layout_height="55dp"
+            android:layout_width="45dp"
+            android:layout_height="51dp"
             android:layout_marginTop="24dp"
             android:src="@drawable/iconconfig"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
@@ -57,10 +57,10 @@
 
         <ImageView
             android:id="@+id/icon_notificacao"
-            android:layout_width="49dp"
-            android:layout_height="49dp"
+            android:layout_width="48dp"
+            android:layout_height="45dp"
             android:layout_marginTop="28dp"
-            android:layout_marginEnd="72dp"
+            android:layout_marginEnd="64dp"
             android:src="@drawable/iconnotific"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Olá, Usuário"
-            android:textColor="#043253"
+            android:textColor="#320453"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
@@ -253,7 +253,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Novos conteúdos"
+            android:text="Cursos concluidos"
             android:textColor="#070707"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -281,10 +281,10 @@
             android:id="@+id/boxIA"
             android:layout_width="198dp"
             android:layout_height="115dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:src="@drawable/ia_barra"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.38"
+            app:layout_constraintHorizontal_bias="0.413"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -292,12 +292,13 @@
             android:id="@+id/txt"
             android:layout_width="20dp"
             android:layout_height="22dp"
-            android:layout_marginTop="52dp"
-            android:fontFamily="@font/spartan_semibold"
+            android:layout_marginTop="48dp"
+            android:fontFamily="@font/poppins_bold"
             android:text="IA"
             android:textColor="#FFFFFF"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.258"
+            app:layout_constraintHorizontal_bias="0.271"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

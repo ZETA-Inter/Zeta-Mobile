@@ -6,7 +6,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public final class ApiClient {
     private static ApiPostgresClient api;
 
-    // Retorna uma única instância do client (singleton)
     public static ApiPostgresClient get() {
         if (api == null) {
             Retrofit retrofit = new Retrofit.Builder()
@@ -18,5 +17,5 @@ public final class ApiClient {
         return api;
     }
 
-    private ApiClient() {} // evita criar instâncias acidentalmente
+    private ApiClient() {}
 }

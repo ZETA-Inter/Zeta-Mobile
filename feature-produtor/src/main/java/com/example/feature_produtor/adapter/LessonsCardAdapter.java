@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar; // Importe ProgressBar
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.postegres.Program; // Importa a classe Program correta
+import com.example.feature_produtor.model.postegres.Program;
 
 
 public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.LessonsViewHolder> {
@@ -40,7 +41,7 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LessonsViewHolder holder, int position) {
-        Program currentProgram = getItem(position); // Usando Program
+        Program currentProgram = getItem(position);
         holder.bind(currentProgram, listener);
     }
 
@@ -49,6 +50,12 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
         private final TextView title;
         private final TextView description;
         private final ImageView img;
+
+        // Novos campos para a lógica de progresso
+        private final ProgressBar progressBar;
+        private final TextView percentageTextView;
+        private final TextView percentageSymbolTextView;
+
         private final Context context;
 
         public LessonsViewHolder(@NonNull View itemView, Context context) {
@@ -58,50 +65,59 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
             title = itemView.findViewById(R.id.cursoTitulo);
             description = itemView.findViewById(R.id.cursoDescr);
             img = itemView.findViewById(R.id.imageView3);
+
+            // Mapeamento dos componentes de progresso do seu XML
+            progressBar = itemView.findViewById(R.id.progressBar);
+            percentageTextView = itemView.findViewById(R.id.porcentagem);
+            percentageSymbolTextView = itemView.findViewById(R.id.text_pocentagem);
         }
 
-        public void bind(final Program item, final OnLessonClickListener listener) { // Usando Program
-            // Atualizado para usar getName() e getDescription() de Program
+        public void bind(final Program item, final OnLessonClickListener listener) {
             title.setText(item.getName());
             description.setText(item.getDescription());
 
-            // Lógica para carregar a imagem (se houver, precisa do Glide/Picasso)
-//            String imageUrl = getImageUrlFromProgram(item);
-//
-//            if (imageUrl != null && !imageUrl.isEmpty()) {
-//                Glide.with(context)
-//                        .load(imageUrl)
-//                        .into(img);
-//            }
+            // --- Lógica de Progresso e Visibilidade ---
+            // Assume que Program.getProgressPercentage() está disponível e retorna 0 se não iniciado.
+            final int progress = item.getProgressPercentage();
 
+            if (progress > 0) {
+                // Curso iniciado: Torna a barra e o texto VÍSIVEIS
+                progressBar.setVisibility(View.VISIBLE);
+                percentageTextView.setVisibility(View.VISIBLE);
+                percentageSymbolTextView.setVisibility(View.VISIBLE);
+
+                // Atualiza o valor e a barra
+                progressBar.setProgress(progress);
+                percentageTextView.setText(String.valueOf(progress));
+
+            } else {
+                // Curso não iniciado (progresso = 0): Oculta a barra e o texto
+                progressBar.setVisibility(View.GONE);
+                percentageTextView.setVisibility(View.GONE);
+                percentageSymbolTextView.setVisibility(View.GONE);
+            }
+            // --- Fim da Lógica de Progresso ---
+
+            // Configura o clique
             itemView.setOnClickListener(v -> listener.onLessonClick(item));
         }
-
-
-//        private String getImageUrlFromProgram(Program item) {
-//            // Implemente a lógica para obter a URL da imagem de Program aqui, se necessário.
-//            return null;
-//        }
     }
 
-
-
-    private static class LessonsItemDiffCallback extends DiffUtil.ItemCallback<Program> { // Usando Program
+    private static class LessonsItemDiffCallback extends DiffUtil.ItemCallback<Program> {
         @Override
-        public boolean areItemsTheSame(@NonNull Program oldItem, @NonNull Program newItem) { // Usando Program
-
+        public boolean areItemsTheSame(@NonNull Program oldItem, @NonNull Program newItem) {
             if (oldItem.getId() == null || newItem.getId() == null) {
-                // Alternativa se o ID for nulo, compara pelo nome
                 return oldItem.getName().equals(newItem.getName());
             }
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Program oldItem, @NonNull Program newItem) { // Usando Program
-            // Comparando nome e descrição
+        public boolean areContentsTheSame(@NonNull Program oldItem, @NonNull Program newItem) {
+            // Adicionado progressPercentage na comparação para que o Adapter atualize a barra
             return oldItem.getName().equals(newItem.getName()) &&
-                    oldItem.getDescription().equals(newItem.getDescription());
+                    oldItem.getDescription().equals(newItem.getDescription()) &&
+                    oldItem.getProgressPercentage() == newItem.getProgressPercentage();
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.example.feature_produtor.api;
 
+import com.example.feature_produtor.model.mongo.Activity;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.model.mongo.Content;
+import com.example.feature_produtor.model.mongo.FlashCard;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,16 +14,18 @@ import java.util.List;
 public interface ApiMongo {
 
     // lista todas as classes
-    @GET("list_all_class")
+    @GET("/api/classes/list_all_class")
     Call<List<Class>> getAllClasses();
 
 
-    //listar todos os contents
+    @GET("/api/classes/list-all-class-by-program-id/{programId}")
+    Call<List<Class>> getClassByProgramId(@Path("programId") Integer programId);
 
-    @GET("list_all_contents")
-    Call<List<Content>> getAllContents();
 
-    @GET("pegarDescricaoPorId/{stepId}")
-    Call<Class> getDescription(@Path("stepId") int stepId);
+    @GET("/api/classes/find-class-by-id/{id}")
+    Call<Class> getClassById(@Path("id") Integer id);
+
+    @GET("api/activities/list_all_activities_by_class_id/{classId}")
+    Call<Activity> getActivityByClassId(@Path("classId") int id);
 }
 

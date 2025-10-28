@@ -3,8 +3,6 @@ package com.example.feature_produtor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -27,16 +25,16 @@ import com.example.feature_produtor.model.postegres.Program;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.textfield.TextInputEditText;
 
+// IMPORTANTE: Use o RetrofitClient do módulo core
+import com.example.core.network.RetrofitClientPostgres;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors; // Necessário para a filtragem moderna
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLessonClickListener {
 
@@ -46,87 +44,54 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     private ImageView config;
     private RecyclerView recyclerCursos;
     private LessonsCardAdapter lessonsCardAdapter;
+    // Lista completa de programas carregados da API
+    private final List<Program> allPrograms = new ArrayList<>();
 
-    // Lista que armazena todos os cursos buscados da API
-    private List<Program> allPrograms = new ArrayList<>();
+    // Variável para armazenar o filtro recebido
+    private String initialSegmentFilter = null;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lessons_worker, container, false);
 
+        // 1. **VERIFICA O ARGUMENTO DE FILTRO ANTES DE TUDO**
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("segment")) {
+            initialSegmentFilter = args.getString("segment");
+            // Opcional: Limpar o argumento para evitar que ele persista
+            // args.remove("segment");
+        }
 
-        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
+        // 2. Configuração do BottomNav (sem mudanças)
+        WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
             bottom.bindNavController(
                     nav,
-                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
-                    com.example.feature_produtor.R.id.HomePageWorker,       // home
-                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
+                    R.id.LessonsWorker,
+                    R.id.HomePageWorker,
+                    R.id.GoalsPageWorker
             );
-
-
-            bottom.setActive(WorkerBottomNavView.Item.HOME, false);
+            bottom.setActive(WorkerBottomNavView.Item.LESSONS, false);
         }
 
-
-
-
+        // 3. Mapeamento de Views e Configuração de RecyclerView (sem mudanças)
         perfil = view.findViewById(R.id.perfil3);
         searchView = view.findViewById(R.id.txtPesquisa3);
         notificacao = view.findViewById(R.id.icon_notifica);
         config = view.findViewById(R.id.imageView5);
         recyclerCursos = view.findViewById(R.id.cursos);
 
-        // 2. Inicialização do Adapter
-        lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
 
-        // 3. Configuração do RecyclerView
+        lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
         recyclerCursos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerCursos.setAdapter(lessonsCardAdapter);
 
 
-        // 4. Iniciação do Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api-postgresql-zeta-fide.onrender.com/") // Use a mesma URL base
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiPostgres apiPostgres = retrofit.create(ApiPostgres.class);
-
-
-        // 5. Chamada para a API (Busca todos os Programs/Cursos)
-        Call<List<Program>> call = apiPostgres.getAllPrograms();
-
-        call.enqueue(new Callback<List<Program>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Program>> call, @NonNull Response<List<Program>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-
-                    List<Program> programs = response.body();
-
-                    // Armazena a lista completa na variável 'allPrograms' para a pesquisa
-                    allPrograms.clear();
-                    allPrograms.addAll(programs);
-
-                    // Exibe a lista completa no RecyclerView
-                    lessonsCardAdapter.submitList(new ArrayList<>(allPrograms));
-
-                } else {
-                    Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Program>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-
-            }
-        });
-
+        // 4. Chamada da API
+        fetchPrograms();
 
         setupClickListeners();
         setupSearchListener();
@@ -135,12 +100,92 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     }
 
 
-    private void setupClickListeners() {
+    private void fetchPrograms() {
+        ApiPostgres apiPostgres = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
 
+        apiPostgres.getAllPrograms().enqueue(new Callback<List<Program>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Program>> call, @NonNull Response<List<Program>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Program> programs = response.body();
+
+                    // 1. Armazena a lista completa
+                    allPrograms.clear();
+                    allPrograms.addAll(programs);
+
+                    // 2. **APLICA O FILTRO INICIAL SE EXISTIR**
+                    applyInitialFilter();
+
+                } else {
+                    Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Program>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+    private void applyInitialFilter() {
+        if (initialSegmentFilter != null) {
+
+            // 1. Limpa o nome do filtro: remove espaços em branco extras e padroniza para minúsculas
+            final String filterNameCleaned = initialSegmentFilter.trim().toLowerCase();
+
+            Toast.makeText(getContext(),
+                    "Tentando filtrar por: " + initialSegmentFilter,
+                    Toast.LENGTH_SHORT).show();
+
+            // 2. Lógica de filtragem mais segura e robusta:
+            List<Program> filteredList = new ArrayList<>();
+
+            for (Program program : allPrograms) {
+                // 3. Verificação de segurança (Null Check)
+                if (program.getSegment() != null && program.getSegment().getName() != null) {
+
+                    // 4. Limpa e padroniza o nome do segmento do programa
+                    String programSegmentNameCleaned = program.getSegment().getName().trim().toLowerCase();
+
+                    // 5. Compara os nomes limpos
+                    if (programSegmentNameCleaned.equals(filterNameCleaned)) {
+                        filteredList.add(program);
+                    }
+                }
+            }
+
+            // 6. Exibe o resultado e a lista
+            if (filteredList.isEmpty()) {
+                Toast.makeText(getContext(),
+                        "Nenhum curso encontrado para o filtro: " + initialSegmentFilter,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            lessonsCardAdapter.submitList(filteredList);
+
+            // Limpa o filtro inicial
+            initialSegmentFilter = null;
+
+        } else {
+            // Se não houver filtro, exibe a lista completa
+            lessonsCardAdapter.submitList(new ArrayList<>(allPrograms));
+        }
+    }
+
+// ... (restante do código)
+
+
+    // --- Métodos de Click Listeners, Busca e onLessonClick (sem mudanças relevantes) ---
+
+    private void setupClickListeners() {
         perfil.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.Profileworker);
         });
-
 
         notificacao.setOnClickListener(v -> {
             if (getView() != null) {
@@ -149,10 +194,8 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
         });
 
         config.setOnClickListener(v -> {
-            //Navigation.findNavController(v).navigate(R.id.configDestino);
+            // Navegação futura
         });
-
-
     }
 
     private void setupSearchListener() {
@@ -160,66 +203,61 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
             searchView.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // Não é necessário usar aqui
                 }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // Chamamos o filtro sempre que o texto muda
+                    // Ao pesquisar, a filtragem de segmento é ignorada
                     filterPrograms(s.toString());
                 }
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    // Também não é necessário usar aqui
                 }
             });
         }
     }
 
-    // Lógica para filtrar a lista de cursos (Program)
     private void filterPrograms(String query) {
-        // Converte a consulta para minúsculas para pesquisa sem distinção entre maiúsculas/minúsculas
         String lowerCaseQuery = query.toLowerCase();
-
-        // Lista para os resultados filtrados
         List<Program> filteredList = new ArrayList<>();
 
         if (lowerCaseQuery.isEmpty()) {
-            // Se a pesquisa estiver vazia, exibe a lista completa
+            // Ao limpar a busca, exibe a lista completa novamente (allPrograms)
             filteredList.addAll(allPrograms);
         } else {
-            // Itera sobre a lista completa (allPrograms)
             for (Program program : allPrograms) {
-                // Verifica se o nome ou descrição do programa contém o texto da pesquisa
                 if ((program.getName() != null && program.getName().toLowerCase().contains(lowerCaseQuery)) ||
                         (program.getDescription() != null && program.getDescription().toLowerCase().contains(lowerCaseQuery))) {
                     filteredList.add(program);
                 }
             }
         }
-
-        // Atualiza o RecyclerView com a lista filtrada
         lessonsCardAdapter.submitList(filteredList);
     }
 
     @Override
     public void onLessonClick(Program item) {
-        // Lógica para quando um card de curso é clicado
-        // Criar um Bundle para empacotar o id do Program (curso)
+
+        // 1. Declara e inicializa a variável de progresso
+        int progress = item.getProgressPercentage();
+
         Bundle bundle = new Bundle();
+        bundle.putInt("programId", item.getId());
 
-        // Adicionar o ID do curso (Program) ao Bundle.
-        Integer programId = item.getId();
-        bundle.putString("programId", String.valueOf(programId));
+        // 2. CORREÇÃO DE LÓGICA: Se a View for nula, saia.
+        if (getView() == null) {
+            // Opcional: Avisar o usuário se o fragmento não estiver pronto
+            Toast.makeText(getContext(), "Erro de navegação: Tente novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Navega para o destino, passando o Bundle como argumento
-        // Assumindo que o destino é uma tela de detalhes do curso
-        if(getView() != null) {
-            // Substitua 'StepsLessonWorker' pelo destino correto para ver as etapas do curso
-            Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker, bundle);
+        // 3. Lógica Condicional: Se 100%, vai para FlashCardStudy; senão, continua a lição
+        if (progress >= 100) {
+            Toast.makeText(getContext(), "Revisando: " + item.getName(), Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
+        } else {
+            NavHostFragment.findNavController(this).navigate(R.id.StepsLessonWorker, bundle);
         }
     }
-
-
 }

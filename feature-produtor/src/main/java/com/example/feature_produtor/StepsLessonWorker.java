@@ -13,18 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.example.feature_produtor.adapter.*;
-import com.example.feature_produtor.api.*;
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.core.network.RetrofitClientMongo;
+import com.example.core.network.RetrofitClientPostgres; // <-- IMPORTANTE: Cliente Postgres
+import com.example.feature_produtor.adapter.StepsLessonAdapter;
+import com.example.feature_produtor.api.ApiMongo;
+import com.example.feature_produtor.api.ApiPostgres; // <-- Assumindo que você criou ApiPostgres
+import com.example.feature_produtor.model.mongo.Class;
+import com.example.feature_produtor.model.postegres.Program; // <-- IMPORTAÇÃO CORRETA do modelo Program
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
+
+
 import com.google.android.material.textfield.TextInputEditText;
 
 
@@ -34,11 +42,10 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.OnStepClickListener {
+
+    private static final String TAG = "StepsLessonWorker";
 
     private ImageView perfil;
     private TextInputEditText pesquisa;
@@ -48,68 +55,60 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
     private Button começar;
     private StepsLessonAdapter stepsLessonAdapter;
 
-    private List<Segment> allLessons = new ArrayList<>();
+    private TextView descricao; // ID do seu TextView
+
+    private final List<Class> allLessons = new ArrayList<>();
+
+    private Integer programId;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            programId = getArguments().getInt("programId", -1);
+
+            if (programId == -1) {
+                programId = null;
+            }
+        }
+
+        if (programId == null && isAdded()) { // Usando isAdded() para segurança, embora seja onCreate
+            Toast.makeText(getContext(), "Erro: ID do curso não encontrado.", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "programId está nulo. Verifique o argumento 'programId' recebido.");
+        }
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_steps_lesson_worker, container, false);
 
+        // Mapeamento de Views
         perfil = view.findViewById(R.id.perfil);
         pesquisa = view.findViewById(R.id.txtPesquisa);
         config = view.findViewById(R.id.config);
         notificacao = view.findViewById(R.id.icon_notifi);
         recyclerEtapas = view.findViewById(R.id.recycler_etapas);
         começar = view.findViewById(R.id.btComeçar);
+        descricao = view.findViewById(R.id.descricao); // Mapeando o TextView
 
-        //iniciando o adapter
-        stepsLessonAdapter = new StepsLessonAdapter(this,getContext());
+        // 2. Iniciando o adapter
+        stepsLessonAdapter = new StepsLessonAdapter(this, requireContext()); // Usando requireContext()
 
-        //configurando RecyclerView
-        recyclerEtapas.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false));
+        // 3. Configurando RecyclerView
+        recyclerEtapas.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL, false)); // Usando requireContext()
         recyclerEtapas.setAdapter(stepsLessonAdapter);
 
+        // 4. Chamada para a API (Busca Etapas Específicas)
+        if (programId != null) {
+            // Nova Chamada: Busca a descrição
+            fetchProgramDetails(programId);
 
-        //Iniciando Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api-postgresql-zeta-fide.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiPostgres apiPostgres = retrofit.create(ApiPostgres.class);
-
-
-        // Fazendo chamada para a api (recycler etapas curso)
-        Call<List<Segment>> call = apiPostgres.getAllSegments();
-
-        call.enqueue(new Callback<List<Segment>>() {
-            @Override
-            public void onResponse(Call<List<Segment>> call, Response<List<Segment>> response) { // Mude aqui também
-                if (response.isSuccessful() && response.body() != null) {
-
-                    List<Segment> steps = response.body(); // Mude aqui também
-
-                    // Armazena a lista completa na variável 'allLessons' para a pesquisa
-                    allLessons.clear();
-                    allLessons.addAll(steps);
-
-                    // Exibe a lista completa no RecyclerView
-                    stepsLessonAdapter.submitList(new ArrayList<>(allLessons));
-
-                } else {
-                    Toast.makeText(getContext(), "Erro ao carregar etapas: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Segment>> call, Throwable t) { // Mude aqui também
-                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-
-            }
-        });
-
+            // Chamada original: Busca as aulas
+            fetchClassesByProgramId(programId);
+        }
 
         setupClickListeners();
         setupSearchListener();
@@ -117,36 +116,132 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         return view;
     }
 
+    /**
+     * Busca os detalhes do Programa (incluindo a descrição) e atualiza o TextView.
+     */
+    private void fetchProgramDetails(Integer id) {
+        ApiPostgres apiPostgres = RetrofitClientPostgres // <-- Usando o cliente Postgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
+
+        Call<Program> call = apiPostgres.getProgramById(id);
+
+        call.enqueue(new Callback<Program>() {
+            @Override
+            public void onResponse(@NonNull Call<Program> call, @NonNull Response<Program> response) {
+                if (!isAdded()) return; // <-- Segurança
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Program program = response.body();
+
+                    if (program.getDescription() != null) {
+                        descricao.setText(program.getDescription());
+                    } else {
+                        descricao.setText("Descrição não disponível para este curso.");
+                    }
+
+                } else {
+                    Log.e(TAG, "Falha ao buscar Program: Código " + response.code());
+                    if (isAdded()) {
+                        Toast.makeText(getContext(), "Erro ao carregar descrição: " + response.code(), Toast.LENGTH_LONG).show();
+                    }
+                    descricao.setText("Erro ao carregar descrição.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Program> call, @NonNull Throwable t) {
+                if (!isAdded()) return; // <-- Segurança
+
+                Log.e(TAG, "Erro de conexão ao buscar Program: " + t.getMessage(), t);
+                if (isAdded()) {
+                    Toast.makeText(getContext(), "Erro de conexão (Descrição): " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+                descricao.setText("Falha de conexão.");
+            }
+        });
+    }
+    
+    private void fetchClassesByProgramId(Integer id) {
+        ApiMongo apiMongo = RetrofitClientMongo
+                .getInstance(requireContext())
+                .create(ApiMongo.class);
+
+
+            Log.d(TAG, "Tentando buscar classes para programId: " + id); // <-- ADICIONE ISSO
+            Call<List<Class>> call = apiMongo.getClassByProgramId(id);
+
+            call.enqueue(new Callback<List<Class>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
+                    // ...
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Class> classesByProgram = response.body();
+                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + classesByProgram.size()); // <-- ADICIONE ISSO
+
+                        // ...
+                    } else {
+                        Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
+                        // ...
+                    }
+                }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
+                if (!isAdded()) return; // <-- Segurança
+
+                Log.e(TAG, "Erro de conexão ao buscar Classes: " + t.getMessage(), t);
+                if (isAdded()) {
+                    Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    // ... (Métodos setupClickListeners, setupSearchListener, filterLessons, onStepClick permanecem iguais)
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+            bottom.bindNavController(
+                    nav,
+                    R.id.LessonsWorker,
+                    R.id.HomePageWorker,
+                    R.id.GoalsPageWorker
+            );
+        }
+    }
+
+
     private void setupClickListeners() {
-        perfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.Profileworker);
-            }
+        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
+
+        config.setOnClickListener(v -> {
+            // Toast seguro não é necessário aqui
+            Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();
         });
 
-        config.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Navigation.findNavController(v).navigate(R.id.);
+        começar.setOnClickListener(v -> {
+            if (!allLessons.isEmpty() && getView() != null) {
+                Class firstLesson = allLessons.get(0);
 
-            }
-        });
+                onStepClick(firstLesson);
 
-        começar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Navigation.findNavController(v).navigate(R.id.);
-
+            } else {
+                Toast.makeText(getContext(), "Nenhuma etapa carregada para começar.", Toast.LENGTH_SHORT).show();
             }
         });
 
         notificacao.setOnClickListener(v -> {
+            // Toast seguro não é necessário aqui
             Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
         });
     }
 
-    //LOgica para pesquisar
     private void setupSearchListener() {
         if (pesquisa != null) {
             pesquisa.addTextChangedListener(new TextWatcher() {
@@ -155,7 +250,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // Chamamos o filtro sempre que o texto muda
                     filterLessons(s.toString());
                 }
 
@@ -165,58 +259,31 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         }
     }
 
-    //Lógica para filtrar a lista de lições
     private void filterLessons(String query) {
-        // Converte a consulta para minúsculas para pesquisa sem distinção entre maiúsculas/minúsculas
         String lowerCaseQuery = query.toLowerCase();
-
-        // Lista para os resultados filtrados
-        List<Segment> filteredList = new ArrayList<>();
+        List<Class> filteredList = new ArrayList<>();
 
         if (lowerCaseQuery.isEmpty()) {
-            // Se a pesquisa estiver vazia, exibe a lista completa
             filteredList.addAll(allLessons);
         } else {
-            // Itera sobre a lista completa (allLessons)
-            for (Segment segment : allLessons) {
-                // Verifica se o nome do segmento (em minúsculas) contém o texto da pesquisa
-                if (segment.getName() != null && segment.getName().toLowerCase().contains(lowerCaseQuery)) {
-                    filteredList.add(segment);
+            for (Class lesson : allLessons) {
+                if (lesson.getTitle() != null && lesson.getTitle().toLowerCase().contains(lowerCaseQuery)) {
+                    filteredList.add(lesson);
                 }
             }
         }
-
-        // Atualiza o RecyclerView com a lista filtrada
         stepsLessonAdapter.submitList(filteredList);
     }
 
-
-
     @Override
-    public void onStepClick(Segment item) {
+    public void onStepClick(Class item) {
         Bundle bundle = new Bundle();
         Integer lessonId = item.getId();
 
-        // ENVIANDO como INT
         bundle.putInt("stepId", lessonId);
 
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
-        }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        WorkerBottomNavView bottom = view.findViewById(com.example.feature_produtor.R.id.bottomNav);
-        if (bottom != null) {
-            NavController nav = NavHostFragment.findNavController(this);
-            bottom.bindNavController(
-                    nav,
-                    com.example.feature_produtor.R.id.LessonsWorker,    // atividades
-                    com.example.feature_produtor.R.id.HomePageWorker,       // home
-                    com.example.feature_produtor.R.id.GoalsPageWorker  // metas
-            );
         }
     }
 }

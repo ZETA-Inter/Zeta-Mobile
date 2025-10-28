@@ -15,22 +15,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_fornecedor.ranking.RankingAdapter;
-import com.example.feature_fornecedor.ranking.RankingApi;
 import com.example.feature_fornecedor.ranking.RankingEntry;
-import com.example.feature_fornecedor.ranking.RetrofitClient;
-import com.example.feature_fornecedor.ranking.RankingAdapter;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RankingPageCompany extends Fragment {
 
@@ -87,7 +80,7 @@ public class RankingPageCompany extends Fragment {
     private void fetchRanking() {
         // Usa o RetrofitClient central do módulo :core
         com.example.feature_fornecedor.ranking.RankingApi api =
-                com.example.core.network.RetrofitClient
+                RetrofitClientPostgres
                         .getInstance(requireContext())
                         .create(com.example.feature_fornecedor.ranking.RankingApi.class);
 

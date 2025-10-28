@@ -13,7 +13,7 @@ public class Class {
 
     private String title;
 
-    private List<Content> content;
+    private List<String> content;
 
     private String description;
 
@@ -40,7 +40,7 @@ public class Class {
         return title;
     }
 
-    public List<Content> getContent() {
+    public List<String> getContent() {
         return content;
     }
 
@@ -70,13 +70,14 @@ public class Class {
         this.title = title;
     }
 
-    public void setContent(List<Content> content) {
+    public void setContent(List<String> content) {
         this.content = content;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
+
 
     public void setFlashcards(List<FlashCard> flashcards) {
         this.flashcards = flashcards;

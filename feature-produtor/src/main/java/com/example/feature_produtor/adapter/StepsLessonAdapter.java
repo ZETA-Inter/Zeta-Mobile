@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.feature_produtor.model.mongo.Class; // IMPORTANTE: Importar o modelo Class
 
-public class StepsLessonAdapter extends ListAdapter<Segment, StepsLessonAdapter.LessonStepViewHolder> {
+// Extende ListAdapter de Class
+public class StepsLessonAdapter extends ListAdapter<Class, StepsLessonAdapter.LessonStepViewHolder> {
 
+    // A interface usa o modelo Class
     public interface OnStepClickListener {
-        void onStepClick(Segment item);
+        void onStepClick(Class item);
     }
 
     private final OnStepClickListener listener;
@@ -38,10 +40,10 @@ public class StepsLessonAdapter extends ListAdapter<Segment, StepsLessonAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LessonStepViewHolder holder, int position) {
-        Segment currentSegment = getItem(position);
+        Class currentClass = getItem(position);
         int stepNumber = position + 1;
         boolean isLastItem = position == getItemCount() - 1;
-        holder.bind(currentSegment, listener, stepNumber, isLastItem);
+        holder.bind(currentClass, listener, stepNumber, isLastItem);
     }
 
     public static class LessonStepViewHolder extends RecyclerView.ViewHolder {
@@ -57,29 +59,31 @@ public class StepsLessonAdapter extends ListAdapter<Segment, StepsLessonAdapter.
             num = itemView.findViewById(R.id.num);
         }
 
-        public void bind(final Segment item, final OnStepClickListener listener, int stepNumber, boolean isLastItem) {
+        public void bind(final Class item, final OnStepClickListener listener, int stepNumber, boolean isLastItem) {
 
             // Define o número da etapa
             num.setText("Etapa " + stepNumber);
 
-            etapaDescricao.setText(item.getName());
+            // Usa item.getTitle() para o título, conforme o modelo Class
+            etapaDescricao.setText(item.getTitle());
             itemView.setOnClickListener(v -> listener.onStepClick(item));
         }
     }
 
 
-    private static class LessonStepDiffCallback extends DiffUtil.ItemCallback<Segment> {
+    private static class LessonStepDiffCallback extends DiffUtil.ItemCallback<Class> {
 
         // Verifica se é o mesmo card (ID)
         @Override
-        public boolean areItemsTheSame(@NonNull Segment oldItem, @NonNull Segment newItem) {
+        public boolean areItemsTheSame(@NonNull Class oldItem, @NonNull Class newItem) {
             return oldItem.getId() != null && oldItem.getId().equals(newItem.getId());
         }
 
         // Compara itens para ver o que precisa ser atualizado
         @Override
-        public boolean areContentsTheSame(@NonNull Segment oldItem, @NonNull Segment newItem) {
-            return oldItem.getName().equals(newItem.getName());
+        public boolean areContentsTheSame(@NonNull Class oldItem, @NonNull Class newItem) {
+            // Compara o Título
+            return oldItem.getTitle().equals(newItem.getTitle());
         }
     }
 }

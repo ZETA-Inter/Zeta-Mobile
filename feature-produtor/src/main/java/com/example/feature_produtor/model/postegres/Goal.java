@@ -1,22 +1,21 @@
 package com.example.feature_produtor.model.postegres;
 
-import com.google.gson.annotations.SerializedName;
-
-public class Program {
+public class Goal {
 
     private Integer id;
     private String name;
     private String description;
-    @SerializedName("segment")
 
-    private Segment segmentResponse;
-     private int progressPercentage;
+    private Program program;
+
+    private Company company;
 
 
-    public Program() {
+    public Goal() {
     }
 
-    // Getters e Setters
+    // --- Getters e Setters ---
+
     public Integer getId() {
         return id;
     }
@@ -41,21 +40,24 @@ public class Program {
         this.description = description;
     }
 
-
-
-    public Segment getSegment() {
-        return segmentResponse;
+    public Program getProgram() {
+        return program;
     }
 
-    public void setSegment(Segment segmentResponse) {
-        this.segmentResponse = segmentResponse;
+    public void setProgram(Program program) {
+        this.program = program;
     }
 
-    public int getProgressPercentage() {
-        return progressPercentage;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setProgressPercentage(int progressPercentage) {
-        this.progressPercentage = progressPercentage;
+    public void setCompany(Company company) {
+        this.company = company;
     }
+
+
+
+
+
 }

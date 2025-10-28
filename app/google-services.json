@@ -12,7 +12,20 @@
           "package_name": "com.example.zeta_mobile"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "34722684785-hms4u43r6qiuu005om5985iqfupq744e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zeta_mobile",
+            "certificate_hash": "99bd0e052326a3f6763bf335383f170ca7efaa22"
+          }
+        },
+        {
+          "client_id": "34722684785-oich3muj50j08kihesog67gifcmlfdks.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDER3L2i9BtB1iYu6A0pyygSv6KvuXxrG4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34722684785-oich3muj50j08kihesog67gifcmlfdks.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

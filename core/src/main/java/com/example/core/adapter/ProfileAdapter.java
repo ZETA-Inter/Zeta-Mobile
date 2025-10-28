@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-/**
- * Adapter totalmente genérico, sem dependência de layouts, modelos ou módulos externos.
- * A feature é responsável por fornecer o layout e como preencher a view.
- */
+
 public class ProfileAdapter<T> extends RecyclerView.Adapter<ProfileAdapter.GenericViewHolder> {
 
     public interface Binder<T> {
