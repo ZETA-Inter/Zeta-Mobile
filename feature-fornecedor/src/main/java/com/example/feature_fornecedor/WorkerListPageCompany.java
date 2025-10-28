@@ -27,6 +27,7 @@ import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,20 +88,42 @@ public class WorkerListPageCompany extends Fragment {
         listWorkers();
     }
 
+    @Nullable
+    private String resolveCompanyId(@NonNull Context c) {
+        SharedPreferences p = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        Map<String, ?> all = p.getAll();
+        Log.d("PREFS_DEBUG", "user_session keys=" + all.keySet());
+
+        // Tenta company_id (String ou Int)
+        if (p.contains("company_id")) {
+            Object v = all.get("company_id");
+            if (v != null) return String.valueOf(v).trim();
+        }
+        // Variações comuns
+        if (p.contains("companyId")) {
+            Object v = all.get("companyId");
+            if (v != null) return String.valueOf(v).trim();
+        }
+        // Alguns projetos usam user_id como company
+        if (p.contains("user_id")) {
+            Object v = all.get("user_id");
+            if (v != null && !String.valueOf(v).equals("-1")) return String.valueOf(v).trim();
+        }
+        return null;
+    }
+
+
     private void listWorkers() {
-        ListAPI listAPI = RetrofitClientPostgres
-                .getInstance(requireContext()) // versão que lê URL/token de resources
+        ListAPI listAPI = com.example.core.network.RetrofitClient
+                .getInstance(requireContext())
                 .create(ListAPI.class);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String companyId = resolveCompanyId(requireContext());
 
-        int company_id = prefs.getInt("user_id", -1);
-
-        if (company_id == -1) {
-            Toast.makeText(requireContext(), "Erro ao buscar dados da empresa", Toast.LENGTH_SHORT).show();
+        if (companyId == null || companyId.isEmpty()) {
+            Toast.makeText(requireContext(), "Erro ao buscar dados da empresa (company_id ausente).", Toast.LENGTH_SHORT).show();
             return;
         }
-        String companyId = String.valueOf(company_id);
 
         listAPI.getWorkersByCompany(companyId).enqueue(new Callback<List<Worker>>() {
             @Override public void onResponse(@NonNull Call<List<Worker>> call, @NonNull Response<List<Worker>> response) {

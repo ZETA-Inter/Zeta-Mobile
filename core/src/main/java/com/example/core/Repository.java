@@ -13,7 +13,7 @@ public class Repository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private DocumentReference ref(String uid) {
-        return db.collection("company").document(uid);
+        return db.collection("Fornecedor").document(uid);
     }
 
     // Cria/atualiza o doc da company a partir do usuário do Auth.

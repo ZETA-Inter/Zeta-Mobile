@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,14 +125,22 @@ public class Register extends Fragment {
                         }
                         navegarParaPlanos(tipo, nome, email, clickView);
                     } else {
-                        mostrarMensagem("Não foi possível salvar a empresa na API.");
+                        String details = null;
+                        try {
+                            details = resp.errorBody() != null ? resp.errorBody().string() : null;
+                        } catch (IOException ignored) {}
+                        Log.e("API_ERROR", "createCompany: HTTP " + resp.code() + " - " + resp.message()
+                                + (details != null ? (" | body: " + details) : ""));
+                        mostrarMensagem("Não foi possível salvar a empresa na API. (HTTP " + resp.code() + ")");
                     }
                 }
                 @Override public void onFailure(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
                                                 @NonNull Throwable t) {
+                    Log.e("API_FAILURE", "createCompany", t);
                     mostrarMensagem("Falha na API (empresa): " + t.getMessage());
                 }
             });
+
 
         } else {
             // --- Worker ---

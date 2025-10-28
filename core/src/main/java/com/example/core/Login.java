@@ -1,6 +1,7 @@
 package com.example.core;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,8 +16,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.core.adapter.AuthAdapter;
-import com.example.core.adapter.AuthAdapter.LoginListener; // Importa a interface LoginListener do Adapter
 import com.example.core.databinding.FragmentLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,15 +30,13 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class Login extends Fragment {
 
+    private static final int RC_GOOGLE = 9001;
+
     private FragmentLoginBinding binding;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final Repository repo = new Repository();
-    // Instanciamos o Adapter para ser usado nos listeners
-    private final AuthAdapter adapter = new AuthAdapter();
-    private static final int RC_GOOGLE = 9001;
     private GoogleSignInClient gsc;
-    private TipoUsuario tipoAtual;
-
+    private TipoUsuario tipoAtual; // se for COMPANY, company_id = uid; para WORKER, ajuste depois conforme sua lógica
 
     @Nullable
     @Override
@@ -65,55 +61,69 @@ public class Login extends Fragment {
 
         // --------------------- Definição do Tipo de Usuário ---------------------
 
+        // Recupera tipo de usuário
         Bundle bundle = getArguments();
-
         if (bundle != null) {
             tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
-        }
-        else if (tipoAtual == null) {
+        } else if (tipoAtual == null) {
             Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
         }
 
-        // --------------------- Login com Email e Senha (FLUXO ASSÍNCRONO CORRIGIDO) ---------------------
-
+        // ===== Login por e-mail/senha (direto com FirebaseAuth para encadear upsert + sessão)
         binding.btnEntrar.setOnClickListener(v -> {
-            String email = binding.tilEmail.getEditText().getText().toString().trim();
-            String senha = binding.tilSenha.getEditText().getText().toString().trim();
+            String email = binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
+            String senha = binding.tilSenha.getEditText() != null ? binding.tilSenha.getEditText().getText().toString().trim() : "";
 
-            if (validarCampos(email, senha)) {
-                // Chama o método login com o NOVO LoginListener (5 argumentos)
-                adapter.login(tipoAtual, email, senha, requireContext(), new LoginListener() {
-                    @Override
-                    public void onSuccess() {
-                        // Navegação APENAS após o sucesso de autenticação E o salvamento do ID na sessão
-                        String deeplink = tipoAtual == TipoUsuario.COMPANY ? "app://Company/Home" : "app://Worker/Home" ;
-                        Uri deepLinkUri = Uri.parse(deeplink);
-                        Navigation.findNavController(v).navigate(deepLinkUri);
-                    }
-
-                    @Override
-                    public void onFailure(String errorMsg) {
-                        // Exibe a mensagem de erro retornada pelo AuthAdapter
-                        mostrarMensagem(errorMsg);
-                    }
-                });
-            } else {
+            if (!validarCampos(email, senha)) {
                 mostrarMensagem("Corrija os campos em destaque.");
+                return;
             }
+
+            bloquearUI(true);
+            mAuth.signInWithEmailAndPassword(email, senha)
+                    .addOnSuccessListener(result -> {
+                        if (result.getUser() == null) {
+                            bloquearUI(false);
+                            mostrarMensagem("Falha ao autenticar usuário.");
+                            return;
+                        }
+                        // 1) upsert no Firestore (company/{uid})
+                        repo.upsertFromAuth(result.getUser(), null)
+                                .addOnSuccessListener(aVoid -> {
+                                    // 2) salvar sessão com company_id = uid (para COMPANY)
+                                    String uid = result.getUser().getUid();
+                                    salvarSessaoBasica(uid, result.getUser().getEmail(), result.getUser().getDisplayName());
+
+                                    // 3) navegar
+                                    navegarDepoisLogin(v);
+                                    bloquearUI(false);
+                                })
+                                .addOnFailureListener(e -> {
+                                    bloquearUI(false);
+                                    mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
+                                });
+                    })
+                    .addOnFailureListener(e -> {
+                        bloquearUI(false);
+                        mostrarMensagem("Erro ao realizar login: " + (e.getMessage() != null ? e.getMessage() : ""));
+                    });
         });
 
+        // Esqueci a senha
         binding.tvForgotPasswordCompany.setOnClickListener(this::navigateToForgotPassword);
 
+        // Google Sign-In
         if (binding.btnGoogle != null) {
             binding.btnGoogle.setOnClickListener(v -> startGoogleFlow());
         }
 
+        // Cadastro
         binding.tvCadastro.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.Register, bundle);
         });
     }
 
-    // ===== Google =====
+    // ===== Google Sign-In + FirebaseAuth =====
     private void startGoogleFlow() {
         Intent signInIntent = gsc.getSignInIntent();
         startActivityForResult(signInIntent, RC_GOOGLE);
@@ -127,33 +137,77 @@ public class Login extends Fragment {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount acc = task.getResult(ApiException.class);
-                AuthCredential cred = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
+                String idToken = acc != null ? acc.getIdToken() : null;
+                if (idToken == null) {
+                    error(binding.tilEmail, "ID Token nulo (verifique default_web_client_id, SHA e Play Services).");
+                    return;
+                }
+                bloquearUI(true);
+
+                AuthCredential cred = GoogleAuthProvider.getCredential(idToken, null);
                 mAuth.signInWithCredential(cred)
                         .addOnSuccessListener(r -> {
-                            // TODO: Implementar a busca do Worker/Company real e usar um LoginListener aqui também
-                            // O fluxo ideal é chamar um novo método no AuthAdapter: adapter.loginSocial(tipoAtual, r.getUser().getUid(), requireContext(), new LoginListener() {...});
+                            if (r.getUser() == null) {
+                                bloquearUI(false);
+                                mostrarMensagem("Falha ao obter usuário (Google).");
+                                return;
+                            }
+                            // 1) upsert no Firestore (company/{uid})
+                            repo.upsertFromAuth(r.getUser(), null)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // 2) salvar sessão com company_id = uid (para COMPANY)
+                                        String uid = r.getUser().getUid();
+                                        salvarSessaoBasica(uid, r.getUser().getEmail(), r.getUser().getDisplayName());
 
-                            // AQUI DEVE ENTRAR A CHAMADA AO ADAPTER COM O CALLBACK DE NAVEGAÇÃO
-                            Toast.makeText(requireContext(), "Login social com sucesso. Implemente a busca do perfil!", Toast.LENGTH_LONG).show();
+                                        // 3) navegar
+                                        navegarDepoisLogin(requireView());
+                                        bloquearUI(false);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        bloquearUI(false);
+                                        mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
+                                    });
                         })
-                        .addOnFailureListener(e -> error(binding.tilEmail, "Falha no Google Sign-In (verifique SHA-1/SHA-256 e default_web_client_id)"));
+                        .addOnFailureListener(e -> {
+                            bloquearUI(false);
+                            error(binding.tilEmail, "Falha no Google Sign-In: " + (e.getMessage() != null ? e.getMessage() : ""));
+                        });
+
             } catch (ApiException e) {
-                // Tratamento de erro ou cancelamento
+                mostrarMensagem("Login com Google cancelado ou falhou.");
             }
         }
     }
 
-    // Adicione este método ao final da sua classe Login
+    // ===== Helpers: sessão + navegação =====
+
+    /** Salva sessão básica e garante company_id = uid (coerente com Repository que escreve em 'company/{uid}'). */
+    private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("company_id", uid)                   // <== chave que a sua tela de lista usa
+                .putString("email", email != null ? email : "")
+                .putString("name", nome != null ? nome : "")
+                .putString("tipo_usuario", tipoAtual != null ? tipoAtual.name() : "")
+                .apply();
+    }
+
+    /** Decide deeplink por tipo e navega. */
+    private void navegarDepoisLogin(@NonNull View navView) {
+        String deeplink = (tipoAtual == TipoUsuario.WORKER) ? "app://Worker/Home" : "app://Company/Home";
+        Uri deepLinkUri = Uri.parse(deeplink);
+        Navigation.findNavController(navView).navigate(deepLinkUri);
+    }
+
+    // ===== Validação e UI =====
     private boolean validarCampos(String email, String senha) {
         boolean ok = true;
-        clearErrors(); // Limpa erros anteriores
+        clearErrors();
 
         if (TextUtils.isEmpty(email)) {
             error(binding.tilEmail, "Informe seu e-mail");
             ok = false;
-        }
-        // Assumindo que você tem a classe Validators acessível
-        else if (!Validators.isValidEmail(email)) {
+        } else if (!Validators.isValidEmail(email)) {
             error(binding.tilEmail, "E-mail inválido");
             ok = false;
         }
@@ -162,17 +216,11 @@ public class Login extends Fragment {
             error(binding.tilSenha, "Informe sua senha");
             ok = false;
         }
-
         return ok;
     }
 
-    // ===== Navegação e Utils UI =====
     private void navigateToForgotPassword(View v) {
         Navigation.findNavController(v).navigate(R.id.ForgetPassword);
-    }
-
-    private String get(TextInputEditText e) {
-        return e.getText() == null ? "" : e.getText().toString().trim();
     }
 
     private void clearErrors() {
@@ -204,12 +252,11 @@ public class Login extends Fragment {
         if (binding.tvFormMsg != null) binding.tvFormMsg.setVisibility(View.GONE);
     }
 
-    private String mapAuthLoginError(Exception e) {
-        String m = e.getMessage() == null ? "" : e.getMessage();
-        if (m.contains("no user record")) return "Usuário não encontrado";
-        if (m.contains("password is invalid")) return "Senha inválida";
-        if (m.contains("INVALID_EMAIL")) return "E-mail inválido";
-        return "Falha no login";
+    private void bloquearUI(boolean busy) {
+        if (binding == null) return;
+        if (binding.btnEntrar != null) binding.btnEntrar.setEnabled(!busy);
+        if (binding.btnGoogle != null) binding.btnGoogle.setEnabled(!busy);
+        // se tiver progress bar, exiba/oculte aqui
     }
 
     @Override

@@ -13,6 +13,8 @@ import com.example.core.dto.response.UserResponse;
 import com.example.core.network.RetrofitClientPostgres;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -28,15 +30,7 @@ public class AuthAdapter {
         void onError(String message);
     }
 
-
-    public interface LoginListener {
-        void onSuccess();
-        void onFailure(String errorMsg);
-    }
-
-    private Retrofit retrofit;
-
-
+    // 1. O método 'cadastrar' agora espera que a validação de CPF/CNPJ tenha sido feita no Fragment
     public void cadastrar(String email, String senha, TipoUsuario tipo,
                           Map<String, Object> dadosUsuario, Context ctx,
                           Listener listener) {
@@ -148,6 +142,16 @@ public class AuthAdapter {
                 if (resp.isSuccessful() && resp.body() != null) {
                     UserResponse user = resp.body();
 
+                    // === NOVO: resolver company_id como String e salvar ===
+                    String companyIdStr = resolveCompanyIdString(user, tipoUsuario);
+                    if (companyIdStr != null && !companyIdStr.trim().isEmpty()) {
+                        persistCompanyId(c, companyIdStr.trim());
+                        Log.d("AuthAdapter", "company_id persistido: " + companyIdStr.trim());
+                    } else {
+                        Log.w("AuthAdapter", "company_id não encontrado no UserResponse (tipo=" + tipoUsuario + ").");
+                    }
+
+                    // Mantém os demais dados já salvos (compat com código existente)
                     SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
                     prefs.edit()
                             .putInt("user_id", user.getId())
@@ -171,5 +175,57 @@ public class AuthAdapter {
                 listener.onFailure("Falha de rede: " + t.getMessage()); // Notifica falha
             }
         });
+    }
+
+    // ======= Helpers novos (mínimos) =======
+
+    /** Salva company_id como String no SharedPreferences "user_session" (padrão esperado). */
+    private void persistCompanyId(@NonNull Context c, @NonNull String companyId) {
+        SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        prefs.edit()
+                .putString("company_id", companyId)
+                .apply();
+    }
+
+    /**
+     * Resolve o company_id como String a partir do UserResponse:
+     * - COMPANY: usa user.getId()
+     * - WORKER: tenta método getCompanyId() via reflexão (se existir no DTO).
+     *   * Não quebra o build caso o DTO não tenha esse método.
+     */
+    private String resolveCompanyIdString(@NonNull UserResponse user, @NonNull TipoUsuario tipo) {
+        if (tipo == TipoUsuario.COMPANY) {
+            // Para empresa, o próprio id do usuário/empresa costuma ser o company_id
+            return String.valueOf(user.getId());
+        } else {
+            // Para worker, tentamos obter companyId do DTO (sem exigir no compile)
+            Integer companyId = tryGetCompanyIdByReflection(user);
+            return (companyId != null) ? String.valueOf(companyId) : null;
+        }
+    }
+
+    /**
+     * Tenta invocar user.getCompanyId() por reflexão (se existir).
+     * Retorna null se não existir ou se falhar.
+     */
+    private Integer tryGetCompanyIdByReflection(@NonNull UserResponse user) {
+        try {
+            Method m = user.getClass().getMethod("getCompanyId");
+            Object v = m.invoke(user);
+            if (v == null) return null;
+            if (v instanceof Integer) return (Integer) v;
+            // caso venha como Long/String
+            if (v instanceof Long) return ((Long) v).intValue();
+            if (v instanceof String) {
+                try { return Integer.parseInt((String) v); } catch (NumberFormatException ignored) {}
+            }
+            return null;
+        } catch (NoSuchMethodException nsme) {
+            Log.w("AuthAdapter", "UserResponse não possui getCompanyId().");
+            return null;
+        } catch (Exception e) {
+            Log.w("AuthAdapter", "Falha ao obter companyId via reflexão: " + e.getMessage());
+            return null;
+        }
     }
 }
