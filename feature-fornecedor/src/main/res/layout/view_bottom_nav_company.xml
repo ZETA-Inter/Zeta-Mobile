@@ -27,7 +27,7 @@
             android:focusable="true">
 
             <ImageView
-                android:id="@+id/btnAwards"
+                android:id="@+id/btnLessons"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
@@ -61,7 +61,7 @@
             android:focusable="true">
 
             <ImageView
-                android:id="@+id/btnTeam"
+                android:id="@+id/btnGoals"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"

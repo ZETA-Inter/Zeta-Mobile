@@ -49,12 +49,17 @@ public class Login extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Google Sign-In + FirebaseAuth SEM hardcode (usa resource gerado pelo google-services)
-        //GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            //    .requestIdToken(getString(R.string.default_web_client_id))
-            //    .requestEmail()
-             //   .build();
-        //gsc = GoogleSignIn.getClient(requireActivity(), gso);
+        // O AuthAdapter já está instanciado como campo de classe (this.adapter), podemos remover esta linha.
+        // AuthAdapter adapter = new AuthAdapter();
+
+        // Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                // .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        gsc = GoogleSignIn.getClient(requireActivity(), gso);
+
+        // --------------------- Definição do Tipo de Usuário ---------------------
 
         // Recupera tipo de usuário
         Bundle bundle = getArguments();

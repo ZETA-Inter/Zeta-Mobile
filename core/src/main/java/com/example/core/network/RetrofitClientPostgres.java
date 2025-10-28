@@ -18,17 +18,18 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public final class RetrofitClient {
+public final class RetrofitClientPostgres {
 
     private static volatile Retrofit retrofit;
     private static volatile ApiPostgresClient api;
 
-    private RetrofitClient() {}
+
+    private RetrofitClientPostgres() {}
 
     @NonNull
     public static ApiPostgresClient getApiService(@NonNull Context context) {
         if (api == null) {
-            synchronized (RetrofitClient.class) {
+            synchronized (RetrofitClientPostgres.class) {
                 if (api == null) {
                     api = getInstance(context).create(ApiPostgresClient.class);
                 }
@@ -40,7 +41,7 @@ public final class RetrofitClient {
     @NonNull
     public static Retrofit getInstance(@NonNull Context context) {
         if (retrofit == null) {
-            synchronized (RetrofitClient.class) {
+            synchronized (RetrofitClientPostgres.class) {
                 if (retrofit == null) {
                     String baseUrl = ensureSlash(context.getString(R.string.core_api_base_url));
                     final String tokenPref = context.getString(R.string.core_api_token);
@@ -62,8 +63,8 @@ public final class RetrofitClient {
                                     Log.d("Retrofit", "Headers enviados: " + request.headers());
                                     return chain.proceed(request);                                }
                             })
-                            .connectTimeout(30, TimeUnit.SECONDS)
-                            .readTimeout(30, TimeUnit.SECONDS)
+                            .connectTimeout(60, TimeUnit.SECONDS)
+                            .readTimeout(60, TimeUnit.SECONDS)
                             .retryOnConnectionFailure(true)
                             .build();
 
@@ -87,7 +88,7 @@ public final class RetrofitClient {
     }
 
     public static void invalidate() {
-        synchronized (RetrofitClient.class) {
+        synchronized (RetrofitClientPostgres.class) {
             retrofit = null;
             api = null;
         }

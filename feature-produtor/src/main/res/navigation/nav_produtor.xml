@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_produtor"
     app:startDestination="@id/HomePageWorker">
 
@@ -26,15 +27,13 @@
         <deepLink
             android:id="@+id/LessonsWorkerDeepLink"
             app:uri="app://Worker/Lessons" />
+
+        <argument
+            android:name="contentType"
+            app:argType="string"
+            android:defaultValue="all" />
     </fragment>
 
-    <fragment
-        android:id="@+id/ModulePageWorker"
-        android:name="com.example.feature_produtor.ModulePageWorker">
-        <deepLink
-            android:id="@+id/ModulePageWorkerDeepLink"
-            app:uri="app://Worker/Module" />
-    </fragment>
 
     <fragment
         android:id="@+id/SummarizeCourseWorker"
@@ -66,14 +65,46 @@
         <deepLink
             android:id="@+id/ContentLessonWorkerDeepLink"
             app:uri="app://Worker/ContentLesson" />
+
+        <argument
+            android:name="classId"
+            android:defaultValue="default_id" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/Profileworker"
+        android:name="com.example.feature_produtor.Profileworker">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatBotPageWorker"
+        android:name="com.example.feature_produtor.ChatBotPageWorker">
+    </fragment>
+
+    <fragment
+        android:id="@+id/EditProfile"
+        android:name="com.example.feature_produtor.EditProfile">
     </fragment>
 
     <fragment
         android:id="@+id/ActivityLessonWorker"
         android:name="com.example.feature_produtor.ActivityLessonWorker">
-        <deepLink
-            android:id="@+id/ActivityLessonWorkerDeepLink"
-            app:uri="app://Worker/ActivityLesson" />
     </fragment>
+
+    <fragment
+        android:id="@+id/FlashCardStudy"
+        android:name="com.example.feature_produtor.FlashCardStudy">
+    </fragment>
+
+
+
+    <dialog
+        android:id="@+id/CardNotificacao" android:name="com.example.feature_produtor.CardNotificacao"
+        tools:layout="@layout/fragment_card_notificacao"/>
+
+
+
 
 </navigation>
