@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,6 +60,8 @@ public class HomePageCompany extends Fragment {
 
             // marca a aba atual SEM navegar (apenas muda o ícone para preenchido)
             bottom.setActive(CompanyBottomNavView.Item.HOME, false);
+
+
         }
         return v;
     }
@@ -66,6 +69,16 @@ public class HomePageCompany extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Ícone de perfil
+        ImageView imgProfile = view.findViewById(R.id.imgProfile);
+
+        imgProfile.setOnClickListener(v -> {
+            // Navega diretamente para o destino do grafo de navegação do core
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(com.example.core.R.id.Profile);
+        });
+
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
