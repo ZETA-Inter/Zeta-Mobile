@@ -4,19 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class WorkerResponse extends UserResponse {
 
-    @SerializedName("id")
-    private int id;
-
-    @SerializedName("name")
-    private String name;
-
-    @SerializedName("email")
-    private String email;
-
-    @SerializedName("planName")
+    @SerializedName("plan_name")
     private String planName;
 
-    @SerializedName("companyName")
+    @SerializedName("company_name")
     private String companyName;
 
     @SerializedName("image_url")
@@ -37,19 +28,6 @@ public class WorkerResponse extends UserResponse {
         this.companyName = companyName;
     }
 
-    //GETTERS
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
 
     public String getPlanName() {
         return planName;
@@ -63,20 +41,6 @@ public class WorkerResponse extends UserResponse {
         return imageUrl;
     }
 
-
-    //SETTERS
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public void setPlanName(String planName) {
         this.planName = planName;
