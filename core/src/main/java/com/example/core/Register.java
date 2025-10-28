@@ -147,7 +147,7 @@ public class Register extends Fragment {
             com.example.core.dto.request.WorkerRequest req =
                     new com.example.core.dto.request.WorkerRequest();
             req.setName(nome);
-            req.setEmail(email);
+            req.setEmail(email);    
             req.setCpf(documento);
 
             api.createWorker(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.WorkerResponse>() {

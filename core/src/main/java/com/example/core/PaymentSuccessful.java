@@ -58,10 +58,11 @@ public class PaymentSuccessful extends Fragment {
 
         String nome = bundle.getString("Nome");
         String email = bundle.getString("Email");
+        String cpf = bundle.getString("CPF");
         Integer planId = bundle.getInt("plan_id");
         String duration = bundle.getString("duration");
         Double amount = bundle.getDouble("amount");
-        createUser(nome, email, planId, duration, amount);
+        createUser(nome, email, cpf, planId, duration, amount);
 
         // espera ~3s e vai para a Home da empresa
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -73,7 +74,7 @@ public class PaymentSuccessful extends Fragment {
         return root;
     }
 
-    public void createUser(String nome, String email, Integer planId, String duration, Double amount) {
+    public void createUser(String nome, String email, String cpf, Integer planId, String duration, Double amount) {
         //Definir a URL
         String url = "https://api-postgresql-zeta-fide.onrender.com";
 
@@ -97,7 +98,7 @@ public class PaymentSuccessful extends Fragment {
 
         // Chamar o método da API
         if (tipoAtual == TipoUsuario.WORKER) {
-            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest(nome, email, planInfo, null));
+            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest(nome, cpf, email, planInfo, null));
             call.enqueue(new Callback<WorkerResponse>() {
                 @Override
                 public void onResponse(Call<WorkerResponse> call, Response<WorkerResponse> response) {
