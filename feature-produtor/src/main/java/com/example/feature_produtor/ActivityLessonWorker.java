@@ -24,6 +24,7 @@ import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,8 +40,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
 
     private ApiMongo apiMongo;
     private int classId = -1;
-    private Activity currentActivity;
-
     private List<Question> allQuestions;
     private int currentQuestionIndex = 0;
 
@@ -63,18 +62,15 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_lesson_worker, container, false);
 
-        // 1. Inicializa UI
         btComeback = view.findViewById(R.id.btComeback2);
         tvAtividade = view.findViewById(R.id.tvAtividade);
         txtPergunta = view.findViewById(R.id.txtPergunta);
         recyclerAnswers = view.findViewById(R.id.recycler_answers);
         btContinuar = view.findViewById(R.id.btContinuar2);
 
-        // 2. Inicializa e configura o Adapter
         answerAdapter = new AnswerAdapter(this);
         recyclerAnswers.setAdapter(answerAdapter);
 
-        // 3. Configura Listeners
         setupClickListeners(view);
 
         // 4. Carrega Conteúdo
@@ -118,10 +114,14 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             public void onResponse(@NonNull Call<List<Activity>> call, @NonNull Response<List<Activity>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Activity> activities = response.body();
-                    currentActivity = activities.get(0);
-                    allQuestions = currentActivity.getQuestions();
 
-                    if (allQuestions != null && !allQuestions.isEmpty()) {
+                    // junta todas as questions dentro da activity 0
+                    allQuestions = activities.stream()
+                            .flatMap(activity -> activity.getQuestions().stream())
+                            .collect(Collectors.toList());
+
+
+                    if (!allQuestions.isEmpty()) {
                         currentQuestionIndex = 0;
                         // O botão é habilitado no displayCurrentQuestion() ou onAnswerSelected()
                         displayCurrentQuestion();
@@ -148,14 +148,11 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
 
         Question question = allQuestions.get(currentQuestionIndex);
 
-        // 1. Resetar o estado da tela para a nova pergunta
         resetQuestionState();
 
-        // 2. Atualiza os textos da UI
         tvAtividade.setText("Pergunta " + (currentQuestionIndex + 1) + " de " + allQuestions.size());
-        txtPergunta.setText(question.getQuestion()); // Restaura o texto original da pergunta
+        txtPergunta.setText(question.getQuestion());
 
-        // 3. Atualiza o RecyclerView com as alternativas
         if (question.getAnswers() != null) {
             answerAdapter.submitList(question.getAnswers());
         } else {
@@ -163,7 +160,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             txtPergunta.setText(txtPergunta.getText() + "\n(Sem alternativas disponíveis)");
         }
 
-        // 4. Atualiza o texto do botão
         boolean isLastQuestion = currentQuestionIndex == allQuestions.size() - 1;
         btContinuar.setText(isLastQuestion ? "Finalizar Atividade" : "Próxima Pergunta");
     }
@@ -175,13 +171,10 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             answerAdapter.setSelectedPosition(RecyclerView.NO_POSITION);
         }
 
-        // NOVO: Desabilita o botão ao carregar uma nova pergunta
         if (btContinuar != null) {
             btContinuar.setEnabled(false);
         }
     }
-
-    // --- Lógica de Clique e Navegação (Refatorada) ---
 
     private void setupClickListeners(View view) {
         btComeback.setOnClickListener(v -> {
@@ -189,36 +182,25 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         });
 
         btContinuar.setOnClickListener(v -> {
-            // A verificação 'selectedAnswer == null' é tecnicamente redundante
-            // se o botão for desabilitado corretamente, mas é bom manter por segurança.
             if (selectedAnswer == null) {
                 return;
             }
 
-            Question currentQuestion = allQuestions.get(currentQuestionIndex); // Pega a pergunta atual para feedback
+            Question currentQuestion = allQuestions.get(currentQuestionIndex);
 
-            // 2. Lógica de verificação da resposta
             if (selectedAnswer.isCorrect()) {
-                // Resposta correta: avança ou finaliza
-
                 if (currentQuestionIndex < allQuestions.size() - 1) {
-                    // AVANÇA PARA A PRÓXIMA PERGUNTA
                     currentQuestionIndex++;
                     displayCurrentQuestion();
                 } else {
-                    // FINALIZA A ATIVIDADE: Navega para HomePageWorker
                     if (getView() != null) {
                         Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
                     }
                 }
 
             } else {
-                // Resposta incorreta: não avança, limpa a seleção E dá feedback.
-
-                // NOVO: Feedback visual de erro (sem Toast)
                 txtPergunta.setText(" Resposta Incorreta. Tente novamente: " + currentQuestion.getQuestion());
 
-                // Limpa a seleção para que o usuário possa escolher outra
                 resetQuestionState();
             }
         });
