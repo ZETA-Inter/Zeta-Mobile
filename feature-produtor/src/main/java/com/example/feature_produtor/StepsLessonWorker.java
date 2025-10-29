@@ -55,7 +55,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
     private Button começar;
     private StepsLessonAdapter stepsLessonAdapter;
 
-    private TextView descricao; // ID do seu TextView
+    private TextView descricao;
 
     private final List<Class> allLessons = new ArrayList<>();
 
@@ -92,21 +92,16 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         notificacao = view.findViewById(R.id.icon_notifi);
         recyclerEtapas = view.findViewById(R.id.recycler_etapas);
         começar = view.findViewById(R.id.btComeçar);
-        descricao = view.findViewById(R.id.descricao); // Mapeando o TextView
+        descricao = view.findViewById(R.id.descricao);
 
-        // 2. Iniciando o adapter
-        stepsLessonAdapter = new StepsLessonAdapter(this, requireContext()); // Usando requireContext()
+        stepsLessonAdapter = new StepsLessonAdapter(this, requireContext());
 
-        // 3. Configurando RecyclerView
         recyclerEtapas.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL, false)); // Usando requireContext()
         recyclerEtapas.setAdapter(stepsLessonAdapter);
 
-        // 4. Chamada para a API (Busca Etapas Específicas)
         if (programId != null) {
-            // Nova Chamada: Busca a descrição
             fetchProgramDetails(programId);
 
-            // Chamada original: Busca as aulas
             fetchClassesByProgramId(programId);
         }
 
@@ -116,9 +111,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         return view;
     }
 
-    /**
-     * Busca os detalhes do Programa (incluindo a descrição) e atualiza o TextView.
-     */
     private void fetchProgramDetails(Integer id) {
         ApiPostgres apiPostgres = RetrofitClientPostgres // <-- Usando o cliente Postgres
                 .getInstance(requireContext())
@@ -168,37 +160,30 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                 .create(ApiMongo.class);
 
 
-            Log.d(TAG, "Tentando buscar classes para programId: " + id); // <-- ADICIONE ISSO
+            Log.d(TAG, "Tentando buscar classes para programId: " + id);
             Call<List<Class>> call = apiMongo.getClassByProgramId(id);
 
             call.enqueue(new Callback<List<Class>>() {
                 @Override
                 public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
-                    // ...
                     if (response.isSuccessful() && response.body() != null) {
                         List<Class> classesByProgram = response.body();
-                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + classesByProgram.size()); // <-- ADICIONE ISSO
+                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + classesByProgram.size());
 
-                        // ...
+                        stepsLessonAdapter.submitList(classesByProgram);
                     } else {
                         Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
-                        // ...
                     }
                 }
 
             @Override
             public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
-                if (!isAdded()) return; // <-- Segurança
-
+                if (!isAdded()) return;
                 Log.e(TAG, "Erro de conexão ao buscar Classes: " + t.getMessage(), t);
-                if (isAdded()) {
-                    Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
-
-    // ... (Métodos setupClickListeners, setupSearchListener, filterLessons, onStepClick permanecem iguais)
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -221,7 +206,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
 
         config.setOnClickListener(v -> {
-            // Toast seguro não é necessário aqui
             Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();
         });
 
@@ -237,7 +221,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         });
 
         notificacao.setOnClickListener(v -> {
-            // Toast seguro não é necessário aqui
             Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
         });
     }

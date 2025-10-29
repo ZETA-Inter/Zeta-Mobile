@@ -58,16 +58,13 @@ public class ContentLessonWorker extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_content_lesson_worker, container, false);
 
-        // 1. Inicializa UI
         btComeback = view.findViewById(R.id.btComeback);
         lessonTitleTextView = view.findViewById(R.id.titulocontent);
         conteudo = view.findViewById(R.id.tvConteudo);
         btContinuar = view.findViewById(R.id.btComeçar);
 
-        // 2. Configura Listeners
         setupClickListeners();
 
-        // 3. Carrega Conteúdo se o ID for válido
         if (currentStepId != -1 && apiMongo != null) {
             fetchLessonContent(currentStepId);
         } else {
@@ -152,11 +149,9 @@ public class ContentLessonWorker extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     currentLesson = response.body();
 
-                    // 1. Atualiza o Título
                     lessonTitleTextView.setText(
                             currentLesson.getTitle() != null ? currentLesson.getTitle() : "Título não disponível");
 
-                    // 2. Inicializa e exibe a primeira página
                     initializeContentPages(currentLesson.getContent(), currentLesson.getDescription());
 
                 } else {
@@ -177,7 +172,6 @@ public class ContentLessonWorker extends Fragment {
     private void initializeContentPages(List<String> rawContentList, String descriptionFallback) {
         contentPages = new ArrayList<>();
 
-        // Prioriza a lista de conteúdo
         if (rawContentList != null) {
             for (String text : rawContentList) {
                 if (text != null && !text.trim().isEmpty()) {
@@ -186,7 +180,6 @@ public class ContentLessonWorker extends Fragment {
             }
         }
 
-        // Se a lista de conteúdo estiver vazia, usa a descrição como única página
         if (contentPages.isEmpty() && descriptionFallback != null && !descriptionFallback.isEmpty()) {
             contentPages.add(descriptionFallback);
         }

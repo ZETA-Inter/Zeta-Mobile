@@ -1,5 +1,6 @@
 package com.example.feature_produtor;
 
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,13 +111,14 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
 
 
     private void fetchActivityByClassId(int id) {
-        Call<Activity> call = apiMongo.getActivityByClassId(id);
+        Call<List<Activity>> call = apiMongo.getActivityByClassId(id);
 
-        call.enqueue(new Callback<Activity>() {
+        call.enqueue(new Callback<List<Activity>>() {
             @Override
-            public void onResponse(@NonNull Call<Activity> call, @NonNull Response<Activity> response) {
+            public void onResponse(@NonNull Call<List<Activity>> call, @NonNull Response<List<Activity>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    currentActivity = response.body();
+                    List<Activity> activities = response.body();
+                    currentActivity = activities.get(0);
                     allQuestions = currentActivity.getQuestions();
 
                     if (allQuestions != null && !allQuestions.isEmpty()) {
@@ -134,7 +136,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             }
 
             @Override
-            public void onFailure(@NonNull Call<Activity> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<Activity>> call, @NonNull Throwable t) {
                 btContinuar.setEnabled(false);
             }
         });

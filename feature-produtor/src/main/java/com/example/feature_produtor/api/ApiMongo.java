@@ -13,11 +13,6 @@ import java.util.List;
 
 public interface ApiMongo {
 
-    // lista todas as classes
-    @GET("/api/classes/list_all_class")
-    Call<List<Class>> getAllClasses();
-
-
     @GET("/api/classes/list-all-class-by-program-id/{programId}")
     Call<List<Class>> getClassByProgramId(@Path("programId") Integer programId);
 
@@ -25,7 +20,7 @@ public interface ApiMongo {
     @GET("/api/classes/find-class-by-id/{id}")
     Call<Class> getClassById(@Path("id") Integer id);
 
-    @GET("api/activities/list_all_activities_by_class_id/{classId}")
-    Call<Activity> getActivityByClassId(@Path("classId") int id);
+    @GET("api/activities/list-all-activities-by-class-id/{classId}")
+    Call<List<Activity>> getActivityByClassId(@Path("classId") int id);
 }
 
