@@ -1,11 +1,13 @@
 package com.example.zeta_mobile;
 
-
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,43 +15,57 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Conecta ao layout que contém o NavHostFragment
+        setContentView(R.layout.activity_main);
 
-        // Encontra o NavController a partir do NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+        if (navHostFragment == null) {
+            Log.e("MainActivity", "NavHostFragment não encontrado no layout!");
+            return;
+        }
 
         NavController navController = navHostFragment.getNavController();
 
-        // Lógica de verificação do usuário (ex: SharedPreferences ou Firebase)
         boolean isUserLoggedIn = checkIfUserIsLoggedIn();
 
         if (isUserLoggedIn) {
-            // Se o usuário estiver logado, navegue para o perfil correto
             String userType = getUserType();
+            Log.d("Main", "Tipo de Usuário: " + userType);
+
             Uri deepLink;
-            if ("produtor".equals(userType)) {
+            if ("WORKER".equalsIgnoreCase(userType)) {
                 deepLink = Uri.parse("app://Worker/Home");
-            } else {
+            } else if ("COMPANY".equalsIgnoreCase(userType)) {
                 deepLink = Uri.parse("app://Company/Home");
+            } else {
+                // Tipo não reconhecido → volta pro login
+                Log.w("MainActivity", "Tipo de usuário desconhecido. Redirecionando para login...");
+                return;
             }
-            navController.navigate(deepLink);
+
+            try {
+                navController.navigate(deepLink);
+            } catch (Exception e) {
+                Log.e("MainActivity", "Falha ao navegar: " + e.getMessage(), e);
+            }
+
         } else {
-            // Se não estiver logado, o Navigation Component irá para o startDestination padrão do seu nav_main.xml.
-            // Que, no seu caso, aponta para o LoginFragment no módulo :core.
+            Log.d("MainActivity", "Usuário não logado. Indo para LoginFragment padrão...");
         }
     }
 
-    // Método de exemplo para verificar o login
     private boolean checkIfUserIsLoggedIn() {
-        // Implemente sua lógica de verificação de sessão aqui.
-        // Por exemplo, checar um token em SharedPreferences ou Firebase Auth.
-        return false;
+        SharedPreferences prefs = getSharedPreferences("user_session", Context.MODE_PRIVATE);
+
+        boolean hasUserId = prefs.contains("user_id") || prefs.contains("company_id");
+        String userType = prefs.getString("tipo_usuario", "");
+
+        return hasUserId && !userType.isEmpty();
     }
 
-    // Método de exemplo para obter o tipo de usuário
     private String getUserType() {
-        // Implemente sua lógica para saber se o usuário é "produtor" ou "fornecedor"
-        return "produtor";
+        SharedPreferences prefs = getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        return prefs.getString("tipo_usuario", "");
     }
+
 }
