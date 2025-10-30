@@ -23,7 +23,6 @@ public final class RetrofitClientPostgres {
     private static volatile Retrofit retrofit;
     private static volatile ApiPostgresClient api;
 
-
     private RetrofitClientPostgres() {}
 
     @NonNull

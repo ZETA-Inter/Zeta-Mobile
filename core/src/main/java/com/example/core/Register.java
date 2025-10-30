@@ -1,5 +1,7 @@
 package com.example.core;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -22,16 +24,24 @@ import androidx.navigation.Navigation;
 
 import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentRegisterBinding;
+import com.example.core.dto.request.CompanyRequest;
+import com.example.core.dto.request.WorkerRequest;
+import com.example.core.dto.response.CompanyResponse;
+import com.example.core.dto.response.WorkerResponse;
 import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-// OBS: Assumindo que você tem a classe Validators e R.color.error_red acessíveis.
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class Register extends Fragment {
 
@@ -81,101 +91,94 @@ public class Register extends Fragment {
             dadosUsuario.put("Nome", nome);
             dadosUsuario.put("Email", email);
             dadosUsuario.put("Telefone", telefone);
+            dadosUsuario.put("Senha", senha);
             dadosUsuario.put(campoDocumento, documento);
 
-            AuthAdapter adapter = new AuthAdapter();
-
-            adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext(),
-                    new AuthAdapter.Listener() {
-                        @Override public void onSuccess(String uid) {
-                            salvarNoBackend(nome, email, documento, tipoAtual, v);
-                        }
-                        @Override public void onError(String message) {
-                            mostrarMensagem(message != null ? message : "Falha no cadastro");
-                        }
-                    });
+            // chamar tela de plano, passando o bundle
+            navegarParaPlanos(dadosUsuario, tipoAtual, nome, email, v);
         });
         return root;
     }
 
-    private void salvarNoBackend(String nome, String email, String documento,
-                                 TipoUsuario tipo, View clickView) {
+    public void salvarNoBackend(Object request) {
         // pegue o serviço central (use a variante do seu RetrofitClient: com ou sem Context)
         com.example.core.client.ApiPostgresClient api =
                 RetrofitClientPostgres.getApiService(requireContext()); // ou getInstance(requireContext()).create(...)
 
-        if (tipo == TipoUsuario.COMPANY) {
-            // --- Company ---
-            com.example.core.dto.request.CompanyRequest req =
-                    new com.example.core.dto.request.CompanyRequest();
-            req.setName(nome);
-            req.setEmail(email);
+        // Chamar o método da API
+        if (tipoAtual == TipoUsuario.WORKER) {
+            Call<WorkerResponse> call = api.createWorker((WorkerRequest) request);
+            call.enqueue(new Callback<WorkerResponse>() {
+                @Override
+                public void onResponse(Call<WorkerResponse> call, Response<WorkerResponse> response) {
+                    if (response.isSuccessful()) {
+                        WorkerResponse worker = response.body();
 
-            api.createCompany(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.CompanyResponse>() {
-                @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
-                                                 @NonNull retrofit2.Response<com.example.core.dto.response.CompanyResponse> resp) {
-                    if (resp.isSuccessful() && resp.body() != null) {
-                        Integer companyId = resp.body().getId();
-                        if (companyId != null) {
-                            requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
-                                    .edit()
-                                    .putInt("company_id", companyId)
-                                    .apply();
-                        }
-                        navegarParaPlanos(tipo, nome, email, clickView);
-                    } else {
-                        String details = null;
                         try {
-                            details = resp.errorBody() != null ? resp.errorBody().string() : null;
-                        } catch (IOException ignored) {}
-                        Log.e("API_ERROR", "createCompany: HTTP " + resp.code() + " - " + resp.message()
-                                + (details != null ? (" | body: " + details) : ""));
-                        mostrarMensagem("Não foi possível salvar a empresa na API. (HTTP " + resp.code() + ")");
+                            // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
+                            SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt("user_id", worker.getId());
+                            editor.putString("name", worker.getName());
+                            editor.putString("email", worker.getEmail());
+                            editor.putString("tipo_usuario", tipoAtual.name());
+                            editor.apply();
+
+                        } catch (Exception ex) {
+                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
+                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
+                        Log.d("SESSION", "Usuário salvo: " + worker.getName() + " (ID: " + worker.getId() + ")");
                     }
                 }
-                @Override public void onFailure(@NonNull retrofit2.Call<com.example.core.dto.response.CompanyResponse> call,
-                                                @NonNull Throwable t) {
-                    Log.e("API_FAILURE", "createCompany", t);
-                    mostrarMensagem("Falha na API (empresa): " + t.getMessage());
+
+                @Override
+                public void onFailure(Call<WorkerResponse> call, Throwable throwable) {
+                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
                 }
             });
 
-
         } else {
-            // --- Worker ---
-            com.example.core.dto.request.WorkerRequest req =
-                    new com.example.core.dto.request.WorkerRequest();
-            req.setName(nome);
-            req.setEmail(email);    
-            req.setCpf(documento);
-            req.setCompanyId(null);
+            Call<CompanyResponse> call = api.createCompany((CompanyRequest) request);
+            call.enqueue(new Callback<CompanyResponse>() {
+                @Override
+                public void onResponse(Call<CompanyResponse> call, Response<CompanyResponse> response) {
+                    if (response.isSuccessful()) {
+                        CompanyResponse company = response.body();
 
-            api.createWorker(req).enqueue(new retrofit2.Callback<com.example.core.dto.response.WorkerResponse>() {
-                @Override public void onResponse(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
-                                                 @NonNull retrofit2.Response<com.example.core.dto.response.WorkerResponse> resp) {
-                    if (resp.isSuccessful() && resp.body() != null) {
-                        Integer workerId = resp.body().getId();
-                        if (workerId != null) {
-                            requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
-                                    .edit()
-                                    .putString("user_id", String.valueOf(workerId))
-                                    .apply();
+                        try {
+                            // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
+                            SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt("user_id", company.getId());
+                            editor.putString("name", company.getName());
+                            editor.putString("email", company.getEmail());
+                            editor.putString("tipo_usuario", tipoAtual.name());
+                            editor.apply();
+
+                        } catch (Exception ex) {
+                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
+                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
                         }
-                        navegarParaPlanos(tipo, nome, email, clickView);
-                    } else {
-                        mostrarMensagem("Não foi possível salvar o produtor na API.");
+
+                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
+                        Log.d("SESSION", "Usuário salvo: " + company.getName() + " (ID: " + company.getId() + ")");
                     }
                 }
-                @Override public void onFailure(@NonNull retrofit2.Call<com.example.core.dto.response.WorkerResponse> call,
-                                                @NonNull Throwable t) {
-                    mostrarMensagem("Falha na API (produtor): " + t.getMessage());
+
+                @Override
+                public void onFailure(Call<CompanyResponse> call, Throwable throwable) {
+                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
 
-    private void navegarParaPlanos(TipoUsuario tipo, String nome, String email, View clickView) {
+    private void navegarParaPlanos(Map<String, Object> dadosUsuario, TipoUsuario tipo, String nome, String email, View clickView) {
         Bundle bundle = new Bundle();
+        bundle.putSerializable("dadosUsuarios", (Serializable) dadosUsuario);
         bundle.putSerializable("TIPO_USUARIO", tipo);
         bundle.putString("Nome", nome);
         bundle.putString("Email", email);

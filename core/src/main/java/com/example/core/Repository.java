@@ -3,8 +3,13 @@ package com.example.core;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.*;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,17 +17,44 @@ public class Repository {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    // ===== Novo: escolhe a coleção conforme o tipo =====
+    private DocumentReference ref(String uid, @Nullable TipoUsuario tipo) {
+        // Se não informado, mantém o comportamento antigo (Fornecedor)
+        String collection = "Fornecedor";
+        if (tipo != null) {
+            collection = (tipo == TipoUsuario.WORKER) ? "Produtor" : "Fornecedor";
+        }
+        return db.collection(collection).document(uid);
+    }
+
+    // ===== Mantido p/ compatibilidade: continua salvando em 'Fornecedor' =====
     private DocumentReference ref(String uid) {
         return db.collection("Fornecedor").document(uid);
     }
 
-    // Cria/atualiza o doc da company a partir do usuário do Auth.
+    // ===== Novo: upsert com TipoUsuario (recomendado usar este) =====
+    public Task<Void> upsertFromAuth(FirebaseUser fu, @Nullable Map<String, Object> dados, @Nullable TipoUsuario tipo) {
+        DocumentReference r = ref(fu.getUid(), tipo);
+
+        return db.runTransaction(tr -> {
+            DocumentSnapshot snap = tr.get(r);
+            assert dados != null;
+            Map<String, Object> toSet = new HashMap<>(dados);
+            if (!snap.exists() || !snap.contains("createdAt")) {
+                toSet.put("createdAt", FieldValue.serverTimestamp());
+            }
+            tr.set(r, toSet, SetOptions.merge());
+            return null;
+        });
+    }
+
+    // ===== Mantido p/ compatibilidade: continua usando 'Fornecedor' se chamarem esta versão =====
     public Task<Void> upsertFromAuth(FirebaseUser fu, @Nullable Map<String, Object> extra) {
         DocumentReference r = ref(fu.getUid());
 
         Map<String, Object> base = new HashMap<>();
-        base.put("ownerCompany", fu.getUid());
-        base.put("name", fu.getDisplayName());  // pode ser null no email/senha
+        base.put("ownerUid", fu.getUid());
+        base.put("name", fu.getDisplayName());
         base.put("email", fu.getEmail());
         base.put("lastLoginAt", FieldValue.serverTimestamp());
 
@@ -38,15 +70,4 @@ public class Repository {
             return null;
         });
     }
-
-    // Atualiza (merge) CNPJ e telefone.
-//    public Task<Void> updateContact(String uid, String cnpj, String phone) {
-//        Map<String, Object> m = new HashMap<>();
-//        m.put("cnpj", cnpj);
-//        m.put("phone", phone);
-    //arrumar logica
-//        //return db.collection("company").document(uid).set(m, SetOptions.merge());
-//        //return db.collection("worker").document(uid).set(m, SetOptions.merge());
-//    }
-
 }
