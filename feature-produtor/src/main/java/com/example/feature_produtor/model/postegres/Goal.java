@@ -2,62 +2,26 @@ package com.example.feature_produtor.model.postegres;
 
 public class Goal {
 
-    private Integer id;
-    private String name;
-    private String description;
-
-    private Program program;
-
-    private Company company;
+    private String goal;
+    private boolean completed;
 
 
     public Goal() {
     }
 
-    // --- Getters e Setters ---
-
-    public Integer getId() {
-        return id;
+    public String getGoal() {
+        return goal;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setGoal(String goal) {
+        this.goal = goal;
     }
 
-    public String getName() {
-        return name;
+    public boolean isCompleted() {
+        return completed;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Program getProgram() {
-        return program;
-    }
-
-    public void setProgram(Program program) {
-        this.program = program;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-
-
-
-
 }
