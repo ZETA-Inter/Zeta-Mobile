@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-                navController.navigate(com.example.core.R.id.splashRoot);            } catch (Exception e) {
+                navController.navigate(com.example.core.R.id.SplashScreen);
+            } catch (Exception e) {
                 Log.e("MainActivity", "Falha ao navegar: " + e.getMessage(), e);
             }
 
