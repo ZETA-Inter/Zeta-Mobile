@@ -48,6 +48,8 @@ public class Plan extends Fragment {
 
     private Bundle bundle;
 
+    public Plan(){}
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
