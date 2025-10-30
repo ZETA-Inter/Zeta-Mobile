@@ -290,14 +290,14 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                     public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
                         StepResponse step = response.body();
 
-                        int stepNumber = 0;
+                        int stepNumber = 1;
                         if (step.getStatus() == 200) {
                             stepNumber = Integer.parseInt(step.getValue());
                         }
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
 
-                        Class firstLesson = allLessons.get(stepNumber);
+                        Class firstLesson = allLessons.get(stepNumber - 1);
 
                         Log.d(TAG, "Step: " + firstLesson);
 

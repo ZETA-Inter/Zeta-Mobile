@@ -257,10 +257,10 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
 
                         SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
                         int workerId = p.getInt("user_id",  -1);
-                        int stepNumber = bundle.getInt("stepNumber", 0);
+                        int stepNumber = bundle.getInt("stepNumber", 1);
                         Log.d(TAG, "Tentando salvar a etapa="+stepNumber+" do programId=" + programId +" e do workerId=" + workerId );
 
-                        StepRequest request = new StepRequest(workerId, programId, stepNumber);
+                        StepRequest request = new StepRequest(workerId, programId, stepNumber + 1);
                         Call<StepResponse> call = apiRedis.saveStep(request);
 
                         call.enqueue(new Callback<StepResponse>() {
