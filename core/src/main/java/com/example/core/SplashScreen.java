@@ -1,9 +1,12 @@
 package com.example.core;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.core.databinding.FragmentSplashScreenBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
 
 public class SplashScreen extends Fragment {
 
@@ -53,11 +58,27 @@ public class SplashScreen extends Fragment {
         // Delay e redirecionamento
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // Use o 'root' view para encontrar o NavController
-            NavController navController = Navigation.findNavController(root);
+            NavController navController = NavHostFragment.findNavController(this);
+
             if (user != null) {
-                // Navega usando um Deep Link
-                Uri deepLink = Uri.parse("app://Company/Home");
-                navController.navigate(deepLink);
+
+                String userType = getUserType();
+                Log.d("SplashScreen", "Tipo de Usuário: " + userType);
+
+                try {
+                    if ("WORKER".equalsIgnoreCase(userType)) {
+                        navController.navigate(Uri.parse("app://Worker/Home"));
+                    } else if ("COMPANY".equalsIgnoreCase(userType)) {
+                        navController.navigate(Uri.parse("app://Company/Home"));
+                    } else {
+                        Log.w("SplashScreen", "Tipo de usuário inválido. Indo para tela inicial.");
+                        navController.navigate(R.id.FirstPage);
+                    }
+                } catch (Exception e) {
+                    Log.e("SplashScreen", "Erro ao navegar: " + e.getMessage(), e);
+                    navController.navigate(R.id.FirstPage);
+                }
+
             } else {
                 // Navega para a página inicial (Primeira Página)
                 NavOptions options = new NavOptions.Builder()
@@ -67,14 +88,16 @@ public class SplashScreen extends Fragment {
                 navController.navigate(R.id.FirstPage, null, options);
             }
 
-            // Opcional: finalizar a Activity que hospeda o Fragment
-//            if (getActivity() != null) {
-//                getActivity().finish();
-//            }
         }, SPLASH_DELAY);
 
         return root;
     }
+
+    private String getUserType() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        return prefs.getString("tipo_usuario", "");
+    }
+
 
     @Override
     public void onDestroyView() {
