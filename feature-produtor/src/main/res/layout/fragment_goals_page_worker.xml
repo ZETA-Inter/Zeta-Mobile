@@ -6,7 +6,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
-    tools:context=".GoalsPageWorker"> <androidx.constraintlayout.widget.ConstraintLayout
+    tools:context=".GoalsPageWorker">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_metas"
+        android:layout_width="391dp"
+        android:layout_height="497dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_metas_titulo"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_daily_goal" />
+
+    <com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView
+        android:id="@+id/bottomNav"
+        android:layout_width="401dp"
+        android:layout_height="116dp"
+        android:layout_gravity="bottom"
+        android:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/goals_header_layout"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
@@ -128,20 +154,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tabs_layout" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_metas"
-        android:layout_width="391dp"
-        android:layout_height="497dp"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_metas_titulo"
-        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_daily_goal" />
 
     <LinearLayout
         android:id="@+id/loading_goals_container"

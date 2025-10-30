@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-27T14:15:36.686683Z">
+        <DropdownSelection timestamp="2025-10-30T13:41:15.498519600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RXCY100TM4Y" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\juliaporfirio-ieg\.android\avd\Zeta3.avd" />
             </handle>
           </Target>
         </DropdownSelection>

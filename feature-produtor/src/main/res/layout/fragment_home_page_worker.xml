@@ -256,6 +256,8 @@
                     <include layout="@layout/fragment_lessons_worker_loading" />
 
                     <include layout="@layout/fragment_lessons_worker_loading" />
+                    <include layout="@layout/fragment_lessons_worker_loading" />
+
 
                 </LinearLayout>
             </HorizontalScrollView>

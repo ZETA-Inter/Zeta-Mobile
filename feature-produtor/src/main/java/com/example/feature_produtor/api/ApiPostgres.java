@@ -15,7 +15,7 @@ import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 
 public interface ApiPostgres {
-    // lista todos os cursos (program)
+
     @GET("/api/programs/list-all")
     Call<List<Program>> getAllPrograms();
 
