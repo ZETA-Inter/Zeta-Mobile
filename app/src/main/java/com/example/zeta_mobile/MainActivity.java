@@ -30,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (isUserLoggedIn) {
             String userType = getUserType();
-            Log.d("Main", "Tipo de Usuário: " + userType);
+            Log.d("MainActivity", "Tipo de Usuário: " + userType);
 
             Uri deepLink;
             if ("WORKER".equalsIgnoreCase(userType)) {
+                Log.d("MainActivity", "Indo para a home de Worker");
                 deepLink = Uri.parse("app://Worker/Home");
             } else if ("COMPANY".equalsIgnoreCase(userType)) {
+                Log.d("MainActivity", "Indo para a home de Company");
                 deepLink = Uri.parse("app://Company/Home");
             } else {
                 // Tipo não reconhecido → volta pro login

@@ -63,11 +63,11 @@ public class SplashScreen extends Fragment {
             if (user != null) {
 
                 String userType = getUserType();
-                Log.d("Main", "Tipo de Usuário: " + userType);
+                Log.d("SplashScreen", "Tipo de Usuário: " + userType);
 
                 Uri deepLink = null;
                 if (userType.equals("WORKER")) {
-                    deepLink = Uri.parse("app://Company/Home");
+                        deepLink = Uri.parse("app://Worker/Home");
                 } else if (userType.equals("COMPANY")) {
                     deepLink = Uri.parse("app://Company/Home");
                 }
