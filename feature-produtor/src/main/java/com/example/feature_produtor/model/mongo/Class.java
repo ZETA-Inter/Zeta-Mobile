@@ -8,9 +8,6 @@ public class Class {
 
     private Integer id;
 
-    @SerializedName("program_id")
-    private Integer programId;
-
     private String title;
 
     private List<String> content;
@@ -30,10 +27,6 @@ public class Class {
 
     public Integer getId() {
         return id;
-    }
-
-    public Integer getProgramId() {
-        return programId;
     }
 
     public String getTitle() {
@@ -62,10 +55,6 @@ public class Class {
         this.id = id;
     }
 
-    public void setProgramId(Integer programId) {
-        this.programId = programId;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -85,5 +74,17 @@ public class Class {
 
     public void setLaws(List<Law> laws) {
         this.laws = laws;
+    }
+
+    @Override
+    public String toString() {
+        return "Class{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content=" + content +
+                ", description='" + description + '\'' +
+                ", flashcards=" + flashcards +
+                ", laws=" + laws +
+                '}';
     }
 }

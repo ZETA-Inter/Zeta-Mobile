@@ -37,6 +37,9 @@ public class ContentLessonWorker extends Fragment {
     private int currentStepId = -1;
     private Class currentLesson;
 
+    private Bundle bundle;
+
+
     // VARIÁVEIS DE PAGINAÇÃO
     private List<String> contentPages;
     private int currentPageIndex = 0;
@@ -44,11 +47,10 @@ public class ContentLessonWorker extends Fragment {
     public ContentLessonWorker() {
     }
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bundle = getArguments();
         initRetrofit();
         processArguments();
     }
@@ -83,7 +85,6 @@ public class ContentLessonWorker extends Fragment {
     }
 
     private void processArguments() {
-        Bundle bundle = getArguments();
         if (bundle != null) {
             currentStepId = bundle.getInt("stepId", -1);
         }
@@ -125,13 +126,9 @@ public class ContentLessonWorker extends Fragment {
         // É crucial verificar se a aula foi carregada E se ela tem um ID válido.
         if (currentLesson != null && currentLesson.getId() != null) {
 
-            Bundle continueBundle = new Bundle();
-            // Usa o ID (class id) da aula carregada para passar para a próxima tela
-            continueBundle.putInt("stepId", currentLesson.getId());
-
             if(getView() != null) {
                 // Navega para a tela ActivityLessonWorker
-                Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, continueBundle);
+                Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, bundle);
             }
         } else {
             // Se a aula não foi carregada corretamente, avisa o usuário

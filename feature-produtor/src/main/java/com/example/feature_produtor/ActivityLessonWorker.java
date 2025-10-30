@@ -1,7 +1,10 @@
 package com.example.feature_produtor;
 
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +19,15 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.network.RetrofitClientMongo;
+import com.example.core.network.RetrofitClientRedis;
 import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
+import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.model.mongo.Activity;
 import com.example.feature_produtor.model.mongo.Activity.Question;
 import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
+import com.example.feature_produtor.model.redis.StepRequest;
+import com.example.feature_produtor.model.redis.StepResponse;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -32,6 +39,9 @@ import retrofit2.Response;
 
 public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAnswerSelectedListener {
 
+    private static final String TAG = "ActivityLessonWorker";
+
+    private Bundle bundle;
     private ImageView btComeback;
     private TextView tvAtividade;
     private TextView txtPergunta;
@@ -62,6 +72,8 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_lesson_worker, container, false);
 
+        bundle = getArguments();
+
         btComeback = view.findViewById(R.id.btComeback2);
         tvAtividade = view.findViewById(R.id.tvAtividade);
         txtPergunta = view.findViewById(R.id.txtPergunta);
@@ -71,7 +83,8 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         answerAdapter = new AnswerAdapter(this);
         recyclerAnswers.setAdapter(answerAdapter);
 
-        setupClickListeners(view);
+        Integer programId = bundle.getInt("programId", 0);
+        setupClickListeners(programId);
 
         // 4. Carrega Conteúdo
         if (classId != -1 && apiMongo != null) {
@@ -88,10 +101,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         return view;
     }
 
-    // --- Inicialização ---
-
     private void initRetrofit() {
-        // Usando requireContext() aqui é seguro, pois está no onCreate
         apiMongo = RetrofitClientMongo
                 .getInstance(requireContext())
                 .create(ApiMongo.class);
@@ -176,7 +186,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         }
     }
 
-    private void setupClickListeners(View view) {
+    private void setupClickListeners(Integer programId) {
         btComeback.setOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
@@ -194,6 +204,33 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                     displayCurrentQuestion();
                 } else {
                     if (getView() != null) {
+                        ApiRedis apiRedis = RetrofitClientRedis
+                                .getInstance(requireContext())
+                                .create(ApiRedis.class);
+
+                        SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                        Integer workerId = p.getInt("user_id",  0);
+
+                        Log.d(TAG, "Tentando buscar classes para programId=" + programId +" e workerId=" + workerId );
+
+                        StepRequest request = new StepRequest(workerId, programId, 0);
+                        Call<StepResponse> call = apiRedis.saveStep(request);
+
+                        call.enqueue(new Callback<StepResponse>() {
+                            @Override
+                            public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
+                                StepResponse step = response.body();
+
+
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<StepResponse> call, Throwable throwable) {
+
+                            }
+                        });
+
                         Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
                     }
                 }
