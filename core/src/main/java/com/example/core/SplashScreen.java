@@ -65,14 +65,20 @@ public class SplashScreen extends Fragment {
                 String userType = getUserType();
                 Log.d("SplashScreen", "Tipo de Usuário: " + userType);
 
-                Uri deepLink = null;
-                if (userType.equals("WORKER")) {
-                        deepLink = Uri.parse("app://Worker/Home");
-                } else if (userType.equals("COMPANY")) {
-                    deepLink = Uri.parse("app://Company/Home");
+                try {
+                    if ("WORKER".equalsIgnoreCase(userType)) {
+                        navController.navigate(Uri.parse("app://Worker/Home"));
+                    } else if ("COMPANY".equalsIgnoreCase(userType)) {
+                        navController.navigate(Uri.parse("app://Company/Home"));
+                    } else {
+                        Log.w("SplashScreen", "Tipo de usuário inválido. Indo para tela inicial.");
+                        navController.navigate(R.id.FirstPage);
+                    }
+                } catch (Exception e) {
+                    Log.e("SplashScreen", "Erro ao navegar: " + e.getMessage(), e);
+                    navController.navigate(R.id.FirstPage);
                 }
 
-                navController.navigate(deepLink);
             } else {
                 // Navega para a página inicial (Primeira Página)
                 NavOptions options = new NavOptions.Builder()

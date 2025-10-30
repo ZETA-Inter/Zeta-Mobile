@@ -178,7 +178,7 @@ public class Register extends Fragment {
 
     private void navegarParaPlanos(Map<String, Object> dadosUsuario, TipoUsuario tipo, String nome, String email, View clickView) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("dadosUsuarios", (Serializable) dadosUsuario);
+        bundle.putSerializable("dadosUsuario", (Serializable) dadosUsuario);
         bundle.putSerializable("TIPO_USUARIO", tipo);
         bundle.putString("Nome", nome);
         bundle.putString("Email", email);

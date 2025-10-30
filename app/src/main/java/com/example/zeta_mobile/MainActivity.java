@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.core.SplashScreen;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -17,14 +19,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
-        if (navHostFragment == null) {
-            Log.e("MainActivity", "NavHostFragment não encontrado no layout!");
-            return;
-        }
+        NavHostFragment navHostFragment = (NavHostFragment)
+                getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 
-        NavController navController = navHostFragment.getNavController();
+        NavController navController = null;
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+        }
 
         boolean isUserLoggedIn = checkIfUserIsLoggedIn();
 
@@ -46,13 +47,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-                navController.navigate(deepLink);
-            } catch (Exception e) {
+                navController.navigate(com.example.core.R.id.splashRoot);            } catch (Exception e) {
                 Log.e("MainActivity", "Falha ao navegar: " + e.getMessage(), e);
             }
 
         } else {
             Log.d("MainActivity", "Usuário não logado. Indo para LoginFragment padrão...");
+            try {
+                // Supondo que o ID do seu LoginFragment no nav_graph é 'loginFragment'
+                // Você DEVE verificar o nome correto no seu nav_graph.xml.
+                assert navController != null;
+                navController.navigate(com.example.core.R.id.Login);
+            } catch (Exception e) {
+                Log.e("MainActivity", "Falha ao navegar para LoginFragment: " + e.getMessage(), e);
+            }
         }
     }
 
