@@ -18,7 +18,7 @@ public class StepsLessonAdapter extends ListAdapter<Class, StepsLessonAdapter.Le
 
     // A interface usa o modelo Class
     public interface OnStepClickListener {
-        void onStepClick(Class item);
+        void onStepClick(Class item, Integer stepNumber);
     }
 
     private final OnStepClickListener listener;
@@ -66,7 +66,7 @@ public class StepsLessonAdapter extends ListAdapter<Class, StepsLessonAdapter.Le
 
             // Usa item.getTitle() para o título, conforme o modelo Class
             etapaDescricao.setText(item.getTitle());
-            itemView.setOnClickListener(v -> listener.onStepClick(item));
+            itemView.setOnClickListener(v -> listener.onStepClick(item, stepNumber));
         }
     }
 

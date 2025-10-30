@@ -16,15 +16,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-// IMPORTS NECESSÁRIOS
-import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
+import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres;
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
-import com.example.feature_produtor.model.mongo.Class;
 
 import com.google.android.material.button.MaterialButton;
+import com.example.core.network.RetrofitClientMongo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ public class ContentLessonWorker extends Fragment {
 
     private static final String TAG = "ContentLessonWorker";
     private static final String PREF_NAME = "user_session";
-    private static final String KEY_WORKER_ID = "worker_id";
+    private static final String KEY_WORKER_ID = "user_id";
 
     private ImageView btComeback;
     private TextView lessonTitleTextView;
@@ -46,16 +45,15 @@ public class ContentLessonWorker extends Fragment {
     private MaterialButton btContinuar;
     private ApiMongo apiMongo;
 
-    // VARIÁVEIS DE ID E PROGRESSO RECEBIDAS DO StepsLessonWorker
     private Integer programId = null;
     private int currentStepId = -1;
     private Class currentLesson;
 
-    // VALORES DE PROGRESSO RECEBIDOS (Passa-Fio)
-    private double remainingProgressValue = 0.0; // Os 50% da Atividade
-    private int currentProgramProgress = 0;   // Progresso após 50% do Conteúdo
+    private Bundle bundle;
 
-    // VARIÁVEIS DE PAGINAÇÃO
+    private double remainingProgressValue = 0.0;
+    private int currentProgramProgress = 0;
+
     private List<String> contentPages;
     private int currentPageIndex = 0;
 
@@ -63,6 +61,7 @@ public class ContentLessonWorker extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bundle = getArguments();
         initRetrofit();
         processArguments();
     }
@@ -70,19 +69,15 @@ public class ContentLessonWorker extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_content_lesson_worker, container, false);
 
-        // 1. Inicializa UI
         btComeback = view.findViewById(R.id.btComeback);
         lessonTitleTextView = view.findViewById(R.id.titulocontent);
         conteudo = view.findViewById(R.id.tvConteudo);
         btContinuar = view.findViewById(R.id.btComeçar);
 
-        // 2. Configura Listeners
         setupClickListeners();
 
-        // 3. Carrega Conteúdo se o ID for válido
         if (currentStepId != -1 && apiMongo != null) {
             fetchLessonContent(currentStepId);
         } else {
@@ -100,7 +95,6 @@ public class ContentLessonWorker extends Fragment {
     }
 
     private void processArguments() {
-        Bundle bundle = getArguments();
         if (bundle != null) {
             currentStepId = bundle.getInt("stepId", -1);
             programId = bundle.getInt("programId", -1);
@@ -145,23 +139,15 @@ public class ContentLessonWorker extends Fragment {
     }
 
 
-    /**
-     * Lógica de navegação para a próxima tela (ActivityLessonWorker).
-     */
     private void navigateToNextScreen() {
         if (currentLesson != null && currentLesson.getId() != null && programId != null) {
 
-            // CRIA O BUNDLE PARA REPASSAR OS DADOS DE PROGRESSO PARA A TELA DE ATIVIDADE
-            Bundle continueBundle = new Bundle();
-            continueBundle.putInt("stepId", currentLesson.getId());
-            continueBundle.putInt("programId", programId);
-
-            // Repassa os valores:
-            continueBundle.putDouble("progressValue", remainingProgressValue);
-            continueBundle.putInt("currentProgress", currentProgramProgress);
+            bundle.putDouble("progressValue", remainingProgressValue);
+            bundle.putInt("currentProgress", currentProgramProgress);
 
             if(getView() != null) {
-                Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, continueBundle);
+                // Navega para a tela ActivityLessonWorker
+                Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, bundle);
             }
         } else {
             Log.e(TAG, "Falha na navegação. programId: " + programId + ", lessonId: " + (currentLesson != null ? currentLesson.getId() : "null"));
@@ -171,7 +157,6 @@ public class ContentLessonWorker extends Fragment {
 
 
     private void fetchLessonContent(int stepId) {
-        // ASSUME que apiMongo.getClassById(stepId) está implementado e retorna com.example.feature_produtor.model.mongo.Class
         Call<Class> call = apiMongo.getClassById(stepId);
 
         call.enqueue(new Callback<Class>() {

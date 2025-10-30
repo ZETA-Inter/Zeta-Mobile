@@ -26,13 +26,16 @@ import android.widget.Toast;
 
 
 import com.example.core.network.RetrofitClientMongo;
-import com.example.core.network.RetrofitClientPostgres;
+import com.example.core.network.RetrofitClientPostgres; // <-- IMPORTANTE: Cliente Postgres
+import com.example.core.network.RetrofitClientRedis;
 import com.example.feature_produtor.adapter.StepsLessonAdapter;
 import com.example.feature_produtor.api.ApiMongo;
-import com.example.feature_produtor.api.ApiPostgres;
+import com.example.feature_produtor.api.ApiPostgres; // <-- Assumindo que você criou ApiPostgres
+import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.model.postegres.Program;
+import com.example.feature_produtor.model.redis.StepResponse;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 
 
@@ -50,21 +53,21 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
     private static final String TAG = "StepsLessonWorker";
 
+    private Bundle bundle;
     private ImageView perfil;
     private TextInputEditText pesquisa;
     private ImageView config;
     private ImageView notificacao;
     private RecyclerView recyclerEtapas;
-    private Button começar;
+    private Button comecar;
     private StepsLessonAdapter stepsLessonAdapter;
     private int currentProgramProgress = 0;
     private int totalClasses = 0;
     private double progressPerClass = 0.0;
 
-
     private TextView descricao;
 
-    private final List<Class> allLessons = new ArrayList<>();
+    private List<Class> allLessons = new ArrayList<>();
 
     private Integer programId;
 
@@ -73,9 +76,10 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // pegando os dados do bundle
-        if (getArguments() != null) {
-            programId = getArguments().getInt("programId", -1);
+        bundle = getArguments();
+
+        if (bundle != null) {
+            programId = bundle.getInt("programId", -1);
 
             //recebe o prpgresso atual do curso clicado
             currentProgramProgress = getArguments().getInt("currentProgress", 0);
@@ -102,24 +106,21 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         config = view.findViewById(R.id.config);
         notificacao = view.findViewById(R.id.icon_notifi);
         recyclerEtapas = view.findViewById(R.id.recycler_etapas);
-        começar = view.findViewById(R.id.btComeçar);
-
-        // Mapeamento dos Textos
+        comecar = view.findViewById(R.id.btComeçar);
         descricao = view.findViewById(R.id.descricao);
 
-
-        // Inicializando e Configurando RecyclerView
         stepsLessonAdapter = new StepsLessonAdapter(this, requireContext());
+
         recyclerEtapas.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL, false));
         recyclerEtapas.setAdapter(stepsLessonAdapter);
 
-        // Chamadas de API
         if (programId != null) {
             fetchProgramDetails(programId);
-            fetchClassesForProgram(programId);
+
+            fetchClassesByProgramId(programId);
         }
 
-        setupClickListeners();
+        setupClickListeners(programId);
         setupSearchListener();
 
         return view;
@@ -130,7 +131,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
    //pegando o id do worker
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-        int workerId = sp.getInt("worker_id", -1);
+        int workerId = sp.getInt("user_id", -1);
         return workerId != -1 ? workerId : null;
     }
 
@@ -168,7 +169,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         ApiPostgres apiPostgres = RetrofitClientPostgres
                 .getInstance(requireContext())
                 .create(ApiPostgres.class);
-
 
         Call<Program> call = apiPostgres.getProgramById(id);
 
@@ -209,51 +209,45 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             }
         });
     }
+    
+    private void fetchClassesByProgramId(Integer id) {
+        ApiMongo apiMongo = RetrofitClientMongo
+                .getInstance(requireContext())
+                .create(ApiMongo.class);
 
 
-// mostra as etapas
-private void fetchClassesForProgram(int programId) {
-    ApiMongo apiMongo = RetrofitClientMongo
-            .getInstance(requireContext())
-            .create(ApiMongo.class);
+            Log.d(TAG, "Tentando buscar classes para programId: " + id);
+            Call<List<Class>> call = apiMongo.getClassByProgramId(id);
 
-    apiMongo.getClassByProgramId(programId).enqueue(new Callback<List<Class>>() {
-        @Override
-        public void  onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
-            if (!isAdded()) return;
+            call.enqueue(new Callback<List<Class>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        allLessons = response.body();
 
-            if (response.isSuccessful() && response.body() != null) {
-                List<Class> classes = response.body();
-                allLessons.clear();
-                allLessons.addAll(classes);
-                stepsLessonAdapter.submitList(new ArrayList<>(classes));
+                        totalClasses = allLessons.size();
+                        if (totalClasses > 0) {
+                            // 100% dividido pelo número de aulas
+                            progressPerClass = 100.0 / totalClasses;
+                            Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
+                        }
 
-                // ✅ NOVO: Calcula o progresso por etapa após carregar as aulas
-                totalClasses = classes.size();
-                if (totalClasses > 0) {
-                    // 100% dividido pelo número de aulas
-                    progressPerClass = 100.0 / totalClasses;
-                    Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
+                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + totalClasses);
+
+                        stepsLessonAdapter.submitList(allLessons);
+                    } else {
+                        Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
+                    }
                 }
-                Log.d(TAG, "Aulas carregadas: " + classes.size());
 
-            } else {
-                // ... (Tratamento de erro mantido)
-                Log.e(TAG, "Falha ao carregar aulas. Code: " + response.code());
+            @Override
+            public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                Log.e(TAG, "Erro de conexão ao buscar Classes: " + t.getMessage(), t);
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-        // ... (onFailure mantido)
-        @Override
-        public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
-            if (!isAdded()) return;
-            Log.e(TAG, "Erro de conexão (Aulas): " + t.getMessage(), t);
-            if (isAdded()) {
-                Toast.makeText(getContext(), "Erro de conexão ao carregar aulas.", Toast.LENGTH_LONG).show();
-            }
-        }
-    });
-}
-
+        });
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -272,15 +266,50 @@ private void fetchClassesForProgram(int programId) {
     }
 
 
-    private void setupClickListeners() {
+    private void setupClickListeners(Integer programId) {
         perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
 
+        config.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();
+        });
 
-        começar.setOnClickListener(v -> {
+        comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
-                // Pega a primeira aula
-                Class firstLesson = allLessons.get(0);
-                onStepClick(firstLesson);
+                ApiRedis apiRedis = RetrofitClientRedis
+                        .getInstance(requireContext())
+                        .create(ApiRedis.class);
+
+                SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                Integer workerId = p.getInt("user_id",  -1);
+
+                Log.d(TAG, "Tentando buscar a etapa para programId=" + programId +" e workerId=" + workerId );
+                Call<StepResponse> call = apiRedis.getStep(workerId, programId);
+
+                call.enqueue(new Callback<StepResponse>() {
+                    @Override
+                    public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
+                        StepResponse step = response.body();
+
+                        int stepNumber = 0;
+                        if (step.getStatus() == 200) {
+                            stepNumber = Integer.parseInt(step.getValue());
+                        }
+
+                        Log.d(TAG, "Número da etapa: "+stepNumber);
+
+                        Class firstLesson = allLessons.get(stepNumber);
+
+                        Log.d(TAG, "Step: " + firstLesson);
+
+                        onStepClick(firstLesson, stepNumber);
+                    }
+
+                    @Override
+                    public void onFailure(Call<StepResponse> call, Throwable throwable) {
+                        Log.e(TAG, "Falha na requisição de step no Redis: " + throwable.getMessage() + throwable);
+                    }
+                });
+
             } else {
                 Toast.makeText(getContext(), "Nenhuma etapa carregada para começar.", Toast.LENGTH_SHORT).show();
             }
@@ -330,7 +359,7 @@ private void fetchClassesForProgram(int programId) {
     }
 
     @Override
-    public void onStepClick(Class item) {
+    public void onStepClick(Class item, Integer stepNumber) {
         if (programId == null || allLessons.isEmpty()) return;
 
         double progressIncrease = progressPerClass / 2.0;
@@ -345,12 +374,14 @@ private void fetchClassesForProgram(int programId) {
             updateProgramProgress(programId, newProgress);
         }
 
+        Integer lessonId = item.getId();
 
-        Bundle bundle = new Bundle();
-        bundle.putInt("stepId", item.getId());
+        bundle.putInt("stepId", lessonId);
+        bundle.putInt("stepNumber", stepNumber);
         bundle.putInt("programId", programId);
         bundle.putDouble("progressIncrease", progressIncrease);
         bundle.putInt("currentProgress", newProgress);
+
 
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);

@@ -52,7 +52,7 @@ public class HomePageWorkerFragment extends Fragment
     private final List<ProgramWorkerResponseDTO> concludedPrograms = new ArrayList<>();
 
     private static final String PREF_NAME = "user_session";
-    private static final String KEY_WORKER_ID = "worker_id";
+    private static final String KEY_WORKER_ID = "user_id";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,9 +79,6 @@ public class HomePageWorkerFragment extends Fragment
         setupClickListeners();
         fetchData();
     }
-
-
-//pegar o workerid
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         int workerId = sp.getInt(KEY_WORKER_ID, -1);
