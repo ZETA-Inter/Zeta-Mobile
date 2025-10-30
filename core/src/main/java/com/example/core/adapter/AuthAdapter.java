@@ -171,7 +171,7 @@ public class AuthAdapter {
                     SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
                     // padronize tipos (String) para evitar confusão depois
                     prefs.edit()
-                            .putString("user_id", (user.getId() != null) ? String.valueOf(user.getId()) : null)
+                            .putInt("user_id", (user.getId() != null) ? user.getId() : -1)
                             .putString("name", user.getName())
                             .putString("email", user.getEmail())
                             .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")

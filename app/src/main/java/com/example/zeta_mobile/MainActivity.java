@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.core.SplashScreen;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override

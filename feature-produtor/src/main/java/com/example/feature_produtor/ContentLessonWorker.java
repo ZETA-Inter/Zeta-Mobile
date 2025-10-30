@@ -16,11 +16,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres;
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
-import com.example.feature_produtor.model.mongo.Class;
 
 import com.google.android.material.button.MaterialButton;
 import com.example.core.network.RetrofitClientMongo;
@@ -37,7 +37,7 @@ public class ContentLessonWorker extends Fragment {
 
     private static final String TAG = "ContentLessonWorker";
     private static final String PREF_NAME = "user_session";
-    private static final String KEY_WORKER_ID = "worker_id";
+    private static final String KEY_WORKER_ID = "user_id";
 
     private ImageView btComeback;
     private TextView lessonTitleTextView;

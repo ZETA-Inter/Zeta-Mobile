@@ -50,7 +50,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     private Bundle bundle;
     private static final String TAG = "ActivityLessonWorker";
     private static final String PREF_NAME = "user_session";
-    private static final String KEY_WORKER_ID = "worker_id";
+    private static final String KEY_WORKER_ID = "user_id";
 
     private ImageView btComeback;
     private TextView tvAtividade;
@@ -164,6 +164,9 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     }
 
     private void fetchActivityByClassId(int id) {
+
+        Log.d(TAG, "ClassId para a busca das activities: " + id);
+
         Call<List<Activity>> call = apiMongo.getActivityByClassId(id);
 
         call.enqueue(new Callback<List<Activity>>() {
@@ -253,25 +256,32 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                                 .create(ApiRedis.class);
 
                         SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                        Integer workerId = p.getInt("user_id",  0);
+                        int workerId = p.getInt("user_id",  -1);
+                        int stepNumber = bundle.getInt("stepNumber", 0);
+                        Log.d(TAG, "Tentando salvar a etapa="+stepNumber+" do programId=" + programId +" e do workerId=" + workerId );
 
-                        Log.d(TAG, "Tentando buscar classes para programId=" + programId +" e workerId=" + workerId );
-
-                        StepRequest request = new StepRequest(workerId, programId, 0);
+                        StepRequest request = new StepRequest(workerId, programId, stepNumber);
                         Call<StepResponse> call = apiRedis.saveStep(request);
 
                         call.enqueue(new Callback<StepResponse>() {
                             @Override
                             public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
-                                StepResponse step = response.body();
+                                if (response.isSuccessful() && response.body() != null) {
+                                    StepResponse step = response.body();
 
-
-
+                                    if (step.getStatus() != null && step.getStatus() == 200) {
+                                        Log.d(TAG, "Etapa " + stepNumber + " salva com sucesso");
+                                    } else {
+                                        Log.w(TAG, "Falha ao salvar etapa: " + step.getError());
+                                    }
+                                } else {
+                                    Log.e(TAG, "Erro HTTP: " + response.code());
+                                }
                             }
 
                             @Override
                             public void onFailure(Call<StepResponse> call, Throwable throwable) {
-
+                                Log.e(TAG, "Erro na requisição de salvamento da etapa no Redis: " + throwable.getMessage());
                             }
                         });
 

@@ -131,7 +131,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
    //pegando o id do worker
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-        int workerId = sp.getInt("worker_id", -1);
+        int workerId = sp.getInt("user_id", -1);
         return workerId != -1 ? workerId : null;
     }
 
@@ -280,7 +280,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                         .create(ApiRedis.class);
 
                 SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                Integer workerId = p.getInt("user_id",  0);
+                Integer workerId = p.getInt("user_id",  -1);
 
                 Log.d(TAG, "Tentando buscar a etapa para programId=" + programId +" e workerId=" + workerId );
                 Call<StepResponse> call = apiRedis.getStep(workerId, programId);
