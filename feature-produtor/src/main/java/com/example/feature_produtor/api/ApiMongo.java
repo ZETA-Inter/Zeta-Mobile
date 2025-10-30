@@ -4,6 +4,7 @@ import com.example.feature_produtor.model.mongo.Activity;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.model.mongo.Content;
 import com.example.feature_produtor.model.mongo.FlashCard;
+import com.example.feature_produtor.model.postegres.Goal;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

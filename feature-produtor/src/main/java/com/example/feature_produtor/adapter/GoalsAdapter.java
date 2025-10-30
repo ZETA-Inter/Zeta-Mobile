@@ -1,0 +1,85 @@
+package com.example.feature_produtor.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.feature_produtor.R;
+import com.example.feature_produtor.model.postegres.Goal;
+
+// Este adaptador não precisa de Listener por enquanto, pois é apenas de exibição.
+public class GoalsAdapter extends ListAdapter<Goal, GoalsAdapter.GoalViewHolder> {
+
+    public interface OnGoalClickListener {
+        void onGoalClicked(Goal goal);
+    }
+
+    private final OnGoalClickListener listener;
+
+    public GoalsAdapter(OnGoalClickListener listener) {
+        super(new GoalDiffCallback());
+        this.listener = listener;
+    }
+
+
+    @NonNull
+    @Override
+    public GoalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_daily_goal, parent, false);
+        return new GoalViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GoalViewHolder holder, int position) {
+        Goal currentGoal = getItem(position);
+        holder.bind(currentGoal, position + 1, listener);
+    }
+
+    public static class GoalViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView goalDescription;
+        private final ImageView goalStatusImage;
+
+        public GoalViewHolder(@NonNull View itemView) {
+            super(itemView);
+            goalDescription = itemView.findViewById(R.id.text_goal_description);
+            goalStatusImage = itemView.findViewById(R.id.image_goal_status);
+        }
+
+        public void bind(final Goal item, int number,final OnGoalClickListener listener) {
+            // Exibe o número da meta e sua descrição
+            String description = number + " -> " + item.getGoal();
+            goalDescription.setText(description);
+
+            if (item.isCompleted()) {
+                goalStatusImage.setVisibility(View.VISIBLE);
+                goalStatusImage.setImageResource(R.drawable.ic_successful);
+            } else {
+                goalStatusImage.setVisibility(View.INVISIBLE);
+            }
+
+            itemView.setOnClickListener(v -> listener.onGoalClicked(item));
+        }
+    }
+
+    private static class GoalDiffCallback extends DiffUtil.ItemCallback<Goal> {
+        @Override
+        public boolean areItemsTheSame(@NonNull Goal oldItem, @NonNull Goal newItem) {
+
+            return oldItem.getGoal().equals(newItem.getGoal());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Goal oldItem, @NonNull Goal newItem) {
+            return oldItem.getGoal().equals(newItem.getGoal()) &&
+                    oldItem.isCompleted() == newItem.isCompleted();
+        }
+    }
+}

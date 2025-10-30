@@ -1,5 +1,7 @@
 package com.example.feature_produtor;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,17 +18,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
+
 import com.example.feature_produtor.adapter.FilterAdapter;
-import com.example.feature_produtor.adapter.LessonsCardAdapter;
-import com.example.feature_produtor.model.postegres.Program;
+import com.example.feature_produtor.adapter.LessonsCardProgressAdapter;
 import com.example.feature_produtor.model.postegres.Segment;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.example.feature_produtor.api.ApiPostgres;
-// Importação do Diálogo (Mantenha se estiver no mesmo pacote, ou ajuste o caminho)
-import com.example.feature_produtor.ResultCardDialogFragment;
-
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,120 +36,56 @@ import retrofit2.Response;
 
 
 public class HomePageWorkerFragment extends Fragment
-        implements LessonsCardAdapter.OnLessonClickListener,
+        implements LessonsCardProgressAdapter.OnLessonClickListener,
         FilterAdapter.OnSegmentClickListener {
 
     private static final String TAG = "HomePageWorkerFragment";
-
     private ImageView perfil, boxIa, iconConfig, iconNotificacao;
-    private RecyclerView recyclerTipoConteudo, recyclerCursosAndamento;
-    private LessonsCardAdapter lessonsCardAdapter;
+    private RecyclerView recyclerTipoConteudo, recyclerCursosAndamento, recyclerCursosConcluidos;
+    private LessonsCardProgressAdapter andamentoLessonsAdapter;
+    private LessonsCardProgressAdapter concludedLessonsAdapter;
     private FilterAdapter filterAdapter;
-    private ApiPostgres apiService;
 
-    // --- CICLO DE VIDA E INICIALIZAÇÃO ---
+    private View loadingAndamentoLayout;
+
+    private final List<ProgramWorkerResponseDTO> allPrograms = new ArrayList<>();
+    private final List<ProgramWorkerResponseDTO> concludedPrograms = new ArrayList<>();
+
+    private static final String PREF_NAME = "user_session";
+    private static final String KEY_WORKER_ID = "worker_id";
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        apiService = RetrofitClientPostgres
-                .getInstance(requireContext())
-                .create(ApiPostgres.class);
+
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_home_page_worker, container, false);
-
-        initViews(view);
-        setupBottomNav(view);
-        setupRecyclers();
-        setupClickListeners();
-        fetchData();
-
-        return view;
+        return inflater.inflate(R.layout.fragment_home_page_worker, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ** PONTO CRUCIAL: Exibe o diálogo ao retornar da tela de FlashCard/Quiz **
+        //chamando os metodos
         checkAndShowResultDialog();
-    }
-
-    // --- LÓGICA DO DIÁLOGO DE RESULTADOS ---
-    private void checkAndShowResultDialog() {
-        Bundle args = getArguments();
-
-        // Verifica se há argumentos de resultados (acertos/erros)
-        if (args != null && args.containsKey("acertos_count")) {
-
-            Log.d(TAG, "Argumentos de resultado encontrados. Exibindo diálogo.");
-
-            String cursoNome = args.getString("curso_nome", "Curso Finalizado");
-            int acertos = args.getInt("acertos_count", 0);
-            int erros = args.getInt("erros_count", 0);
-
-            try {
-                // Cria e exibe o diálogo (DESCOMENTADO E ATIVO)
-                ResultCardDialogFragment dialog =
-                        ResultCardDialogFragment.newInstance(cursoNome, acertos, erros);
-
-                // Usa getChildFragmentManager() para DialogFragment dentro de um Fragmento
-                dialog.show(getChildFragmentManager(), "ResultDialog");
-            } catch (Exception e) {
-                Log.e(TAG, "Erro ao tentar mostrar ResultCardDialogFragment. Certifique-se que a classe existe e está importada.", e);
-                Toast.makeText(getContext(), "Erro ao mostrar resultados: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            // Limpa os argumentos APÓS USAR. ESSENCIAL para que o diálogo não apareça
-            // novamente em rotações ou retornos futuros sem novos resultados.
-            getArguments().clear();
-        } else {
-            Log.d(TAG, "Nenhum argumento de resultado encontrado.");
-        }
+        initViews(view);
+        setupBottomNav(view);
+        setupRecyclers();
+        setupClickListeners();
+        fetchData();
     }
 
 
-    // --- MÉTODOS DE SETUP E LÓGICA ---
-
-    private void initViews(View view) {
-        perfil = view.findViewById(R.id.icon_perfil);
-        boxIa = view.findViewById(R.id.boxIA);
-        iconConfig = view.findViewById(R.id.icon_configuracoes);
-        iconNotificacao = view.findViewById(R.id.icon_notificacao);
-        recyclerCursosAndamento = view.findViewById(R.id.recycler_cursos_andamento);
-        recyclerTipoConteudo = view.findViewById(R.id.recycler_tipo_conteudo);
-    }
-
-    private void setupBottomNav(View view) {
-        WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
-        if (bottom != null) {
-            NavController nav = NavHostFragment.findNavController(this);
-            bottom.bindNavController(
-                    nav,
-                    R.id.LessonsWorker,
-                    R.id.HomePageWorker,
-                    R.id.GoalsPageWorker
-            );
-            bottom.setActive(WorkerBottomNavView.Item.HOME, false);
-        }
-    }
-
-    private void setupRecyclers() {
-        lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
-        filterAdapter = new FilterAdapter(this);
-
-        recyclerCursosAndamento.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerCursosAndamento.setAdapter(lessonsCardAdapter);
-
-        recyclerTipoConteudo.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerTipoConteudo.setAdapter(filterAdapter);
+//pegar o workerid
+    private Integer getWorkerIdFromLocalStore() {
+        SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        int workerId = sp.getInt(KEY_WORKER_ID, -1);
+        return workerId != -1 ? workerId : null;
     }
 
     private void fetchData() {
@@ -158,106 +94,212 @@ public class HomePageWorkerFragment extends Fragment
     }
 
     private void fetchPrograms() {
-        apiService.getAllPrograms().enqueue(new Callback<List<Program>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Program>> call,
-                                   @NonNull Response<List<Program>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Program> allPrograms = response.body();
+        Integer workerId = getWorkerIdFromLocalStore();
 
-                    List<Program> inProgressPrograms = allPrograms.stream()
-                            .filter(p -> p.getProgressPercentage() < 100)
+        if (workerId == null) {
+            Toast.makeText(getContext(), "Erro: ID do Worker não encontrado.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        recyclerCursosAndamento.setVisibility(View.GONE);
+        loadingAndamentoLayout.setVisibility(View.VISIBLE);
+
+        ApiPostgres apiPostgres = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
+
+        //chama o endpoint que lista os programs por id do worker
+        apiPostgres.listWorkerProgramsWithProgress(workerId).enqueue(new Callback<List<ProgramWorkerResponseDTO>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Response<List<ProgramWorkerResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    loadingAndamentoLayout.setVisibility(View.GONE);
+                    recyclerCursosAndamento.setVisibility(View.VISIBLE);
+                    List<ProgramWorkerResponseDTO> programs = response.body();
+
+                    // Limpa as listas
+                    allPrograms.clear();
+                    concludedPrograms.clear();
+
+                    // Filtra usando Streams para clareza
+                    List<ProgramWorkerResponseDTO> inProgress = programs.stream()
+                            .filter(p -> p.getProgressPercentage() > 0 && p.getProgressPercentage() < 100)
                             .collect(Collectors.toList());
 
-                    // Opcional: List<Program> completedPrograms = allPrograms.stream()
-                    //     .filter(p -> p.getProgressPercentage() >= 100)
-                    //     .collect(Collectors.toList());
+                    List<ProgramWorkerResponseDTO> completed = programs.stream()
+                            .filter(p -> p.getProgressPercentage() >= 100)
+                            .collect(Collectors.toList());
 
-                    lessonsCardAdapter.submitList(inProgressPrograms);
+                    allPrograms.addAll(inProgress);
+                    concludedPrograms.addAll(completed);
 
-                } else {
-                    Log.e(TAG, "Erro ao carregar cursos: Código " + response.code());
-                    Toast.makeText(getContext(),
-                            "Erro ao carregar cursos: " + response.code(),
-                            Toast.LENGTH_LONG).show();
+                    // Submete às Recyclers
+                    andamentoLessonsAdapter.submitList(new ArrayList<>(allPrograms));
+                    concludedLessonsAdapter.submitList(new ArrayList<>(concludedPrograms));
+
+
+                }
+
+
+                else {
+                    loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                    recyclerCursosAndamento.setVisibility(View.GONE);
+                    Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
+                 //   Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                    // se o erro for 404 td bem pq o worker pode simplismente não ter iniciado nenhum curso ainda
                 }
             }
-
             @Override
-            public void onFailure(@NonNull Call<List<Program>> call, @NonNull Throwable t) {
-                Log.e(TAG, "Erro de conexão (Cursos): " + t.getMessage(), t);
-                Toast.makeText(getContext(),
-                        "Erro de conexão (Cursos): " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
+            public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
+                loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                recyclerCursosAndamento.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Erro de conexão: " + t.getMessage());
             }
         });
     }
 
     private void fetchSegments() {
-        apiService.getAllSegments().enqueue(new Callback<List<Segment>>() {
+        //lista os segments (filtros)
+
+        ApiPostgres apiPostgres = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
+
+        apiPostgres.getAllSegments().enqueue(new Callback<List<Segment>>() {
             @Override
-            public void onResponse(@NonNull Call<List<Segment>> call,
-                                   @NonNull Response<List<Segment>> response) {
+            public void onResponse(@NonNull Call<List<Segment>> call, @NonNull Response<List<Segment>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     filterAdapter.submitList(response.body());
                 } else {
                     Log.e(TAG, "Erro ao carregar filtros: Código " + response.code());
-                    Toast.makeText(getContext(),
-                            "Erro ao carregar filtros: " + response.code(),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Erro ao carregar filtros: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Segment>> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro de conexão (Filtros): " + t.getMessage(), t);
-                Toast.makeText(getContext(),
-                        "Erro de conexão (Filtros): " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Erro de conexão (Filtros): " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
+   // click do curso que passa o progresso o program id para etapas
+    @Override
+    public void onLessonClick(ProgramWorkerResponseDTO item) {
+        int programId = item.getId();
+        int currentProgress = item.getProgressPercentage();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("programId", programId);
+        bundle.putInt("currentProgress", currentProgress);
+
+        if (getView() == null) return;
+
+        if (currentProgress >= 100) {
+            // Concluído: Navega para a tela de flashcard
+            Toast.makeText(getContext(), "Revisando: " + item.getName(), Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
+        } else {
+            // Em Andamento: Navega para a tela de etapas
+            NavHostFragment.findNavController(this).navigate(R.id.StepsLessonWorker, bundle);
+        }
+    }
+
+    // click do filtro (vai para cursos filtrado)
+    @Override
+    public void onSegmentClick(Segment segment) {
+        Bundle bundle = new Bundle();
+        bundle.putString("segment", segment.getName());
+
+        Toast.makeText(getContext(), "Filtrando por: " + segment.getName(), Toast.LENGTH_SHORT).show();
+        if (getView() != null) {
+            // Navega para a tela LessonsWorker com o filtro de segmento
+            NavHostFragment.findNavController(this).navigate(R.id.LessonsWorker, bundle);
+        }
+    }
+
+
+
+    // quando os flahs cards são concluidos abre esse dialog
+    private void checkAndShowResultDialog() {
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("acertos_count")) {
+            Log.d(TAG, "Argumentos de resultado encontrados. Exibindo diálogo.");
+
+            String cursoNome = args.getString("curso_nome", "Curso Finalizado");
+            int acertos = args.getInt("acertos_count", 0);
+            int erros = args.getInt("erros_count", 0);
+
+            try {
+                ResultCardDialogFragment dialog = ResultCardDialogFragment.newInstance(cursoNome, acertos, erros);
+                dialog.show(getChildFragmentManager(), "ResultDialog");
+            } catch (Exception e) {
+                Log.e(TAG, "Erro ao tentar mostrar ResultCardDialogFragment.", e);
+                Toast.makeText(getContext(), "Erro ao mostrar resultados: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            // Limpar os argumentos para evitar que o diálogo reapareça
+            getArguments().clear();
+        } else {
+            Log.d(TAG, "Nenhum argumento de resultado encontrado.");
+        }
+    }
+
+    //iniciando variavis
+    private void initViews(View view) {
+        perfil = view.findViewById(R.id.icon_perfil);
+        boxIa = view.findViewById(R.id.boxIA);
+        iconConfig = view.findViewById(R.id.icon_configuracoes);
+        iconNotificacao = view.findViewById(R.id.icon_notificacao);
+
+        recyclerCursosAndamento = view.findViewById(R.id.recycler_cursos_andamento);
+        recyclerTipoConteudo = view.findViewById(R.id.recycler_tipo_conteudo);
+        recyclerCursosConcluidos = view.findViewById(R.id.recycler_cursos_concluidos);
+        loadingAndamentoLayout = view.findViewById(R.id.layout_cursos_andamento_loading);
+    }
+
+    // nav bar
+    private void setupBottomNav(View view) {
+        WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
+        if (bottom != null) {
+            NavController nav = NavHostFragment.findNavController(this);
+
+            bottom.bindNavController(nav, R.id.HomePageWorker, R.id.LessonsWorker, R.id.GoalsPageWorker);
+            bottom.setActive(WorkerBottomNavView.Item.HOME, false);
+        }
+    }
+
+    //iniciando os recilers
+    private void setupRecyclers() {
+
+        andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
+        concludedLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
+        filterAdapter = new FilterAdapter(this);
+
+        // RecyclerView de Cursos em Andamento
+        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
+
+        // RecyclerView de Tipos de Conteúdo (Segmentos)
+        recyclerTipoConteudo.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerTipoConteudo.setAdapter(filterAdapter);
+
+        // RecyclerView de Cursos Concluídos
+        recyclerCursosConcluidos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerCursosConcluidos.setAdapter(concludedLessonsAdapter);
+    }
+
+    // clicks da nav bar superior
     private void setupClickListeners() {
         NavController nav = NavHostFragment.findNavController(this);
 
         perfil.setOnClickListener(v -> nav.navigate(R.id.Profileworker));
         boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotPageWorker));
-        iconConfig.setOnClickListener(v -> nav.navigate(R.id.FlashCardStudy));
+        iconConfig.setOnClickListener(v -> { });
         iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
+
+
     }
 
-    // --- MÉTODOS DA INTERFACE (LISTENERS) ---
-
-    @Override
-    public void onLessonClick(Program item) {
-
-        int progress = item.getProgressPercentage();
-
-        Bundle bundle = new Bundle();
-        bundle.putInt("programId", item.getId());
-
-        if (getView() == null) {
-            Toast.makeText(getContext(), "Erro de navegação. Fragmento não anexado.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (progress >= 100) {
-            Toast.makeText(getContext(), "Revisando: " + item.getName(), Toast.LENGTH_SHORT).show();
-            NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
-        } else {
-            NavHostFragment.findNavController(this).navigate(R.id.StepsLessonWorker, bundle);
-        }
-    }
-
-    @Override
-    public void onSegmentClick(Segment nome) {
-        Bundle bundle = new Bundle();
-        bundle.putString("segment", nome.getName());
-
-        Toast.makeText(getContext(), "Filtrando por: " + nome.getName(), Toast.LENGTH_SHORT).show();
-        if (getView() != null) {
-            NavHostFragment.findNavController(this).navigate(R.id.LessonsWorker, bundle);
-        }
-    }
 }
