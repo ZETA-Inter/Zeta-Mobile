@@ -25,6 +25,7 @@ import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
+import com.example.core.service.RegisterService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +41,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PaymentSuccessful extends Fragment {
 
     private FragmentPaymentSuccessfulBinding binding;
-
-    private Register register;
 
     private TipoUsuario tipoAtual;
 
@@ -104,7 +103,8 @@ public class PaymentSuccessful extends Fragment {
                             request = new CompanyRequest(nome, email, planInfo);
                         }
 
-                        register.salvarNoBackend(request);
+                        RegisterService.salvarNoBackend(requireContext(), tipoAtual, request);
+                        Log.d("PaymentSucessful", "Usuário criado com sucesso no banco - request=" + request);
                     }
                     @Override public void onError(String message) {
                         Log.e("Payment Sucessful", message != null ? message : "Falha no cadastro");
