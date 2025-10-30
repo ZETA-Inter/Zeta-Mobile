@@ -1,3 +1,4 @@
+// Arquivo: com/example/core/adapter/AuthAdapter.java
 package com.example.core.adapter;
 
 import android.content.Context;
@@ -6,228 +7,185 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.example.core.LoginListener;
+import com.example.core.Repository;
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.response.UserResponse;
-import com.example.core.network.RetrofitClientPostgres;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
-import retrofit2.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+/**
+ * Versão B: o cadastro centraliza a persistência no Firestore (Repository.upsertFromAuth)
+ * antes de avisar sucesso para a UI. Se o upsert falhar, reverte a conta criada.
+ */
 public class AuthAdapter {
+
+    private static final String TAG = "AuthAdapter";
+
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
+    private final Repository repo = new Repository(); // usado internamente nesta versão B
 
-
+    // Listener de retorno para a UI
     public interface Listener {
         void onSuccess(String uid);
         void onError(String message);
     }
 
-    // 1. O método 'cadastrar' agora espera que a validação de CPF/CNPJ tenha sido feita no Fragment
-    public void cadastrar(String email, String senha, TipoUsuario tipo,
-                          Map<String, Object> dadosUsuario, Context ctx,
-                          Listener listener) {
+    /**
+     * Cria usuário no FirebaseAuth e persiste o perfil no Firestore, escolhendo a coleção
+     * conforme o TipoUsuario (Fornecedor para COMPANY, Produtor para WORKER).
+     * Em caso de falha no Firestore, reverte a conta do Auth.
+     */
+    public void cadastrar(@NonNull String email,
+                          @NonNull String senha,
+                          @Nullable TipoUsuario tipo,
+                          @Nullable Map<String, Object> dadosUsuario,
+                          @NonNull Context ctx,
+                          @NonNull Listener listener) {
 
-        FirebaseAuth.getInstance()
-                .createUserWithEmailAndPassword(email, senha)
+        mAuth.createUserWithEmailAndPassword(email, senha)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        String uid = task.getResult().getUser() != null ? task.getResult().getUser().getUid() : null;
-                        cadastrarUsuario(uid, tipo, dadosUsuario,  ctx);
-                        listener.onSuccess(uid);
-                    } else {
-                        String msg = task.getException() != null ? task.getException().getMessage() : "Erro no cadastro";
+                    if (!task.isSuccessful()) {
+                        String msg = (task.getException() != null && task.getException().getMessage() != null)
+                                ? task.getException().getMessage()
+                                : "Erro no cadastro";
                         listener.onError(msg);
+                        return;
                     }
+
+                    FirebaseUser fu = mAuth.getCurrentUser();
+                    if (fu == null) {
+                        listener.onError("Usuário autenticado não encontrado após cadastro.");
+                        return;
+                    }
+
+                    // Upsert no Firestore na coleção adequada (Fornecedor/Produtor)
+                    repo.upsertFromAuth(fu, dadosUsuario, tipo)
+                            .addOnSuccessListener(aVoid -> {
+                                // Sucesso total: Auth + Firestore pronto
+                                listener.onSuccess(fu.getUid());
+                            })
+                            .addOnFailureListener(e -> {
+                                // Falha em persistir perfil: reverte conta para não ficar órfã
+                                String motivo = (e.getMessage() != null) ? e.getMessage() : "Falha ao salvar perfil no Firestore";
+                                reverterCadastro(fu.getUid(), motivo, ctx);
+                                listener.onError("Falha ao salvar perfil: " + motivo);
+                            });
                 });
     }
 
-    private void cadastrarUsuario(String uid, TipoUsuario tipoUsuario, Map<String, Object> dadosUsuario, Context c) {
-
-        String collection = tipoUsuario == TipoUsuario.WORKER ? "Produtor" : "Fornecedor";
-        if (dadosUsuario.containsKey("Senha")) {
-            dadosUsuario.remove("Senha");
-        }
-        mFirestore.collection(collection)
-                .document(uid)
-                .set(dadosUsuario)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(c, "Usuario cadastrado com sucesso..!", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    reverterCadastro(uid, "Erro ao gravar dados do usuário: " + e.getMessage(), c);
-                });
-    }
-
-    public void reverterCadastro(String uid, String motivo, Context c) {
-
-        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getUid().equals(uid)) {
-            mAuth.getCurrentUser().delete()
-                    .addOnCompleteListener(deleteTask -> {
-                        if (deleteTask.isSuccessful()) {
-                            Log.e("REVERSAO_CADASTRO", "Usuário (" + uid + ") DELETADO. Motivo da falha original: " + motivo);
-                            Toast.makeText(c, "Erro: " + motivo + ". Por favor, tente novamente.", Toast.LENGTH_LONG).show();
-                        } else {
-                            Log.e("REVERSAO_CADASTRO", "FALHA CRÍTICA: Não foi possível deletar o usuário (" + uid + "). CONTA ÓRFÃ.");
-                            Toast.makeText(c, "Erro crítico no cadastro. Contate o suporte para resolver a conta órfã.", Toast.LENGTH_LONG).show();
-                        }
-                    });
+    /**
+     * Reverte a conta criada no Auth quando algo crítico falha após o cadastro (ex.: Firestore).
+     */
+    public void reverterCadastro(@NonNull String uid, @NonNull String motivo, @NonNull Context c) {
+        FirebaseUser curr = mAuth.getCurrentUser();
+        if (curr != null && uid.equals(curr.getUid())) {
+            curr.delete().addOnCompleteListener(deleteTask -> {
+                if (deleteTask.isSuccessful()) {
+                    Log.e(TAG, "Usuário (" + uid + ") DELETADO. Motivo: " + motivo);
+                    Toast.makeText(c, "Erro: " + motivo + ". Tente novamente.", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e(TAG, "FALHA CRÍTICA: Não foi possível deletar o usuário (" + uid + "). CONTA ÓRFÃ.");
+                    Toast.makeText(c, "Erro crítico no cadastro. Contate o suporte.", Toast.LENGTH_LONG).show();
+                }
+            });
         } else {
-            Log.w("REVERSAO_CADASTRO", "Usuário já deslogado ou nulo, impossível reverter.");
-            Toast.makeText(c, "Erro ao finalizar o cadastro. Tente fazer login ou contate o suporte.", Toast.LENGTH_LONG).show();
+            Log.w(TAG, "Usuário já deslogado ou nulo; impossível reverter via Auth.");
+            Toast.makeText(c, "Erro ao finalizar o cadastro. Faça login novamente.", Toast.LENGTH_LONG).show();
         }
     }
 
+    // ================================================================
+    // As funções abaixo são as que você já tinha. Mantive para compatibilidade
+    // com o restante do app. Ajuste conforme seu uso real.
+    // ================================================================
 
-
-    public void login(TipoUsuario tipoUsuario, String email, String senha, Context c, final LoginListener listener) {
+    public void login(TipoUsuario tipoUsuario, String email, String senha, Context c) {
         mAuth.signInWithEmailAndPassword(email, senha)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Toast.makeText(c, "Login realizado com sucesso..!", Toast.LENGTH_SHORT).show();
-                        String uid = task.getResult().getUser().getUid();
-
-                        // Passamos o listener para o próximo passo assíncrono
-                        verificarPerfil(uid, tipoUsuario, c, email, listener);
+                        String uid = (task.getResult() != null && task.getResult().getUser() != null)
+                                ? task.getResult().getUser().getUid() : null;
+                        if (uid != null) {
+                            verificarPerfil(uid, tipoUsuario, c, email);
+                        } else {
+                            Toast.makeText(c, "Falha ao obter UID do usuário.", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        // Notifica o Fragment da falha no Firebase
-                        String msg = task.getException() != null ? task.getException().getMessage() : "Erro ao realizar login";
-                        listener.onFailure(msg);
+                        Toast.makeText(c, "Erro ao realizar login..!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    private final com.google.firebase.firestore.FirebaseFirestore mFirestore =
+            com.google.firebase.firestore.FirebaseFirestore.getInstance();
 
-    private void verificarPerfil(String uid, TipoUsuario tipoUsuario, Context c, String email, final LoginListener listener){
-        String collection = tipoUsuario == TipoUsuario.WORKER ? "Produtor" : "Fornecedor";
-        Log.d("AuthAdapter", "Collection para busca do User: "+ collection);
+    private void verificarPerfil(String uid, @Nullable TipoUsuario tipoUsuario, Context c, String email) {
+        // Coleção compatível com seu cenário atual:
+        String collection;
+        if (tipoUsuario == null) {
+            collection = "Fornecedor"; // default
+        } else {
+            collection = (tipoUsuario == TipoUsuario.WORKER) ? "Produtor" : "Fornecedor";
+        }
+
         mFirestore.collection(collection)
                 .document(uid)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()){
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        fetchUserFromBackend(email, tipoUsuario, c);
                         Toast.makeText(c, "Perfil encontrado..!", Toast.LENGTH_SHORT).show();
-                        // Passamos o listener para o último passo assíncrono
-                        fetchUserFromBackend(email, tipoUsuario, c, listener);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(c, "Perfil não encontrado..!", Toast.LENGTH_SHORT).show();
                         mAuth.signOut();
-                        listener.onFailure("Perfil não encontrado no Firestore."); // Notifica falha
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(c, "Erro ao verificar perfil..!", Toast.LENGTH_SHORT).show();
-                    listener.onFailure("Erro ao verificar perfil: " + e.getMessage()); // Notifica falha
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(c, "Erro ao verificar perfil..!", Toast.LENGTH_SHORT).show()
+                );
     }
 
-
-    private void fetchUserFromBackend(String email, TipoUsuario tipoUsuario, Context c, final LoginListener listener) {
-        ApiPostgresClient api = RetrofitClientPostgres.getApiService(c);
+    private void fetchUserFromBackend(String email, @Nullable TipoUsuario tipoUsuario, Context c) {
+        ApiPostgresClient api = com.example.core.network.RetrofitClientPostgres.getApiService(c);
 
         Call<UserResponse> call = (tipoUsuario == TipoUsuario.WORKER)
                 ? api.findWorkerByEmail(email)
                 : api.findCompanyByEmail(email);
 
-        call.enqueue(new retrofit2.Callback<UserResponse>() {
+        call.enqueue(new Callback<UserResponse>() {
             @Override public void onResponse(@NonNull Call<UserResponse> call,
-                                             @NonNull retrofit2.Response<UserResponse> resp) {
+                                             @NonNull Response<UserResponse> resp) {
                 if (resp.isSuccessful() && resp.body() != null) {
                     UserResponse user = resp.body();
-
-                    // === NOVO: resolver company_id como String e salvar ===
-                    String companyIdStr = resolveCompanyIdString(user, tipoUsuario);
-                    if (companyIdStr != null && !companyIdStr.trim().isEmpty()) {
-                        persistCompanyId(c, companyIdStr.trim());
-                        Log.d("AuthAdapter", "company_id persistido: " + companyIdStr.trim());
-                    } else {
-                        Log.w("AuthAdapter", "company_id não encontrado no UserResponse (tipo=" + tipoUsuario + ").");
-                    }
-
-                    // Mantém os demais dados já salvos (compat com código existente)
                     SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
+                    // padronize tipos (String) para evitar confusão depois
                     prefs.edit()
-                            .putInt("user_id", user.getId())
+                            .putString("user_id", (user.getId() != null) ? String.valueOf(user.getId()) : null)
                             .putString("name", user.getName())
                             .putString("email", user.getEmail())
-                            .putString("tipo_usuario", tipoUsuario.name())
+                            .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")
                             .apply();
 
                     Toast.makeText(c, "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
-
-
-                    listener.onSuccess();
-
                 } else {
                     Toast.makeText(c, "Erro ao buscar usuário: " + resp.code(), Toast.LENGTH_SHORT).show();
-                    listener.onFailure("Erro ao buscar dados do usuário: Código " + resp.code()); // Notifica falha
                 }
             }
+
             @Override public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
                 Toast.makeText(c, "Falha de rede: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                listener.onFailure("Falha de rede: " + t.getMessage()); // Notifica falha
             }
         });
-    }
-
-    // ======= Helpers novos (mínimos) =======
-
-    /** Salva company_id como String no SharedPreferences "user_session" (padrão esperado). */
-    private void persistCompanyId(@NonNull Context c, @NonNull String companyId) {
-        SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
-        prefs.edit()
-                .putString("company_id", companyId)
-                .apply();
-    }
-
-    /**
-     * Resolve o company_id como String a partir do UserResponse:
-     * - COMPANY: usa user.getId()
-     * - WORKER: tenta método getCompanyId() via reflexão (se existir no DTO).
-     *   * Não quebra o build caso o DTO não tenha esse método.
-     */
-    private String resolveCompanyIdString(@NonNull UserResponse user, @NonNull TipoUsuario tipo) {
-        if (tipo == TipoUsuario.COMPANY) {
-            // Para empresa, o próprio id do usuário/empresa costuma ser o company_id
-            return String.valueOf(user.getId());
-        } else {
-            // Para worker, tentamos obter companyId do DTO (sem exigir no compile)
-            Integer companyId = tryGetCompanyIdByReflection(user);
-            return (companyId != null) ? String.valueOf(companyId) : null;
-        }
-    }
-
-    /**
-     * Tenta invocar user.getCompanyId() por reflexão (se existir).
-     * Retorna null se não existir ou se falhar.
-     */
-    private Integer tryGetCompanyIdByReflection(@NonNull UserResponse user) {
-        try {
-            Method m = user.getClass().getMethod("getCompanyId");
-            Object v = m.invoke(user);
-            if (v == null) return null;
-            if (v instanceof Integer) return (Integer) v;
-            // caso venha como Long/String
-            if (v instanceof Long) return ((Long) v).intValue();
-            if (v instanceof String) {
-                try { return Integer.parseInt((String) v); } catch (NumberFormatException ignored) {}
-            }
-            return null;
-        } catch (NoSuchMethodException nsme) {
-            Log.w("AuthAdapter", "UserResponse não possui getCompanyId().");
-            return null;
-        } catch (Exception e) {
-            Log.w("AuthAdapter", "Falha ao obter companyId via reflexão: " + e.getMessage());
-            return null;
-        }
     }
 }

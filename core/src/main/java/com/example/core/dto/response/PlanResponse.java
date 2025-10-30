@@ -1,10 +1,16 @@
 package com.example.core.dto.response;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
+
 
 public class PlanResponse {
 
+    @SerializedName("plan_id")
     private Integer planId;
+
+    @SerializedName("plan_name")
     private String planName;
     private Double value;
     private List<Functionalities> functionalities;

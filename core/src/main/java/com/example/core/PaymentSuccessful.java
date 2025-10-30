@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.core.adapter.AuthAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPaymentSuccessfulBinding;
 import com.example.core.dto.request.PlanInfoRequest;
@@ -24,7 +25,10 @@ import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
+import com.example.core.service.RegisterService;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -56,13 +60,14 @@ public class PaymentSuccessful extends Fragment {
             tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
         }
 
+        Map<String, Object> dadosUsuario = (Map<String, Object>) bundle.getSerializable("dadosUsuario");
         String nome = bundle.getString("Nome");
         String email = bundle.getString("Email");
-        String cpf = bundle.getString("CPF");
         Integer planId = bundle.getInt("plan_id");
         String duration = bundle.getString("duration");
         Double amount = bundle.getDouble("amount");
-        createUser(nome, email, cpf, planId, duration, amount);
+        assert dadosUsuario != null;
+        createUser(dadosUsuario, nome, email, planId, duration, amount);
 
         // espera ~3s e vai para a Home da empresa
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -74,97 +79,37 @@ public class PaymentSuccessful extends Fragment {
         return root;
     }
 
-    public void createUser(String nome, String email, String cpf, Integer planId, String duration, Double amount) {
-        //Definir a URL
-        String url = "https://api-postgresql-zeta-fide.onrender.com";
+    public void createUser(Map<String, Object> dadosUsuario, String nome, String email, Integer planId, String duration, Double amount) {
 
-        // Configuração das requisições
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS) // tempo para conectar
-                .readTimeout(30, TimeUnit.SECONDS)    // tempo para esperar resposta
-                .writeTimeout(20, TimeUnit.SECONDS)   // tempo para enviar dados
-                .build();
+        String senha = dadosUsuario.get("Senha").toString();
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(url)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        PlanInfoRequest planInfo = new PlanInfoRequest(planId, duration, amount);
-
-        // Criar a interface para a API
-        ApiPostgresClient postgresClient = retrofit.create(ApiPostgresClient.class);
-
-        // Chamar o método da API
-        if (tipoAtual == TipoUsuario.WORKER) {
-            Call<WorkerResponse> call = postgresClient.createWorker(new WorkerRequest(nome, cpf, email, planInfo, null));
-            call.enqueue(new Callback<WorkerResponse>() {
-                @Override
-                public void onResponse(Call<WorkerResponse> call, Response<WorkerResponse> response) {
-                    if (response.isSuccessful()) {
-                        WorkerResponse worker = response.body();
-
-                        try {
-                        // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
-                        SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt("user_id", worker.getId());
-                        editor.putString("name", worker.getName());
-                        editor.putString("email", worker.getEmail());
-                        editor.putString("tipo_usuario", tipoAtual.name());
-                        editor.apply();
-
-                        } catch (Exception ex) {
-                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
-                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
-                        }
-
-                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
-                        Log.d("SESSION", "Usuário salvo: " + worker.getName() + " (ID: " + worker.getId() + ")");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<WorkerResponse> call, Throwable throwable) {
-                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } else {
-            Call<CompanyResponse> call = postgresClient.createCompany(new CompanyRequest(nome, email, planInfo));
-            call.enqueue(new Callback<CompanyResponse>() {
-                @Override
-                public void onResponse(Call<CompanyResponse> call, Response<CompanyResponse> response) {
-                    if (response.isSuccessful()) {
-                        CompanyResponse company = response.body();
-
-                        try {
-                            // Setar dados do usuário no Shared Preferences, para pegar globalmente em outros fragments
-                            SharedPreferences prefs = getContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putInt("user_id", company.getId());
-                            editor.putString("name", company.getName());
-                            editor.putString("email", company.getEmail());
-                            editor.putString("tipo_usuario", tipoAtual.name());
-                            editor.apply();
-
-                        } catch (Exception ex) {
-                            Log.e("SESSION", "Erro ao salvar sessão: " + ex.getMessage());
-                            Toast.makeText(getContext(), "Erro ao salvar sessão local.", Toast.LENGTH_SHORT).show();
-                        }
-
-                        Toast.makeText(getContext(), "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
-                        Log.d("SESSION", "Usuário salvo: " + company.getName() + " (ID: " + company.getId() + ")");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<CompanyResponse> call, Throwable throwable) {
-                    Toast.makeText(getContext(), "Erro ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (senha == null) {
+            Log.e("PaymentSucessful", "Senha vazia.");
+            return;
         }
+
+        dadosUsuario.remove("Senha");
+
+        AuthAdapter adapter = new AuthAdapter();
+        adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext(),
+                new AuthAdapter.Listener() {
+                    @Override public void onSuccess(String uid) {
+                        PlanInfoRequest planInfo = new PlanInfoRequest(planId, duration, amount);
+
+                        Object request;
+                        if (tipoAtual == TipoUsuario.WORKER) {
+                            request = new WorkerRequest(nome, email, planInfo, null);
+                        } else {
+                            request = new CompanyRequest(nome, email, planInfo);
+                        }
+
+                        RegisterService.salvarNoBackend(requireContext(), tipoAtual, request);
+                        Log.d("PaymentSucessful", "Usuário criado com sucesso no banco - request=" + request);
+                    }
+                    @Override public void onError(String message) {
+                        Log.e("Payment Sucessful", message != null ? message : "Falha no cadastro");
+                    }
+                });
     }
 
     @Override
