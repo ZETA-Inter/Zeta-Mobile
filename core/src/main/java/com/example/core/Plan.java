@@ -19,6 +19,7 @@ import com.example.core.adapter.PlanAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPlanBinding;
 import com.example.core.dto.response.PlanResponse;
+import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
@@ -72,27 +73,11 @@ public class Plan extends Fragment {
     private void list_plans_api() {
         binding.progressBar.setVisibility(View.VISIBLE);
 
-        //Definir a URL
-        String url = "https://api-postgresql-zeta-fide.onrender.com";
-
-        // Configuração das requisições
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS) // tempo para conectar
-                .readTimeout(30, TimeUnit.SECONDS)    // tempo para esperar resposta
-                .writeTimeout(20, TimeUnit.SECONDS)   // tempo para enviar dados
-                .build();
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(url)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // Criar a interface para a API
-        ApiPostgresClient postgresClient = retrofit.create(ApiPostgresClient.class);
+        ApiPostgresClient api =
+                RetrofitClientPostgres.getApiService(requireContext());
 
         // Chamar o método da API
-        Call<List<PlanResponse>> call = postgresClient.listPlans();
+        Call<List<PlanResponse>> call = api.listPlans();
 
         call.enqueue(new Callback<List<PlanResponse>>() {
             @Override
