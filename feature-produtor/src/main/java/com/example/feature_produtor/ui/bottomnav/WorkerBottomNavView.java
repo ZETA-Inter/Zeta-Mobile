@@ -23,14 +23,14 @@ public class WorkerBottomNavView extends FrameLayout {
     private Item current = Item.HOME;
 
     // PNGs no /res/drawable (troque os nomes pelos seus arquivos)
-    private final int LESSONS_OUTLINE = R.drawable.ic_lessons_outline;  // ex.: trofeu_contorno.png
-    private final int LESSONS_FILLED = R.drawable.ic_lessons_filled;   // ex.: trofeu_preenchido.png
+    private final int LESSONS_OUTLINE = R.drawable.atividades;
+    private final int LESSONS_FILLED = R.drawable.atividadeselect;
 
     private final int HOME_OUTLINE   = R.drawable.ic_home_outline;
     private final int HOME_FILLED    = R.drawable.ic_home_filled;
 
-    private final int GOALS_OUTLINE = R.drawable.ic_goals_outline;
-    private final int GOALS_FILLED    = R.drawable.ic_goals_filled;
+    private final int GOALS_OUTLINE = R.drawable.metas;
+    private final int GOALS_FILLED    = R.drawable.metasselect;
 
 
     public WorkerBottomNavView(Context c) { this(c, null); }

@@ -4,6 +4,7 @@ import com.example.feature_produtor.model.mongo.Activity;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.model.mongo.Content;
 import com.example.feature_produtor.model.mongo.FlashCard;
+import com.example.feature_produtor.model.postegres.Goal;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -25,7 +26,8 @@ public interface ApiMongo {
     @GET("/api/classes/find-class-by-id/{id}")
     Call<Class> getClassById(@Path("id") Integer id);
 
-    @GET("api/activities/list_all_activities_by_class_id/{classId}")
+    @GET("api/activities/list-all-activities-by-class-id/{classId}")
     Call<Activity> getActivityByClassId(@Path("classId") int id);
+
 }
 
