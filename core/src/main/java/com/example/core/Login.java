@@ -1,12 +1,10 @@
 package com.example.core;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import com.example.core.utils.IValidator;
 
-import com.example.core.client.ApiPostgresClient; // Importação necessária
 import com.example.core.databinding.FragmentLoginBinding;
-import com.example.core.dto.response.WorkerResponse; // Importação necessária (DTO de resposta do Worker)
-import com.example.core.network.RetrofitClientPostgres; // Importação necessária
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,24 +26,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class Login extends Fragment {
 
     private static final int RC_GOOGLE = 9001;
-    private static final String TAG = "LoginFragment"; // Tag para logs
-    private static final String PREF_NAME = "user_session"; // Nome do SharedPreferences
 
     private FragmentLoginBinding binding;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final Repository repo = new Repository();
     private GoogleSignInClient gsc;
-    private TipoUsuario tipoAtual;
+    private TipoUsuario tipoAtual; // se for COMPANY, company_id = uid; para WORKER, ajuste depois conforme sua lógica
 
     @Nullable
     @Override
@@ -62,27 +49,30 @@ public class Login extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Configuração do Google Sign-In
+        // O AuthAdapter já está instanciado como campo de classe (this.adapter), podemos remover esta linha.
+        // AuthAdapter adapter = new AuthAdapter();
+
+        // Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                // .requestIdToken(getString(R.string.default_web_client_id)) // Descomente se for usar token no backend
+                // .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         gsc = GoogleSignIn.getClient(requireActivity(), gso);
 
         // --------------------- Definição do Tipo de Usuário ---------------------
+
+        // Recupera tipo de usuário
         Bundle bundle = getArguments();
         if (bundle != null) {
             tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
-        }
-        if (tipoAtual == null) {
-            mostrarMensagem("Tipo de usuário não informado.");
-            return;
+        } else if (tipoAtual == null) {
+            Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
         }
 
-        // ===== Login por e-mail/senha
+        // ===== Login por e-mail/senha (direto com FirebaseAuth para encadear upsert + sessão)
         binding.btnEntrar.setOnClickListener(v -> {
-            String email = getEmail();
-            String senha = getSenha();
+            String email = binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
+            String senha = binding.tilSenha.getEditText() != null ? binding.tilSenha.getEditText().getText().toString().trim() : "";
 
             if (!validarCampos(email, senha)) {
                 mostrarMensagem("Corrija os campos em destaque.");
@@ -97,8 +87,21 @@ public class Login extends Fragment {
                             mostrarMensagem("Falha ao autenticar usuário.");
                             return;
                         }
-                        // CHAMA O HANDLER UNIFICADO
-                        handleAuthSuccess(result.getUser(), v);
+                        // 1) upsert no Firestore (company/{uid})
+                        repo.upsertFromAuth(result.getUser(), null)
+                                .addOnSuccessListener(aVoid -> {
+                                    // 2) salvar sessão com company_id = uid (para COMPANY)
+                                    String uid = result.getUser().getUid();
+                                    salvarSessaoBasica(uid, result.getUser().getEmail(), result.getUser().getDisplayName());
+
+                                    // 3) navegar
+                                    navegarDepoisLogin(v);
+                                    bloquearUI(false);
+                                })
+                                .addOnFailureListener(e -> {
+                                    bloquearUI(false);
+                                    mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
+                                });
                     })
                     .addOnFailureListener(e -> {
                         bloquearUI(false);
@@ -120,110 +123,7 @@ public class Login extends Fragment {
         });
     }
 
-    // ====================================================================
-    // 🧰 FUNÇÕES PRINCIPAIS DE BUSCA E SESSÃO (WORKER ID)
-    // ====================================================================
-
-    /** * Roteia a lógica de sucesso do Firebase para a ação apropriada
-     * (Buscar ID Postgres para Worker ou Salvar UID para Company).
-     */
-    private void handleAuthSuccess(@NonNull FirebaseUser user, @NonNull View navView) {
-        String email = user.getEmail();
-        String name = user.getDisplayName();
-        String uid = user.getUid();
-
-        if (email == null) {
-            bloquearUI(false);
-            mostrarMensagem("E-mail não encontrado na autenticação. Tente novamente.");
-            return;
-        }
-
-        if (tipoAtual == TipoUsuario.WORKER) {
-            // WORKER: Busca o ID do PostgreSQL por e-mail
-            fetchWorkerIdByEmail(email, name, uid, navView);
-        } else {
-            // COMPANY: Salva o UID do Firebase como company_id no Firestore e localmente
-            repo.upsertFromAuth(user, null)
-                    .addOnSuccessListener(aVoid -> {
-                        salvarSessaoCompany(uid, email, name);
-                        navegarDepoisLogin(navView);
-                        bloquearUI(false);
-                    })
-                    .addOnFailureListener(e -> {
-                        bloquearUI(false);
-                        mostrarMensagem("Erro ao atualizar perfil da Empresa: " + e.getMessage());
-                    });
-        }
-    }
-
-
-    /** * Busca o Worker ID no Backend do PostgreSQL usando o e-mail (endpoint /find-email/{email}).
-     */
-    private void fetchWorkerIdByEmail(@NonNull String email, @Nullable String name,
-                                      @NonNull String firebaseUid, @NonNull View navView) {
-
-        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
-
-        api.findWorkerByEmail(email).enqueue(new Callback<WorkerResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<WorkerResponse> call, @NonNull Response<WorkerResponse> response) {
-                bloquearUI(false);
-                if (response.isSuccessful() && response.body() != null) {
-                    Integer workerId = response.body().getId();
-
-                    if (workerId != null && workerId > 0) {
-                        // SUCESSO! 💾 Salva o ID do PostgreSQL e navega.
-                        salvarSessaoWorker(workerId, email, name, firebaseUid);
-                        navegarDepoisLogin(navView);
-                    } else {
-                        // Worker encontrado, mas ID é inválido
-                        mostrarMensagem("ID do Worker não encontrado no banco de dados. Contate o suporte.");
-                    }
-
-                } else {
-                    // ERRO: Usuário existe no Firebase, mas não no PostgreSQL (404 ou 204)
-                    Log.e(TAG, "Worker not found in Postgres for email: " + email);
-                    mostrarMensagem("Worker não encontrado no banco de dados. Login falhou.");
-                    mAuth.signOut(); // Limpa o Firebase para forçar novo cadastro limpo
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<WorkerResponse> call, @NonNull Throwable t) {
-                bloquearUI(false);
-                Log.e(TAG, "Erro de conexão ao buscar Worker ID: " + t.getMessage(), t);
-                mostrarMensagem("Erro de conexão ao buscar Worker. Verifique sua rede.");
-            }
-        });
-    }
-
-    /** Salva dados de sessão para WORKER, incluindo o ID do PostgreSQL. */
-    private void salvarSessaoWorker(int workerId, @Nullable String email, @Nullable String nome, @NonNull String firebaseUid) {
-        SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        sp.edit()
-                .putInt("worker_id", workerId)                         // <-- CHAVE DO WORKER (PostgreSQL ID)
-                .putString("email", email != null ? email : "")
-                .putString("name", nome != null ? nome : "")
-                .putString("tipo_usuario", tipoAtual.name())
-                .putString("firebase_uid", firebaseUid)                // Opcional: UID do Firebase
-                .apply();
-    }
-
-    /** Salva dados de sessão para COMPANY (usa o UID do Firebase como company_id). */
-    private void salvarSessaoCompany(@NonNull String uid, @Nullable String email, @Nullable String nome) {
-        SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        sp.edit()
-                .putString("company_id", uid)                   // COMPANY: UID do Firebase
-                .putString("email", email != null ? email : "")
-                .putString("name", nome != null ? nome : "")
-                .putString("tipo_usuario", tipoAtual.name())
-                .apply();
-    }
-
-    // ====================================================================
-    // 🌐 GOOGLE SIGN-IN FLOW
-    // ====================================================================
-
+    // ===== Google Sign-In + FirebaseAuth =====
     private void startGoogleFlow() {
         Intent signInIntent = gsc.getSignInIntent();
         startActivityForResult(signInIntent, RC_GOOGLE);
@@ -239,7 +139,7 @@ public class Login extends Fragment {
                 GoogleSignInAccount acc = task.getResult(ApiException.class);
                 String idToken = acc != null ? acc.getIdToken() : null;
                 if (idToken == null) {
-                    error(binding.tilEmail, "ID Token nulo (verifique configuração).");
+                    error(binding.tilEmail, "ID Token nulo (verifique default_web_client_id, SHA e Play Services).");
                     return;
                 }
                 bloquearUI(true);
@@ -252,8 +152,21 @@ public class Login extends Fragment {
                                 mostrarMensagem("Falha ao obter usuário (Google).");
                                 return;
                             }
-                            // CHAMA O HANDLER UNIFICADO (Google)
-                            handleAuthSuccess(r.getUser(), requireView());
+                            // 1) upsert no Firestore (company/{uid})
+                            repo.upsertFromAuth(r.getUser(), null)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // 2) salvar sessão com company_id = uid (para COMPANY)
+                                        String uid = r.getUser().getUid();
+                                        salvarSessaoBasica(uid, r.getUser().getEmail(), r.getUser().getDisplayName());
+
+                                        // 3) navegar
+                                        navegarDepoisLogin(requireView());
+                                        bloquearUI(false);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        bloquearUI(false);
+                                        mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
+                                    });
                         })
                         .addOnFailureListener(e -> {
                             bloquearUI(false);
@@ -262,14 +175,22 @@ public class Login extends Fragment {
 
             } catch (ApiException e) {
                 mostrarMensagem("Login com Google cancelado ou falhou.");
-                bloquearUI(false);
             }
         }
     }
 
-    // ====================================================================
-    // 🧭 NAVEGAÇÃO, VALIDAÇÃO E UI
-    // ====================================================================
+    // ===== Helpers: sessão + navegação =====
+
+    /** Salva sessão básica e garante company_id = uid (coerente com Repository que escreve em 'company/{uid}'). */
+    private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("company_id", uid)                   // <== chave que a sua tela de lista usa
+                .putString("email", email != null ? email : "")
+                .putString("name", nome != null ? nome : "")
+                .putString("tipo_usuario", tipoAtual != null ? tipoAtual.name() : "")
+                .apply();
+    }
 
     /** Decide deeplink por tipo e navega. */
     private void navegarDepoisLogin(@NonNull View navView) {
@@ -278,18 +199,7 @@ public class Login extends Fragment {
         Navigation.findNavController(navView).navigate(deepLinkUri);
     }
 
-    private void navigateToForgotPassword(View v) {
-        Navigation.findNavController(v).navigate(R.id.ForgetPassword);
-    }
-
-    private String getEmail() {
-        return binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
-    }
-
-    private String getSenha() {
-        return binding.tilSenha.getEditText() != null ? binding.tilSenha.getEditText().getText().toString().trim() : "";
-    }
-
+    // ===== Validação e UI =====
     private boolean validarCampos(String email, String senha) {
         boolean ok = true;
         clearErrors();
@@ -297,8 +207,7 @@ public class Login extends Fragment {
         if (TextUtils.isEmpty(email)) {
             error(binding.tilEmail, "Informe seu e-mail");
             ok = false;
-        } else if (requireContext() instanceof IValidator && !((IValidator) requireContext()).isValidEmail(email)) {
-            // Assumindo que você tem uma interface IValidator ou classe Validators
+        } else if (!Validators.isValidEmail(email)) {
             error(binding.tilEmail, "E-mail inválido");
             ok = false;
         }
@@ -308,6 +217,10 @@ public class Login extends Fragment {
             ok = false;
         }
         return ok;
+    }
+
+    private void navigateToForgotPassword(View v) {
+        Navigation.findNavController(v).navigate(R.id.ForgetPassword);
     }
 
     private void clearErrors() {
@@ -343,7 +256,7 @@ public class Login extends Fragment {
         if (binding == null) return;
         if (binding.btnEntrar != null) binding.btnEntrar.setEnabled(!busy);
         if (binding.btnGoogle != null) binding.btnGoogle.setEnabled(!busy);
-        // Exiba/oculte progress bar ou loading spinner aqui
+        // se tiver progress bar, exiba/oculte aqui
     }
 
     @Override
