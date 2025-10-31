@@ -24,4 +24,19 @@
     <color name="link_blue">#3F51B5</color>      <!-- Link Cadastre se -->
 
     <color name="purple_custom">#563887</color>
+
+    <!-- COMPANY -->
+    <color name="brand_company_primary">#043253</color>
+    <color name="brand_company_secondary">#3F51B5</color>
+    <color name="brand_company_on_primary">#FFFFFF</color>
+
+    <!-- WORKER -->
+    <color name="brand_worker_primary">#654D95</color>
+    <color name="brand_worker_secondary">#41305D</color>
+    <color name="brand_worker_on_primary">#FFFFFF</color>
+
+
+    <color name="company_primary">#043253</color>   <!-- exemplo -->
+    <color name="worker_primary">#654D95</color>    <!-- exemplo -->
+
 </resources>
