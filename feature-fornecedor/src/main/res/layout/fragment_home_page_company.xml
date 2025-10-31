@@ -41,10 +41,10 @@
 
                     <ImageView
                         android:id="@+id/imgProfile"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
                         android:padding="10dp"
-                        android:src="@drawable/perfil"/>
+                        android:src="@drawable/perfil" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
@@ -83,22 +83,22 @@
 
                     <ImageButton
                         android:id="@+id/btnBell"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_notification"/>
+                        android:src="@drawable/ic_notification" />
 
                     <ImageButton
                         android:id="@+id/btnSettings"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_marginStart="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_setting"/>
+                        android:src="@drawable/ic_setting" />
                 </LinearLayout>
 
                 <TextView

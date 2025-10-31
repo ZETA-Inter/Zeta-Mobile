@@ -296,7 +296,7 @@ public class HomePageWorkerFragment extends Fragment
 
         perfil.setOnClickListener(v -> nav.navigate(R.id.Profileworker));
         boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotPageWorker));
-        iconConfig.setOnClickListener(v -> { });
+        iconConfig.setOnClickListener(v -> { nav.navigate(R.id.FlashCardStudy);});
         iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
 
 

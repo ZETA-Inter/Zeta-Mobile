@@ -11,131 +11,129 @@
     android:clipToPadding="false"
     tools:context="com.example.feature_fornecedor.WorkerListPageCompany">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <!-- SCROLL PARA O CONTEÚDO PRINCIPAL -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollWorkers"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
+            android:layout_height="wrap_content"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingTop="44dp"
-            android:paddingBottom="16dp"
-            android:overScrollMode="never"
-            android:scrollbars="none">
-
+            android:paddingBottom="8dp"
+            android:orientation="vertical"
+            app:layout_scrollFlags="noScroll">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="64dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <!-- HEADER (perfil, busca, ícones) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:padding="10dp"
+                    android:src="@drawable/perfil"
+                    tools:ignore="ContentDescription" />
 
-                    <!-- ÍCONE DE PERFIL -->
-                    <ImageView
-                        android:id="@+id/imgProfile"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:padding="10dp"
-                        android:src="@drawable/perfil"/>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp"
+                    app:cardBackgroundColor="@color/white">
 
-                    <!-- BARRA DE PESQUISA -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/black"
-                        app:strokeWidth="1dp"
-                        app:cardBackgroundColor="@color/input_fill">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="14dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="14dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Pesquisar"
+                            android:textSize="16sp"
+                            android:textColor="@color/label_grey"/>
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Pesquisar"
-                                android:textSize="16sp"
-                                android:textColor="@color/label_grey"/>
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/iconlupa"
+                            tools:ignore="ContentDescription" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                            <ImageView
-                                android:layout_width="22dp"
-                                android:layout_height="22dp"
-                                android:src="@drawable/lupa"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                <ImageButton
+                    android:id="@+id/btnBell"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_notification"
+                    tools:ignore="ContentDescription" />
 
-                    <!-- ÍCONE DE NOTIFICAÇÃO -->
-                    <ImageButton
-                        android:id="@+id/btnBell"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="10dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/iconnotific"/>
-
-                    <!-- ÍCONE DE CONFIGURAÇÕES -->
-                    <ImageButton
-                        android:id="@+id/btnSettings"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="8dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="10dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/iconconfig"/>
-                </LinearLayout>
-
-                <!-- TÍTULO DA SEÇÃO -->
-                <TextView
-                    android:id="@+id/txtTitleWorkers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="Lista de Produtores"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-                <!-- LISTA DE WORKERS -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/item_worker"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:overScrollMode="never"
-                    tools:listitem="@layout/item_worker" />
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_setting"
+                    tools:ignore="ContentDescription" />
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- MENU INFERIOR -->
-        <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
-            android:id="@+id/bottomNav"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/txtTitleWorkers"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:elevation="0dp"/>
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Lista de Produtores"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/item_worker"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="56dp" android:clipToPadding="false"
+            android:overScrollMode="never"
+            tools:listitem="@layout/item_worker" />
+
     </LinearLayout>
+
+    <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="0dp"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
