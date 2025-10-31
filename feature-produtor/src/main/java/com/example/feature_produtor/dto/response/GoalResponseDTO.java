@@ -1,23 +1,18 @@
-package com.example.feature_produtor.model.postegres;
+package com.example.feature_produtor.dto.response;
 
-import com.google.gson.annotations.SerializedName;
-
-public class Program {
+public class GoalResponseDTO {
 
     private Integer id;
     private String name;
     private String description;
-    @SerializedName("segment")
-
-    private Segment segmentResponse;
 
 
 
-
-    public Program() {
+    public GoalResponseDTO() {
     }
 
-    // Getters e Setters
+    // --- Getters e Setters ---
+
     public Integer getId() {
         return id;
     }
@@ -44,13 +39,7 @@ public class Program {
 
 
 
-    public Segment getSegment() {
-        return segmentResponse;
-    }
 
-    public void setSegment(Segment segmentResponse) {
-        this.segmentResponse = segmentResponse;
-    }
 
 
 

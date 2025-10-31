@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.core.adapter.AuthAdapter;
+import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentLoginBinding;
 import com.example.core.ui.BrandingHelper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -28,6 +30,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import retrofit2.Call;
 
 public class Login extends Fragment {
 
@@ -95,32 +99,10 @@ public class Login extends Fragment {
             }
 
             bloquearUI(true);
-            mAuth.signInWithEmailAndPassword(email, senha)
-                    .addOnSuccessListener(result -> {
-                        if (result.getUser() == null) {
-                            bloquearUI(false);
-                            mostrarMensagem("Falha ao autenticar usuário.");
-                            return;
-                        }
-                        // 1) upsert no Firestore
-                        repo.upsertFromAuth(result.getUser(), null)
-                                .addOnSuccessListener(aVoid -> {
-                                    // 2) salvar sessão
-                                    String uid = result.getUser().getUid();
-                                    salvarSessaoBasica(uid, result.getUser().getEmail(), result.getUser().getDisplayName());
-                                    // 3) navegar
-                                    navegarDepoisLogin(v);
-                                    bloquearUI(false);
-                                })
-                                .addOnFailureListener(e -> {
-                                    bloquearUI(false);
-                                    mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        bloquearUI(false);
-                        mostrarMensagem("Erro ao realizar login: " + (e.getMessage() != null ? e.getMessage() : ""));
-                    });
+            AuthAdapter adapter = new AuthAdapter();
+            adapter.login(tipoAtual, email, senha, getContext());
+
+            navegarDepoisLogin(v);
         });
 
         // Esqueci a senha
@@ -191,12 +173,10 @@ public class Login extends Fragment {
         }
     }
 
-    // ===== Helpers: sessão + navegação =====
-
     private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
         sp.edit()
-                .putString("company_id", uid) // mantém compatibilidade com telas que leem company_id
+                .putString("company_id", uid)
                 .putString("email", email != null ? email : "")
                 .putString("name", nome != null ? nome : "")
                 .putString("tipo_usuario", tipoAtual.name()) // salva o tipo para branding em outras telas
