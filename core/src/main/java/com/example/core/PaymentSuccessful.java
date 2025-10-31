@@ -1,7 +1,5 @@
 package com.example.core;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,105 +15,144 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.core.adapter.AuthAdapter;
-import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentPaymentSuccessfulBinding;
-import com.example.core.dto.request.PlanInfoRequest;
-import com.example.core.dto.response.CompanyResponse;
-import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
+import com.example.core.dto.request.PlanInfoRequest;
 import com.example.core.dto.request.WorkerRequest;
 import com.example.core.service.RegisterService;
+import com.example.core.ui.BrandingHelper;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PaymentSuccessful extends Fragment {
 
     private FragmentPaymentSuccessfulBinding binding;
-
     private TipoUsuario tipoAtual;
-
-    private Retrofit retrofit;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Infla o layout usando o View Binding
-        binding = FragmentPaymentSuccessfulBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        // 1) Resolve tipo (Bundle → sessão) e aplica Theme Overlay
+        Bundle args = getArguments();
+        TipoUsuario fromBundle = (args != null)
+                ? (TipoUsuario) args.getSerializable("TIPO_USUARIO")
+                : null;
+        tipoAtual = BrandingHelper.resolveTipo(requireContext(), fromBundle);
+        if (tipoAtual == null) tipoAtual = TipoUsuario.COMPANY; // fallback seguro
+
+        LayoutInflater themed = BrandingHelper.themedInflater(requireContext(), inflater, tipoAtual);
+        binding = FragmentPaymentSuccessfulBinding.inflate(themed, container, false);
         View root = binding.getRoot();
-        View view = root;
 
-        Bundle bundle = getArguments();
+        // 2) Aplica logo (opcional—ignora se id não existir no layout)
+        BrandingHelper.applyBrandToViews(root, tipoAtual, R.id.imgLogo /*, ids extras se quiser */);
 
-        if (bundle != null) {
-            tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
+        // 3) Coleta argumentos e valida
+        if (args == null) {
+            Toast.makeText(requireContext(), "Dados do pagamento ausentes.", Toast.LENGTH_SHORT).show();
+            navigateHomeWithDelay(root, 2000);
+            return root;
         }
 
-        Map<String, Object> dadosUsuario = (Map<String, Object>) bundle.getSerializable("dadosUsuario");
-        String nome = bundle.getString("Nome");
-        String email = bundle.getString("Email");
-        Integer planId = bundle.getInt("plan_id");
-        String duration = bundle.getString("duration");
-        Double amount = bundle.getDouble("amount");
-        assert dadosUsuario != null;
-        createUser(dadosUsuario, nome, email, planId, duration, amount);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> dadosUsuario = (Map<String, Object>) args.getSerializable("dadosUsuario");
+        String nome      = args.getString("Nome", "");
+        String email     = args.getString("Email", "");
+        int    planId    = args.getInt("plan_id", 0);
+        String duration  = args.getString("duration", null);
+        double amount    = args.getDouble("amount", 0.0);
 
-        // espera ~3s e vai para a Home da empresa
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            String deeplink = tipoAtual == TipoUsuario.COMPANY ? "app://Company/Home" : "app://Worker/Home";
-            Uri deepLinkUri = Uri.parse(deeplink);
-            Navigation.findNavController(view).navigate(deepLinkUri);
-        }, 3000);
+        if (dadosUsuario == null || nome.isEmpty() || email.isEmpty()) {
+            Toast.makeText(requireContext(), "Informações do usuário incompletas.", Toast.LENGTH_SHORT).show();
+            navigateHomeWithDelay(root, 2000);
+            return root;
+        }
+
+        // 4) Cria usuário (Firebase + backend)
+        createUser(dadosUsuario, nome, email, planId, duration, amount, root);
+
+        // 5) Navega para Home após ~3s (independente do backend; ajuste se quiser condicionar)
+        navigateHomeWithDelay(root, 3000);
 
         return root;
     }
 
-    public void createUser(Map<String, Object> dadosUsuario, String nome, String email, Integer planId, String duration, Double amount) {
+    private void createUser(Map<String, Object> dadosUsuario,
+                            String nome,
+                            String email,
+                            int planId,
+                            @Nullable String duration,
+                            double amount,
+                            @NonNull View navView) {
 
-        String senha = dadosUsuario.get("Senha").toString();
+        Object senhaObj = dadosUsuario.get("Senha");
+        String senha = (senhaObj instanceof String) ? (String) senhaObj : null;
 
-        if (senha == null) {
-            Log.e("PaymentSucessful", "Senha vazia.");
+        if (senha == null || senha.trim().isEmpty()) {
+            Log.e("PaymentSuccessful", "Senha ausente ao criar usuário.");
+            Toast.makeText(requireContext(), "Não foi possível finalizar o cadastro (senha ausente).", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Remove a senha antes de propagar dados ao Firestore/API
         dadosUsuario.remove("Senha");
 
-        AuthAdapter adapter = new AuthAdapter();
-        adapter.cadastrar(email, senha, tipoAtual, dadosUsuario, requireContext(),
-                new AuthAdapter.Listener() {
+        new com.example.core.adapter.AuthAdapter().cadastrar(
+                email,
+                senha,
+                tipoAtual,
+                dadosUsuario,
+                requireContext(),
+                new com.example.core.adapter.AuthAdapter.Listener() {
                     @Override public void onSuccess(String uid) {
-                        PlanInfoRequest planInfo = new PlanInfoRequest(planId, duration, amount);
+                        // Monta o planInfo; duration pode ser null (p.ex. plano grátis)
+                        PlanInfoRequest planInfo = new PlanInfoRequest(
+                                planId > 0 ? planId : null,
+                                duration,
+                                amount
+                        );
 
+                        // Request específico por tipo
                         Object request;
                         if (tipoAtual == TipoUsuario.WORKER) {
+                            // companyId nulo no cadastro do worker (como combinado)
                             request = new WorkerRequest(nome, email, planInfo, null);
                         } else {
                             request = new CompanyRequest(nome, email, planInfo);
                         }
 
-                        RegisterService.salvarNoBackend(requireContext(), tipoAtual, request);
-                        Log.d("PaymentSucessful", "Usuário criado com sucesso no banco - request=" + request);
+                        try {
+                            RegisterService.salvarNoBackend(requireContext(), tipoAtual, request);
+                            Log.d("PaymentSuccessful", "Usuário persistido no backend: " + request);
+                        } catch (Exception e) {
+                            Log.e("PaymentSuccessful", "Falha ao salvar no backend: " + e.getMessage(), e);
+                            Toast.makeText(requireContext(), "Falha ao salvar no backend.", Toast.LENGTH_SHORT).show();
+                        }
                     }
+
                     @Override public void onError(String message) {
-                        Log.e("Payment Sucessful", message != null ? message : "Falha no cadastro");
+                        Log.e("PaymentSuccessful", message != null ? message : "Falha no cadastro (Auth)");
+                        Toast.makeText(requireContext(), "Falha no cadastro: " + (message != null ? message : ""), Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+        );
+    }
+
+    private void navigateHomeWithDelay(@NonNull View v, long delayMs) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            String deeplink = (tipoAtual == TipoUsuario.COMPANY)
+                    ? "app://Company/Home"
+                    : "app://Worker/Home";
+            Navigation.findNavController(v).navigate(Uri.parse(deeplink));
+        }, delayMs);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Importante: limpa a referência do binding para evitar memory leaks
         binding = null;
     }
 }

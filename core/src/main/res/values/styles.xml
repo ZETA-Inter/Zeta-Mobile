@@ -66,4 +66,17 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ThemeOverlay.App.Company" parent="">
+        <item name="colorPrimary">@color/brand_company_primary</item>
+        <item name="colorSecondary">@color/brand_company_secondary</item>
+        <item name="colorOnPrimary">@color/brand_company_on_primary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Worker" parent="">
+        <item name="colorPrimary">@color/brand_worker_primary</item>
+        <item name="colorSecondary">@color/brand_worker_secondary</item>
+        <item name="colorOnPrimary">@color/brand_worker_on_primary</item>
+    </style>
+
+
 </resources>

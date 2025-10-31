@@ -43,7 +43,7 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClic
 
     private static final String TAG = "GoalsPageWorkerFragment";
     private static final String PREF_NAME = "user_session";
-    private static final String KEY_WORKER_ID = "worker_id";
+    private static final String KEY_WORKER_ID = "user_id";
 
     private RecyclerView recyclerMetas;
     private TextInputEditText txtPesquisa;
