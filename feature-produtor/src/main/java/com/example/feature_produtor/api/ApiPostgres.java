@@ -2,6 +2,7 @@ package com.example.feature_produtor.api;
 
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
+import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
 import com.example.feature_produtor.model.postegres.Program;
 import com.example.feature_produtor.model.postegres.Segment;
@@ -13,6 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiPostgres {
     @GET("/api/programs/list-all")
@@ -42,7 +44,11 @@ public interface ApiPostgres {
     @GET("api/goals/list-goals-by-company/{workerId}/{companyId}")
     Call<Goal> getGoalsByCompany(@Path("companyId") int companyId);
 
+    @GET("api/workers/program-progress/{workerId}")
+    Call<WorkerProgressResponse> findProgramProcess(@Path("workerId") int workerId, @Query("programId") int programId);
 
+    @PATCH("api/worker-goals/complete-goal/{workerId}/{goalId}")
+    Call<String> completeGoal(@Path("workerId") int workerId, @Path("goalId") int goalId);
 
 }
 

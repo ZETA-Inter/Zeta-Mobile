@@ -16,13 +16,13 @@ import com.example.feature_produtor.model.postegres.Goal;
 // Este adaptador não precisa de Listener por enquanto, pois é apenas de exibição.
 public class GoalsAdapter extends ListAdapter<Goal, GoalsAdapter.GoalViewHolder> {
 
-    public interface OnGoalClickListener {
-        void onGoalClicked(Goal goal);
+    public interface OnGoalLongClickListener {
+        void onGoalLongClicked(Goal goal);
     }
 
-    private final OnGoalClickListener listener;
+    private final OnGoalLongClickListener listener;
 
-    public GoalsAdapter(OnGoalClickListener listener) {
+    public GoalsAdapter(OnGoalLongClickListener listener) {
         super(new GoalDiffCallback());
         this.listener = listener;
     }
@@ -57,7 +57,7 @@ public class GoalsAdapter extends ListAdapter<Goal, GoalsAdapter.GoalViewHolder>
             goalIndicatorLine = itemView.findViewById(R.id.goal_indicator_line); // << adicionar
         }
 
-        public void bind(final Goal item, final OnGoalClickListener listener) {
+        public void bind(final Goal item, final OnGoalLongClickListener listener) {
             goalName.setText(item.getGoalName());
             goalDescription.setText(item.getGoalDescription());
 
@@ -69,8 +69,10 @@ public class GoalsAdapter extends ListAdapter<Goal, GoalsAdapter.GoalViewHolder>
                 goalStatusImage.setImageResource(R.drawable.ic_failure);
             }
 
-            itemView.setOnClickListener(v -> listener.onGoalClicked(item));
-        }
+            itemView.setOnLongClickListener(v -> {
+                listener.onGoalLongClicked(item);
+                return true;
+            });        }
     }
 
 
