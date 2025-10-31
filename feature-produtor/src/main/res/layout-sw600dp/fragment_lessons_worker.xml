@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/perfil3"
         app:layout_constraintEnd_toStartOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/perfil3"
-        app:srcCompat="@drawable/iconnotific"
+        app:srcCompat="@drawable/ic_notification"
         tools:ignore="ContentDescription" />
 
     <ImageView

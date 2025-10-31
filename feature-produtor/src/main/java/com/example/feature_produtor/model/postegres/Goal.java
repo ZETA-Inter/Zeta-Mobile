@@ -2,6 +2,9 @@ package com.example.feature_produtor.model.postegres;
 
 public class Goal {
 
+    private Integer goalId;
+
+    private Integer programId;
     private String goalDescription;
     private String goalName;
     private boolean completed;
@@ -14,16 +17,16 @@ public class Goal {
         return goalDescription;
     }
 
-    public void setGoalDescription(String goalDescription) {
-        this.goalDescription = goalDescription;
-    }
-
     public String getGoalName() {
         return goalName;
     }
 
-    public void setGoalName(String goalName) {
-        this.goalName = goalName;
+    public Integer getProgramId() {
+        return programId;
+    }
+
+    public Integer getGoalId() {
+        return goalId;
     }
 
     public boolean isCompleted() {

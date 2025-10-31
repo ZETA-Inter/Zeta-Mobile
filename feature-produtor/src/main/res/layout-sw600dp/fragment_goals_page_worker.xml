@@ -39,7 +39,7 @@
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="Notificações"
-        android:src="@drawable/iconnotific"
+        android:src="@drawable/ic_notification"
         app:layout_constraintBottom_toBottomOf="@+id/icon_perfil_goals"
         app:layout_constraintEnd_toStartOf="@+id/icon_configuracoes_goals"
         app:layout_constraintTop_toTopOf="@+id/icon_perfil_goals" />

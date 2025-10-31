@@ -9,6 +9,7 @@ import com.example.feature_produtor.model.postegres.Segment;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -49,7 +50,7 @@ public interface ApiPostgres {
     Call<WorkerProgressResponse> findProgramProcess(@Path("workerId") int workerId, @Query("programId") int programId);
 
     @PATCH("api/worker-goals/complete-goal/{workerId}/{goalId}")
-    Call<String> completeGoal(@Path("workerId") int workerId, @Path("goalId") int goalId);
+    Call<ResponseBody> completeGoal(@Path("workerId") int workerId, @Path("goalId") int goalId);
 
 }
 

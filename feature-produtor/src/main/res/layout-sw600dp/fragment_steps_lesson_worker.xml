@@ -44,7 +44,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/perfil"
             app:layout_constraintEnd_toStartOf="@+id/config"
             app:layout_constraintTop_toTopOf="@+id/perfil"
-            app:srcCompat="@drawable/iconnotific"
+            app:srcCompat="@drawable/ic_notification"
             tools:ignore="ContentDescription" />
 
         <ImageView
