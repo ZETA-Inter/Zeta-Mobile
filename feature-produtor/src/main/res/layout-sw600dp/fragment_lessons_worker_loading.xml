@@ -11,19 +11,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="211dp"
-        android:background="#BFBFBF">
+        android:background="#D5D5D5">
 
         <TextView
             android:id="@+id/cursoDescr"
-            android:layout_width="279dp"
-            android:layout_height="122dp"
-            android:layout_marginTop="60dp"
-            android:fontFamily="@font/spartan_semibold"
-            android:text="             Nenhum curso iniciado"
+            android:layout_width="275dp"
+            android:layout_height="99dp"
+            android:layout_marginTop="56dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="               Nenhum curso iniciado"
             android:textColor="#3A3A3A"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.951"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

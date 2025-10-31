@@ -26,8 +26,8 @@
     <color name="purple_custom">#563887</color>
 
 
-    <color name="correct_green">#4CAF50</color>
-    <color name="wrong_red">#F44336</color>
+    <color name="correct_green">#5F9F7F</color>
+    <color name="wrong_red">#18A4E1</color>
     <color name="default_background_color">#F0F0F0</color>
 
 </resources>
