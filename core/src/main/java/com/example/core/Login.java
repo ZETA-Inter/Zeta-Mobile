@@ -17,8 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.core.adapter.AuthAdapter;
-import com.example.core.client.ApiPostgresClient;
 import com.example.core.databinding.FragmentLoginBinding;
+import com.example.core.ui.BrandingHelper;
 import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -41,25 +41,47 @@ public class Login extends Fragment {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final Repository repo = new Repository();
     private GoogleSignInClient gsc;
-    private TipoUsuario tipoAtual; // se for COMPANY, company_id = uid; para WORKER, ajuste depois conforme sua lógica
+    private TipoUsuario tipoAtual; // COMPANY ou WORKER
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentLoginBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        // 1) Resolve o tipo (Bundle → sessão)
+        Bundle args = getArguments();
+        TipoUsuario fromBundle = (args != null)
+                ? (TipoUsuario) args.getSerializable("TIPO_USUARIO")
+                : null;
+        tipoAtual = BrandingHelper.resolveTipo(requireContext(), fromBundle);
+        if (tipoAtual == null) tipoAtual = TipoUsuario.COMPANY; // fallback seguro
+
+        // 2) Inflar com Theme Overlay correspondente ao tipo
+        LayoutInflater themed = BrandingHelper.themedInflater(requireContext(), inflater, tipoAtual);
+        binding = FragmentLoginBinding.inflate(themed, container, false);
+        View root = binding.getRoot();
+
+        // 3) Ajustar logo + (opcional) tint manual em botões
+        //    -> garanta que seu layout tenha um ImageView com id ivLogo
+        BrandingHelper.applyBrandToViews(
+                root,
+                tipoAtual,
+                R.id.imgLogo,                  // ImageView da logo no layout
+                R.id.btnEntrar,               // botões a re-tintar (se necessário)
+                R.id.btnGoogle                // (MaterialButton)
+        );
+
+        return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // O AuthAdapter já está instanciado como campo de classe (this.adapter), podemos remover esta linha.
-        // AuthAdapter adapter = new AuthAdapter();
-
         // Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                // .requestIdToken(getString(R.string.default_web_client_id))
+                // .requestIdToken(getString(R.string.default_web_client_id)) // sem hardcode
                 .requestEmail()
                 .build();
         gsc = GoogleSignIn.getClient(requireActivity(), gso);
@@ -101,6 +123,8 @@ public class Login extends Fragment {
 
         // Cadastro
         binding.tvCadastro.setOnClickListener(v -> {
+            Bundle bundleRegistrer = new Bundle();
+            bundleRegistrer.putSerializable("TIPO_USUARIO", tipoAtual);
             Navigation.findNavController(v).navigate(R.id.Register, bundle);
         });
     }
@@ -134,14 +158,10 @@ public class Login extends Fragment {
                                 mostrarMensagem("Falha ao obter usuário (Google).");
                                 return;
                             }
-                            // 1) upsert no Firestore (company/{uid})
                             repo.upsertFromAuth(r.getUser(), null)
                                     .addOnSuccessListener(aVoid -> {
-                                        // 2) salvar sessão com company_id = uid (para COMPANY)
                                         String uid = r.getUser().getUid();
                                         salvarSessaoBasica(uid, r.getUser().getEmail(), r.getUser().getDisplayName());
-
-                                        // 3) navegar
                                         navegarDepoisLogin(requireView());
                                         bloquearUI(false);
                                     })
@@ -161,6 +181,8 @@ public class Login extends Fragment {
         }
     }
 
+    // ===== Helpers: sessão + navegação =====
+
     private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
         sp.edit()
@@ -171,7 +193,6 @@ public class Login extends Fragment {
                 .apply();
     }
 
-    /** Decide deeplink por tipo e navega. */
     private void navegarDepoisLogin(@NonNull View navView) {
         String deeplink = (tipoAtual == TipoUsuario.WORKER) ? "app://Worker/Home" : "app://Company/Home";
         Uri deepLinkUri = Uri.parse(deeplink);
