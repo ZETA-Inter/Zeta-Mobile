@@ -1,20 +1,17 @@
 package com.example.core;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,64 +19,71 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentRegisterBinding;
-import com.example.core.dto.request.CompanyRequest;
-import com.example.core.dto.request.WorkerRequest;
-import com.example.core.dto.response.CompanyResponse;
-import com.example.core.dto.response.WorkerResponse;
-import com.example.core.network.RetrofitClientPostgres;
+import com.example.core.ui.BrandingHelper;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 
 public class Register extends Fragment {
 
     private FragmentRegisterBinding binding;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final Repository repo = new Repository(); // Repository não está sendo usado, mas mantido.
+    private final Repository repo = new Repository(); // mantido
     private TipoUsuario tipoAtual;
 
+    // guardamos o último watcher para remover ao alternar
+    private android.text.TextWatcher docMaskWatcher;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentRegisterBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        // 1) Resolve o tipo (Bundle → sessão)
+        Bundle args = getArguments();
+        TipoUsuario fromBundle = (args != null)
+                ? (TipoUsuario) args.getSerializable("TIPO_USUARIO")
+                : null;
+        tipoAtual = BrandingHelper.resolveTipo(requireContext(), fromBundle);
+        if (tipoAtual == null) tipoAtual = TipoUsuario.COMPANY; // fallback
+
+        // 2) Inflar com Theme Overlay do tipo
+        LayoutInflater themed = BrandingHelper.themedInflater(requireContext(), inflater, tipoAtual);
+        binding = FragmentRegisterBinding.inflate(themed, container, false);
         View root = binding.getRoot();
 
-        Bundle bundle = getArguments();
+        // 3) Branding visual (logo/botão)
+        BrandingHelper.applyBrandToViews(
+                root,
+                tipoAtual,
+                R.id.imgLogo,
+                R.id.btnCadastrar
+        );
 
-        if (bundle != null) {
-            tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
-        }
-        else if (tipoAtual == null) {
-            Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
-            // Considere adicionar Navigation.findNavController(root).popBackStack(); aqui para voltar.
-        }
+        // 4) Agora SIM: aplicar máscara após binding existir
+        configureDocumentoField(tipoAtual);
 
+        // 5) CTA "Já possui conta?"
         configurarJaPossuiConta();
 
-        // 1. IMPLEMENTAÇÃO DA VALIDAÇÃO E FLUXO DE CADASTRO
+        // 6) Clique do Cadastrar
         binding.btnCadastrar.setOnClickListener(v -> {
             limparTodosErros();
             ocultarMensagem();
 
-            String nome = binding.tilNome.getEditText().getText().toString().trim();
-            String email = binding.tilEmail.getEditText().getText().toString().trim();
-            String telefone = binding.tilTelefone.getEditText().getText().toString().trim();
-            String senha = binding.tilSenha.getEditText().getText().toString().trim();
-            String confirmarSenha = binding.tilConfirmar.getEditText().getText().toString().trim();
-            String documento = binding.tilCnpj.getEditText().getText().toString().trim();
+            String nome = get((TextInputEditText) binding.tilNome.getEditText());
+            String email = get((TextInputEditText) binding.tilEmail.getEditText());
+            String telefone = get((TextInputEditText) binding.tilTelefone.getEditText());
+            String senha = get((TextInputEditText) binding.tilSenha.getEditText());
+            String confirmarSenha = get((TextInputEditText) binding.tilConfirmar.getEditText());
+            String documento = get((TextInputEditText) binding.tilCnpj.getEditText()); // vem mascarado
+
             String campoDocumento = (tipoAtual == TipoUsuario.WORKER) ? "CPF" : "CNPJ";
 
             if (!validarCampos(nome, email, telefone, documento, senha, confirmarSenha, campoDocumento)) {
@@ -87,20 +91,27 @@ public class Register extends Fragment {
                 return;
             }
 
+            // normaliza documento sem máscara para backend
+            String documentoRaw = documento.replaceAll("\\D+", "");
+
             Map<String, Object> dadosUsuario = new HashMap<>();
             dadosUsuario.put("Nome", nome);
             dadosUsuario.put("Email", email);
             dadosUsuario.put("Telefone", telefone);
             dadosUsuario.put("Senha", senha);
-            dadosUsuario.put(campoDocumento, documento);
+            dadosUsuario.put(campoDocumento, documentoRaw);
 
-            // chamar tela de plano, passando o bundle
             navegarParaPlanos(dadosUsuario, tipoAtual, nome, email, v);
         });
+
         return root;
     }
 
-    private void navegarParaPlanos(Map<String, Object> dadosUsuario, TipoUsuario tipo, String nome, String email, View clickView) {
+    private void navegarParaPlanos(Map<String, Object> dadosUsuario,
+                                   TipoUsuario tipo,
+                                   String nome,
+                                   String email,
+                                   View clickView) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("dadosUsuario", (Serializable) dadosUsuario);
         bundle.putSerializable("TIPO_USUARIO", tipo);
@@ -115,17 +126,19 @@ public class Register extends Fragment {
         int start = base.indexOf("Entre com ela.");
         int end = start + "Entre com ela.".length();
 
-        // cor
-        ss.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), com.example.core.R.color.error_red)),
-                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(
+                new ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), com.example.core.R.color.error_red)
+                ),
+                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
 
-        // clique -> navega para a tela de login
         ClickableSpan click = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TIPO_USUARIO", tipoAtual);
-                Navigation.findNavController(requireView()).navigate(R.id.Login);
+                Navigation.findNavController(widget).navigate(R.id.Login, bundle);
             }
         };
         ss.setSpan(click, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -135,43 +148,89 @@ public class Register extends Fragment {
         binding.tvJaConta.setHighlightColor(Color.TRANSPARENT);
     }
 
-
-    // 2. Método validarCampos corrigido para receber o tipo de documento
-    private boolean validarCampos(String nome, String email, String fone, String documento, String senha, String confirmarSenha, String tipoDocumento) {
+    // ===== Validação =====
+    private boolean validarCampos(String nome,
+                                  String email,
+                                  String fone,
+                                  String documento, // mascarado
+                                  String senha,
+                                  String confirmarSenha,
+                                  String tipoDocumento) {
         boolean ok = true;
 
         if (TextUtils.isEmpty(nome)) { error(binding.tilNome, "Informe seu nome"); ok = false; }
+
         if (TextUtils.isEmpty(email)) { error(binding.tilEmail, "Informe seu e-mail"); ok = false; }
         else if (!Validators.isValidEmail(email)) { error(binding.tilEmail, "E-mail inválido"); ok = false; }
+
         if (TextUtils.isEmpty(fone)) { error(binding.tilTelefone, "Informe seu telefone"); ok = false; }
         else if (!Validators.isValidPhone(fone)) { error(binding.tilTelefone, "Telefone inválido"); ok = false; }
 
-        // Validação condicional do documento (CPF ou CNPJ)
         if (TextUtils.isEmpty(documento)) {
             error(binding.tilCnpj, "Informe seu " + tipoDocumento);
             ok = false;
-        }
-        else if (tipoDocumento.equals("CNPJ") && !Validators.isValidCNPJ(documento)) {
+        } else if (tipoDocumento.equals("CNPJ") && !Validators.isValidCNPJ(documento)) {
             error(binding.tilCnpj, "CNPJ inválido");
             ok = false;
-        }
-        // OBS: Adicione a validação Validators.isValidCPF para WORKER (CPF)
-        else if (tipoDocumento.equals("CPF") && !Validators.isValidCPF(documento)) {
+        } else if (tipoDocumento.equals("CPF") && !Validators.isValidCPF(documento)) {
             error(binding.tilCnpj, "CPF inválido");
             ok = false;
         }
 
         if (TextUtils.isEmpty(senha)) { error(binding.tilSenha, "Informe sua senha"); ok = false; }
         else if (!Validators.isStrongPassword(senha)) { error(binding.tilSenha, "Mín. 6, com letra e número"); ok = false; }
+
         if (TextUtils.isEmpty(confirmarSenha)) { error(binding.tilConfirmar, "Confirme sua senha"); ok = false; }
         else if (!senha.equals(confirmarSenha)) { error(binding.tilConfirmar, "As senhas não coincidem"); ok = false; }
 
         return ok;
     }
 
-    // Métodos de utilidade (mantidos sem alteração)
-    private String get(TextInputEditText e) { return e.getText() == null ? "" : e.getText().toString().trim(); }
-    private void clearErrors() { /* ... */ }
+    // ===== Aplicação/alternância da máscara (agora funcional) =====
+
+    private void configureDocumentoField(@Nullable TipoUsuario tipo) {
+        if (binding == null) return;
+
+        // 1) Label externo acima do campo
+        if (binding.lblCnpj != null) {
+            binding.lblCnpj.setText(tipo == TipoUsuario.WORKER ? "CPF" : "CNPJ");
+        }
+
+        // 2) Desliga label flutuante do TextInputLayout
+        binding.tilCnpj.setHintEnabled(false);
+        binding.tilCnpj.setHelperTextEnabled(false); // sem texto embaixo
+
+        // 3) Placeholder e máscara no EditText
+        TextInputEditText et = binding.edtCnpj;
+        if (et == null) return;
+
+        // Remove máscara anterior
+        if (docMaskWatcher != null) {
+            et.removeTextChangedListener(docMaskWatcher);
+            docMaskWatcher = null;
+        }
+        et.setText("");
+
+        if (tipo == TipoUsuario.WORKER) {
+            et.setHint("Digite seu CPF");
+            MaskUtils.applyMaxDigits(et, 11);
+            docMaskWatcher = new MaskUtils.SimpleMaskTextWatcher(et, "###.###.###-##", 11);
+            et.addTextChangedListener(docMaskWatcher);
+        } else {
+            et.setHint("Digite seu CNPJ");
+            MaskUtils.applyMaxDigits(et, 14);
+            docMaskWatcher = new MaskUtils.SimpleMaskTextWatcher(et, "##.###.###/####-##", 14);
+            et.addTextChangedListener(docMaskWatcher);
+        }
+    }
+
+
+
+    // ===== Helpers UI =====
+    private String get(TextInputEditText e) {
+        return (e == null || e.getText() == null) ? "" : e.getText().toString().trim();
+    }
+
     private void error(TextInputLayout til, String msg) {
         if (til == null) return;
         til.setError(msg);
@@ -183,6 +242,7 @@ public class Register extends Fragment {
             til.setBoxStrokeWidthFocused(2);
         } catch (Exception ignored) {}
     }
+
     private void limparTodosErros() {
         limparErro(binding.tilNome);
         limparErro(binding.tilEmail);
@@ -191,28 +251,35 @@ public class Register extends Fragment {
         limparErro(binding.tilSenha);
         limparErro(binding.tilConfirmar);
     }
+
     private void limparErro(TextInputLayout til) {
+        if (til == null) return;
         til.setError(null);
         til.setErrorEnabled(false);
     }
+
     private void mostrarMensagem(String s) {
-        binding.tvFormMsg.setText(s);
-        binding.tvFormMsg.setVisibility(View.VISIBLE);
+        if (binding != null && binding.tvFormMsg != null) {
+            binding.tvFormMsg.setText(s);
+            binding.tvFormMsg.setVisibility(View.VISIBLE);
+        }
     }
+
     private void ocultarMensagem() {
-        binding.tvFormMsg.setVisibility(View.GONE);
-    }
-    private String mapAuthCreateError(Exception e) {
-        String m = e.getMessage() == null ? "" : e.getMessage();
-        if (m.contains("email address is already in use")) return "E-mail já cadastrado";
-        if (m.contains("WEAK_PASSWORD")) return "Senha fraca (mín. 6)";
-        if (m.contains("INVALID_EMAIL")) return "E-mail inválido";
-        return "Não foi possível criar sua conta";
+        if (binding != null && binding.tvFormMsg != null) {
+            binding.tvFormMsg.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // evita vazamento de watcher
+        if (binding != null && binding.tilCnpj != null) {
+            TextInputEditText et = (TextInputEditText) binding.tilCnpj.getEditText();
+            if (et != null && docMaskWatcher != null) et.removeTextChangedListener(docMaskWatcher);
+            docMaskWatcher = null;
+        }
         binding = null;
     }
 }
