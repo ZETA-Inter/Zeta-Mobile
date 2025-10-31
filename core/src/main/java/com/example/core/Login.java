@@ -123,6 +123,8 @@ public class Login extends Fragment {
 
         // Cadastro
         binding.tvCadastro.setOnClickListener(v -> {
+            Bundle bundleRegistrer = new Bundle();
+            bundleRegistrer.putSerializable("TIPO_USUARIO", tipoAtual);
             Navigation.findNavController(v).navigate(R.id.Register, bundle);
         });
     }
@@ -178,6 +180,8 @@ public class Login extends Fragment {
             }
         }
     }
+
+    // ===== Helpers: sessão + navegação =====
 
     private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
