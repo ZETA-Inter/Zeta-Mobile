@@ -94,7 +94,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/iconnotific"/>
+                        android:src="@drawable/ic_notificationx"/>
 
                     <!-- ÍCONE DE CONFIGURAÇÕES -->
                     <ImageButton
