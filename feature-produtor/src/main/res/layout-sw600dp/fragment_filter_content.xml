@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_filtro"
-    android:layout_width="wrap_content"
+    android:layout_width="184dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp"
@@ -15,14 +15,14 @@
 
     <TextView
         android:id="@+id/text_filtro"
-        android:layout_width="112dp"
+        android:layout_width="178dp"
         android:layout_height="match_parent"
-        android:fontFamily="@font/poppins_semibold"
+        android:fontFamily="@font/baloo_bhaina"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:text="filtro"
+        android:paddingBottom="10dp"
+        android:text="                            filtro"
         android:textColor="#333333"
         android:textSize="18sp"
         android:textStyle="normal" />

@@ -20,6 +20,7 @@ android {
     namespace = "com.example.zeta_mobile"
     compileSdk = 35
 
+
     defaultConfig {
         applicationId = "com.example.zeta_mobile"
         minSdk = 30
@@ -35,7 +36,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true   // 👈 obrigatório em library no AGP 8+
+        buildConfig = true
     }
 
     buildTypes {

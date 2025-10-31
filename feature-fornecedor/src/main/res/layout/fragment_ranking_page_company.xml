@@ -2,19 +2,19 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <!-- Barra do topo (perfil, busca, sinos, settings) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,8 +22,8 @@
             android:paddingEnd="16dp"
             android:paddingTop="44dp"
             android:paddingBottom="8dp"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            app:layout_scrollFlags="noScroll">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
@@ -31,10 +31,11 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:padding="10dp"
-                    android:src="@drawable/perfil"/>
+                    android:src="@drawable/perfil"
+                    tools:ignore="ContentDescription" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
@@ -67,28 +68,31 @@
                         <ImageView
                             android:layout_width="22dp"
                             android:layout_height="22dp"
-                            android:src="@drawable/iconlupa"/>
+                            android:src="@drawable/iconlupa"
+                            tools:ignore="ContentDescription" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <ImageButton
                     android:id="@+id/btnBell"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_notificationx"/>
+                    android:src="@drawable/ic_notification"
+                    tools:ignore="ContentDescription" />
 
                 <ImageButton
                     android:id="@+id/btnSettings"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_setting"/>
+                    android:src="@drawable/ic_setting"
+                    tools:ignore="ContentDescription" />
             </LinearLayout>
         </LinearLayout>
 
@@ -105,137 +109,147 @@
 
             <ImageView
                 android:id="@+id/podiumBg"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="381dp"
+                android:layout_height="301dp"
                 android:src="@drawable/bg_ranking_podium"
                 android:scaleType="fitCenter"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
             <LinearLayout
                 android:id="@+id/slotFirst"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="78dp"
+                android:layout_marginTop="84dp"
                 android:clipChildren="false"
-                android:clipToPadding="false">
+                android:clipToPadding="false"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.503"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imgFirst"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
+                    android:src="@drawable/perfil"
                     app:shapeAppearanceOverlay="@style/CircleImage"
                     app:strokeColor="@color/white"
-                    app:strokeWidth="2dp"/>
+                    app:strokeWidth="2dp" />
 
                 <TextView
                     android:id="@+id/nameFirst"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="—"
-                    android:textStyle="bold"
+                    android:text="Ana Clara Moreira"
                     android:textColor="@color/black"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/ptsFirst"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 pts"
+                    android:text="247 pts"
                     android:textColor="@color/black"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/slotThird"
+                android:layout_width="104dp"
+                android:layout_height="124dp"
+                android:layout_marginTop="148dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@id/slotFirst"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgThird"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/perfil"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeColor="@color/white"
+                    app:strokeWidth="2dp" />
+
+                <TextView
+                    android:id="@+id/nameThird"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_marginTop="6dp"
+                    android:text="Gabriel Claro Ferreiro"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/ptsThird"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="135 pts"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/slotSecond"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="56dp"
-                android:layout_marginBottom="44dp"
+                android:layout_width="111dp"
+                android:layout_height="141dp"
+                android:layout_marginTop="128dp"
                 android:clipChildren="false"
-                android:clipToPadding="false">
+                android:clipToPadding="false"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/slotFirst"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imgSecond"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="centerCrop"
+                    android:src="@drawable/perfil"
                     app:shapeAppearanceOverlay="@style/CircleImage"
                     app:strokeColor="@color/white"
-                    app:strokeWidth="2dp"/>
+                    app:strokeWidth="2dp" />
 
                 <TextView
                     android:id="@+id/nameSecond"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="35dp"
                     android:layout_marginTop="6dp"
-                    android:text="—"
-                    android:textStyle="bold"
+                    android:text="Beatriz Souza           Lima"
+                    android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/ptsSecond"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 pts"
+                    android:text="228 pts"
                     android:textColor="@color/black"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/slotThird"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginStart="56dp"
-                android:layout_marginBottom="24dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgThird"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="2dp"/>
-
-                <TextView
-                    android:id="@+id/nameThird"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="—"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"/>
-
-                <TextView
-                    android:id="@+id/ptsThird"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 pts"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"/>
-            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -247,8 +261,9 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:clipToPadding="false"
+            android:paddingBottom="56dp"
             android:overScrollMode="never"/>
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
         android:id="@+id/bottomNav"
