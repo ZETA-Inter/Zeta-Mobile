@@ -24,26 +24,32 @@ import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_produtor.adapter.GoalsAdapter;
 import com.example.feature_produtor.api.ApiPostgres;
 import com.example.feature_produtor.dto.response.GoalResponseDTO;
+import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
-public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClickListener{
+public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLongClickListener{
 
     private static final String TAG = "GoalsPageWorkerFragment";
     private static final String PREF_NAME = "user_session";
     private static final String KEY_WORKER_ID = "user_id";
+
+    private int workerId = 0;
 
     private RecyclerView recyclerMetas;
     private TextInputEditText txtPesquisa;
@@ -87,11 +93,9 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClic
 
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        int workerId = sp.getInt(KEY_WORKER_ID, -1);
+        workerId = sp.getInt(KEY_WORKER_ID, -1);
         return workerId != -1 ? workerId : null;
     }
-
-    // Buscando na api
 
     private void fetchGoals() {
         Integer workerId = getWorkerIdFromLocalStore();
@@ -169,13 +173,11 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClic
 
 
         List<Goal> filteredList = allGoals.stream()
-                .filter(goal -> goal.getGoal().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery))
+                .filter(goal -> goal.getGoalName().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery))
                 .collect(Collectors.toList());
 
         goalsAdapter.submitList(filteredList);
     }
-
-    //  Configuração da Bottom Nav
 
     private void setupBottomNav(View view) {
         WorkerBottomNavView bottom = view.findViewById(R.id.bottomNav);
@@ -187,18 +189,121 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClic
         }
     }
 
+    private void showCompletionDialog(Goal goal) {
+        String title = "Finalizar Meta";
+        String message = "Você deseja marcar a meta '" + goal.getGoalName() + "' como concluída?";
 
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(true)
 
+                .setPositiveButton("Finalizar", (dialog, which) -> {
+                    Toast.makeText(getContext(), "Finalizando meta: " + goal.getGoalName(), Toast.LENGTH_SHORT).show();
+                    completeGoal(goal);
+                })
 
-
-
-
-
-    @Override
-    public void onGoalClicked(Goal goal) {
-
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
     }
 
+    private void completeGoal(Goal goal) {
+        Integer programId = goal.getProgramId();
+        if (programId == null || programId == 0) {
+            completeGoalApi(goal);
+        } else {
+            completedProgram(workerId, programId, goal);
+        }
+    }
 
+    private void completedProgram(int workerId, int programId, Goal goal) {
+        ApiPostgres apiPostgres = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
 
+        Call<WorkerProgressResponse> call = apiPostgres.findProgramProcess(workerId, programId);
+
+        call.enqueue(new Callback<WorkerProgressResponse>() {
+            @Override
+            public void onResponse(Call<WorkerProgressResponse> call, Response<WorkerProgressResponse> response) {
+                if (response.isSuccessful()) {
+                    WorkerProgressResponse wp = response.body();
+
+                    if (wp.getWorkerProgress() >= 100) {
+                        Log.d(TAG, "Program foi concluído. Concluindo meta...");
+                        completeGoalApi(goal);
+                    } else {
+                        Log.d(TAG, "Program percentage is lower than 100. Not completing goal.");
+                    }
+                } else {
+                    String errorBody = response.errorBody() != null ? response.errorBody().toString() : "Erro desconhecido.";
+                    Toast.makeText(requireContext(), "Erro ao procurar porcentagem do programa. Código: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WorkerProgressResponse> call, Throwable throwable) {
+                Log.e(TAG, "Falha na requisição para finalizar programa: " + throwable.getMessage());
+                Toast.makeText(requireContext(), "Erro de conexão: Não foi possível alcançar o servidor.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void completeGoalApi(Goal goal) {
+        ApiPostgres apiPostgres = RetrofitClientPostgres
+                .getInstance(requireContext())
+                .create(ApiPostgres.class);
+
+        Call<ResponseBody> call = apiPostgres.completeGoal(workerId, goal.getGoalId());
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        String message = response.body() != null ? response.body().string() : "Meta concluída com sucesso!";
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    refreshGoalsList();
+                } else {
+                    String errorBody = "Erro desconhecido.";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorBody = response.errorBody().string();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.e(TAG, "Erro ao finalizar meta. Code: " + response.code() + ", Body: " + errorBody);
+                    Toast.makeText(requireContext(), "Erro ao concluir meta. Código: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                Log.e(TAG, "Falha na requisição para finalizar meta: " + throwable.getMessage());
+                Toast.makeText(requireContext(), "Erro de conexão: Não foi possível alcançar o servidor.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void refreshGoalsList() {
+        fetchGoals();
+    }
+
+    @Override
+    public void onGoalLongClicked(Goal goal) {
+        if (!goal.isCompleted()) {
+            showCompletionDialog(goal);
+        } else {
+            Toast.makeText(requireContext(), "Meta já concluída!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

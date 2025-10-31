@@ -100,7 +100,6 @@
             android:id="@+id/podium"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            android:paddingTop="8dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingTop="8dp"
@@ -112,10 +111,8 @@
                 android:id="@+id/podiumBg"
                 android:layout_width="381dp"
                 android:layout_height="301dp"
-                android:scaleType="fitXY"
                 android:src="@drawable/bg_ranking_podium"
                 android:scaleType="fitCenter"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -194,7 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_marginTop="6dp"
-                    android:text="Gabriel Claro                   Ferreiro"
+                    android:text="Gabriel Claro Ferreiro"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="14sp"
@@ -266,7 +263,7 @@
             android:clipToPadding="false"
             android:paddingBottom="56dp"
             android:overScrollMode="never"/>
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
         android:id="@+id/bottomNav"

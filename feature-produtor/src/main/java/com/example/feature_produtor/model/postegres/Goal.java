@@ -2,19 +2,31 @@ package com.example.feature_produtor.model.postegres;
 
 public class Goal {
 
-    private String goal;
+    private Integer goalId;
+
+    private Integer programId;
+    private String goalDescription;
+    private String goalName;
     private boolean completed;
 
 
     public Goal() {
     }
 
-    public String getGoal() {
-        return goal;
+    public String getGoalDescription() {
+        return goalDescription;
     }
 
-    public void setGoal(String goal) {
-        this.goal = goal;
+    public String getGoalName() {
+        return goalName;
+    }
+
+    public Integer getProgramId() {
+        return programId;
+    }
+
+    public Integer getGoalId() {
+        return goalId;
     }
 
     public boolean isCompleted() {
