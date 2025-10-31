@@ -39,46 +39,51 @@ public class GoalsAdapter extends ListAdapter<Goal, GoalsAdapter.GoalViewHolder>
     @Override
     public void onBindViewHolder(@NonNull GoalViewHolder holder, int position) {
         Goal currentGoal = getItem(position);
-        holder.bind(currentGoal, position + 1, listener);
+        holder.bind(currentGoal, listener);
     }
 
     public static class GoalViewHolder extends RecyclerView.ViewHolder {
 
+        private final TextView goalName;
         private final TextView goalDescription;
         private final ImageView goalStatusImage;
+        private final View goalIndicatorLine; // << adicionar
 
         public GoalViewHolder(@NonNull View itemView) {
             super(itemView);
+            goalName = itemView.findViewById(R.id.text_goal_name);
             goalDescription = itemView.findViewById(R.id.text_goal_description);
             goalStatusImage = itemView.findViewById(R.id.image_goal_status);
+            goalIndicatorLine = itemView.findViewById(R.id.goal_indicator_line); // << adicionar
         }
 
-        public void bind(final Goal item, int number,final OnGoalClickListener listener) {
-            // Exibe o número da meta e sua descrição
-            String description = number + " -> " + item.getGoal();
-            goalDescription.setText(description);
+        public void bind(final Goal item, final OnGoalClickListener listener) {
+            goalName.setText(item.getGoalName());
+            goalDescription.setText(item.getGoalDescription());
 
             if (item.isCompleted()) {
                 goalStatusImage.setVisibility(View.VISIBLE);
                 goalStatusImage.setImageResource(R.drawable.ic_successful);
             } else {
-                goalStatusImage.setVisibility(View.INVISIBLE);
+                goalStatusImage.setVisibility(View.VISIBLE);
+                goalStatusImage.setImageResource(R.drawable.ic_failure);
             }
 
             itemView.setOnClickListener(v -> listener.onGoalClicked(item));
         }
     }
 
+
     private static class GoalDiffCallback extends DiffUtil.ItemCallback<Goal> {
         @Override
         public boolean areItemsTheSame(@NonNull Goal oldItem, @NonNull Goal newItem) {
 
-            return oldItem.getGoal().equals(newItem.getGoal());
+            return oldItem.getGoalName().equals(newItem.getGoalName());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull Goal oldItem, @NonNull Goal newItem) {
-            return oldItem.getGoal().equals(newItem.getGoal()) &&
+            return oldItem.getGoalName().equals(newItem.getGoalName()) &&
                     oldItem.isCompleted() == newItem.isCompleted();
         }
     }

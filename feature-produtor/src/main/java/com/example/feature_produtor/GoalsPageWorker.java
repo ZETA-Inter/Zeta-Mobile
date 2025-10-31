@@ -169,7 +169,7 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalClic
 
 
         List<Goal> filteredList = allGoals.stream()
-                .filter(goal -> goal.getGoal().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery))
+                .filter(goal -> goal.getGoalName().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery))
                 .collect(Collectors.toList());
 
         goalsAdapter.submitList(filteredList);
