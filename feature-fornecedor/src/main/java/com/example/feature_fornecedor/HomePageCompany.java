@@ -73,11 +73,11 @@ public class HomePageCompany extends Fragment {
         // Ícone de perfil
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
-        imgProfile.setOnClickListener(v -> {
-            // Navega diretamente para o destino do grafo de navegação do core
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(com.example.core.R.id.Profile);
-        });
+//        imgProfile.setOnClickListener(v -> {
+//            // Navega diretamente para o destino do grafo de navegação do core
+//            NavController navController = NavHostFragment.findNavController(this);
+//            navController.navigate(com.example.core.R.id.Profile);
+//        });
 
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {

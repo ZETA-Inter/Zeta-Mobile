@@ -16,8 +16,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentLoginBinding;
 import com.example.core.ui.BrandingHelper;
+import com.example.core.network.RetrofitClientPostgres;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,6 +30,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import retrofit2.Call;
 
 public class Login extends Fragment {
 
@@ -82,12 +86,20 @@ public class Login extends Fragment {
                 .build();
         gsc = GoogleSignIn.getClient(requireActivity(), gso);
 
-        // ===== Login por e-mail/senha (FirebaseAuth) =====
+        // --------------------- Definição do Tipo de Usuário ---------------------
+
+        // Recupera tipo de usuário
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            tipoAtual = (TipoUsuario) bundle.getSerializable("TIPO_USUARIO");
+        } else if (tipoAtual == null) {
+            Toast.makeText(requireContext(), "Tipo de usuário não informado", Toast.LENGTH_SHORT).show();
+        }
+
+        // ===== Login por e-mail/senha (direto com FirebaseAuth para encadear upsert + sessão)
         binding.btnEntrar.setOnClickListener(v -> {
-            String email = binding.tilEmail.getEditText() != null
-                    ? binding.tilEmail.getEditText().getText().toString().trim() : "";
-            String senha = binding.tilSenha.getEditText() != null
-                    ? binding.tilSenha.getEditText().getText().toString().trim() : "";
+            String email = binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
+            String senha = binding.tilSenha.getEditText() != null ? binding.tilSenha.getEditText().getText().toString().trim() : "";
 
             if (!validarCampos(email, senha)) {
                 mostrarMensagem("Corrija os campos em destaque.");
@@ -95,32 +107,10 @@ public class Login extends Fragment {
             }
 
             bloquearUI(true);
-            mAuth.signInWithEmailAndPassword(email, senha)
-                    .addOnSuccessListener(result -> {
-                        if (result.getUser() == null) {
-                            bloquearUI(false);
-                            mostrarMensagem("Falha ao autenticar usuário.");
-                            return;
-                        }
-                        // 1) upsert no Firestore
-                        repo.upsertFromAuth(result.getUser(), null)
-                                .addOnSuccessListener(aVoid -> {
-                                    // 2) salvar sessão
-                                    String uid = result.getUser().getUid();
-                                    salvarSessaoBasica(uid, result.getUser().getEmail(), result.getUser().getDisplayName());
-                                    // 3) navegar
-                                    navegarDepoisLogin(v);
-                                    bloquearUI(false);
-                                })
-                                .addOnFailureListener(e -> {
-                                    bloquearUI(false);
-                                    mostrarMensagem("Erro ao atualizar perfil: " + e.getMessage());
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        bloquearUI(false);
-                        mostrarMensagem("Erro ao realizar login: " + (e.getMessage() != null ? e.getMessage() : ""));
-                    });
+            AuthAdapter adapter = new AuthAdapter();
+            adapter.login(tipoAtual, email, senha, getContext());
+
+            navegarDepoisLogin(v);
         });
 
         // Esqueci a senha
@@ -131,10 +121,8 @@ public class Login extends Fragment {
             binding.btnGoogle.setOnClickListener(v -> startGoogleFlow());
         }
 
-        // Cadastro (mantém o tipo no bundle)
+        // Cadastro
         binding.tvCadastro.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("TIPO_USUARIO", tipoAtual);
             Navigation.findNavController(v).navigate(R.id.Register, bundle);
         });
     }
@@ -191,15 +179,13 @@ public class Login extends Fragment {
         }
     }
 
-    // ===== Helpers: sessão + navegação =====
-
     private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
         sp.edit()
-                .putString("company_id", uid) // mantém compatibilidade com telas que leem company_id
+                .putString("company_id", uid)
                 .putString("email", email != null ? email : "")
                 .putString("name", nome != null ? nome : "")
-                .putString("tipo_usuario", tipoAtual.name()) // salva o tipo para branding em outras telas
+                .putString("tipo_usuario", tipoAtual != null ? tipoAtual.name() : "")
                 .apply();
     }
 
@@ -266,7 +252,7 @@ public class Login extends Fragment {
         if (binding == null) return;
         if (binding.btnEntrar != null) binding.btnEntrar.setEnabled(!busy);
         if (binding.btnGoogle != null) binding.btnGoogle.setEnabled(!busy);
-        // aqui você pode exibir/ocultar um ProgressBar se tiver
+        // se tiver progress bar, exiba/oculte aqui
     }
 
     @Override
