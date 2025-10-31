@@ -2,6 +2,7 @@
 package com.example.core.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,10 +10,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.core.Login;
 import com.example.core.Repository;
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.response.UserResponse;
+import com.example.core.notifications.NotificationHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -176,6 +179,11 @@ public class AuthAdapter {
                             .putString("email", user.getEmail())
                             .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")
                             .apply();
+
+                    String title = "Bem-vindo!";
+                    String mensagem = "Olá " + user.getName() + ", aproveite seu primeiro acesso.";
+                    NotificationHelper.sendNotification(c, title, mensagem, new Intent(c, Login.class));
+                    Log.d(TAG, "Notificação de Login enviada com sucesso!");
 
                     Toast.makeText(c, "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
                 } else {
