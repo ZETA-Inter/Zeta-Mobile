@@ -2,13 +2,17 @@ package com.example.zeta_mobile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.example.core.notifications.NotificationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
         }
+
+        NotificationHelper.createNotificationChannel(this);
+        pedirPermissaoNotificacao();
 
         boolean isUserLoggedIn = checkIfUserIsLoggedIn();
 
@@ -59,6 +66,18 @@ public class MainActivity extends AppCompatActivity {
                 navController.navigate(com.example.core.R.id.Login);
             } catch (Exception e) {
                 Log.e("MainActivity", "Falha ao navegar para LoginFragment: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    private void pedirPermissaoNotificacao() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
+                        101
+                );
             }
         }
     }
