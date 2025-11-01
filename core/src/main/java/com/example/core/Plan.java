@@ -82,7 +82,7 @@ public class Plan extends Fragment {
     }
 
     private void list_plans_api() {
-        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.percentageBar.setVisibility(View.VISIBLE);
 
         ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
         Call<List<PlanResponse>> call = api.listPlans();
@@ -91,7 +91,7 @@ public class Plan extends Fragment {
             @Override
             public void onResponse(@NonNull Call<List<PlanResponse>> call,
                                    @NonNull Response<List<PlanResponse>> response) {
-                binding.progressBar.setVisibility(View.GONE);
+                binding.percentageBar.setVisibility(View.GONE);
 
                 if (!response.isSuccessful() || response.body() == null) {
                     showError("Não foi possível carregar os planos. (" + response.code() + ")");
@@ -113,7 +113,7 @@ public class Plan extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<PlanResponse>> call, @NonNull Throwable t) {
-                binding.progressBar.setVisibility(View.GONE);
+                binding.percentageBar.setVisibility(View.GONE);
                 showError("Falha ao carregar planos: " + (t.getMessage() != null ? t.getMessage() : "erro de rede"));
                 // evite recursão infinita aqui; deixe o usuário tentar novamente manualmente se desejar
             }

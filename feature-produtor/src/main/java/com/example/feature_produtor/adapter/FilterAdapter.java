@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
 
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.core.model.Segment;
 public class FilterAdapter extends ListAdapter<Segment, FilterAdapter.SegmentViewHolder> {
 
 

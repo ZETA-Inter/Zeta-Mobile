@@ -21,12 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.ui.CircularProgressView;
-import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
 
 import com.example.feature_produtor.adapter.FilterAdapter;
-import com.example.feature_produtor.adapter.LessonsCardProgressAdapter;
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.core.adapter.LessonsCardProgressAdapter;
+import com.example.core.model.Segment;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.example.feature_produtor.api.ApiPostgres;
 import java.util.ArrayList;

@@ -2,9 +2,6 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.app.ListActivity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,19 +19,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.core.network.RetrofitClientMongo;
-import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientRedis;
 import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
-import com.example.feature_produtor.api.ApiPostgres;
 import com.example.feature_produtor.api.ProgressApiHelper;
-import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 
-import com.example.feature_produtor.adapter.AnswerAdapter;
-import com.example.feature_produtor.model.mongo.Activity;
-import com.example.feature_produtor.model.mongo.Activity.Question;
-import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
+import com.example.core.model.mongo.Activity;
+import com.example.core.model.mongo.Activity.Question;
+import com.example.core.model.mongo.Activity.Question.Answer;
 import com.example.feature_produtor.model.redis.StepRequest;
 import com.example.feature_produtor.model.redis.StepResponse;
 import com.google.android.material.button.MaterialButton;

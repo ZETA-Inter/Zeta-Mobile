@@ -2,6 +2,7 @@ package com.example.core.client;
 
 import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.PlanResponse;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.dto.response.UserResponse;
 import com.example.core.dto.response.WorkerResponse;
 import com.example.core.dto.request.CompanyRequest;
@@ -37,7 +38,10 @@ public interface ApiPostgresClient {
     Call<WorkerResponse> findProgramById(@Path("id") Integer id);
 
     @GET("api/workers/list-actual-programs-by-id/{id}")
-    Call<WorkerResponse> listActualProgramsById(@Path("id") Integer id);
+    Call<List<ProgramWorkerResponseDTO>> listActualProgramsById(@Path("id") Integer id);
+
+    @GET("api/companies/list-actual-worker-programs-by-id/{id}")
+    Call<List<ProgramWorkerResponseDTO>> listActualProgramsByCompanyId(@Path("id") Integer id);
 
     @GET("api/goals/progress-goals/{workerId}")
     Call<WorkerResponse> findProgressGoalsById(@Path("workerId") Integer workerId);
@@ -47,6 +51,12 @@ public interface ApiPostgresClient {
 
     @GET("api/workers/overall-goals-progress/{workerId}")
     Call<Integer> findOverallGoalsProgressById(@Path("workerId") Integer workerId);
+
+    @GET("api/companies/average-progress-percentage/{companyId}")
+    Call<Integer> findAverageProgressPercentageById(@Path("companyId") Integer companyId);
+
+    @GET("api/goals/average-finished-goals/{companyId}")
+    Call<Integer> findAverageFinishedGoalsById(@Path("companyId") Integer companyId);
 
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);
