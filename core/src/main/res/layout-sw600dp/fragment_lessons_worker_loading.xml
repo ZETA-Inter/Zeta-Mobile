@@ -19,7 +19,7 @@
             android:layout_height="99dp"
             android:layout_marginTop="56dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="               Nenhum curso iniciado"
+            android:text="Nenhum curso iniciado"
             android:textColor="#3A3A3A"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
