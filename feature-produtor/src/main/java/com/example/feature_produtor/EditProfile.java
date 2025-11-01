@@ -137,7 +137,7 @@ public class EditProfile extends Fragment {
             }
 
             // 2.4. Navega de volta para o Profileworker
-            Navigation.findNavController(fragmentView).navigate(R.id.Profileworker, bundle);
+            Navigation.findNavController(fragmentView).navigate(com.example.core.R.id.Profile, bundle);
 
             // Nota: A lógica de salvar os dados no banco (além da imagem) deve ocorrer aqui antes da navegação,
             // ou ser tratada no Fragment de destino (Profileworker).

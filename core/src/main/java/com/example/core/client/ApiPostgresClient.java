@@ -34,13 +34,13 @@ public interface ApiPostgresClient {
     Call<UserResponse> findCompanyByEmail(@Path("email") String email);
 
     @GET("api/workers/list-actual-programs-by-id/{id}")
-    Call<WorkerResponse> findProgramById(@Path("id") String id);
+    Call<WorkerResponse> findProgramById(@Path("id") Integer id);
 
     @GET("api/workers/list-actual-programs-by-id/{id}")
-    Call<WorkerResponse> findLessonsProgressById(@Path("id") String id);
+    Call<WorkerResponse> listActualProgramsById(@Path("id") Integer id);
 
     @GET("api/goals/progress-goals/{workerId}")
-    Call<WorkerResponse> findProgressGoalsById(@Path("workerId") String workerId);
+    Call<WorkerResponse> findProgressGoalsById(@Path("workerId") Integer workerId);
 
     @GET("api/workers/overall-programs-progress/{workerId}")
     Call<Integer> findOverallProgramsProgressById(@Path("workerId") Integer workerId);

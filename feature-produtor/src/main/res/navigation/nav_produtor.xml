@@ -71,13 +71,6 @@
             android:defaultValue="default_id" />
     </fragment>
 
-
-    <fragment
-        android:id="@+id/Profileworker"
-        android:name="com.example.feature_produtor.Profileworker">
-
-    </fragment>
-
     <fragment
         android:id="@+id/ChatBotPageWorker"
         android:name="com.example.feature_produtor.ChatBotPageWorker">
@@ -101,10 +94,9 @@
 
 
     <dialog
-        android:id="@+id/CardNotificacao" android:name="com.example.feature_produtor.CardNotificacao"
+        android:id="@+id/CardNotificacao"
+        android:name="com.example.feature_produtor.CardNotificacao"
         tools:layout="@layout/fragment_card_notificacao"/>
-
-
 
 
 </navigation>

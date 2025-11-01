@@ -267,7 +267,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
     private void setupClickListeners(Integer programId) {
-        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
+        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(com.example.core.R.id.Profile));
 
         config.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();

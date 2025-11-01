@@ -204,7 +204,7 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     }
 
     private void setupClickListeners() {
-        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
+        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(com.example.core.R.id.Profile));
         notificacao.setOnClickListener(v -> {
             if (getView() != null) Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
         });
