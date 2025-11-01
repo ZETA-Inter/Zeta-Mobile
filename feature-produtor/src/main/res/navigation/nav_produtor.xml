@@ -35,21 +35,6 @@
     </fragment>
 
 
-    <fragment
-        android:id="@+id/SummarizeCourseWorker"
-        android:name="com.example.feature_produtor.SummarizeCourseWorker">
-        <deepLink
-            android:id="@+id/SummarizeCourseWorkerDeepLink"
-            app:uri="app://Worker/SummarizeCourse" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/TrainingPageWorker"
-        android:name="com.example.feature_produtor.TrainingPageWorker">
-        <deepLink
-            android:id="@+id/TrainingPageWorkerDeepLink"
-            app:uri="app://Worker/Training" />
-    </fragment>
 
     <fragment
         android:id="@+id/StepsLessonWorker"
@@ -79,8 +64,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/ChatBotPageWorker"
-        android:name="com.example.feature_produtor.ChatBotPageWorker">
+        android:id="@+id/ChatBotWorker"
+        android:name="com.example.feature_produtor.ChatBotWorker">
     </fragment>
 
     <fragment

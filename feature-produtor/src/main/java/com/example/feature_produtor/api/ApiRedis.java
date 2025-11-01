@@ -1,7 +1,7 @@
 package com.example.feature_produtor.api;
 
-import com.example.feature_produtor.model.redis.StepRequest;
-import com.example.feature_produtor.model.redis.StepResponse;
+import com.example.feature_produtor.dto.request.StepRequest;
+import com.example.feature_produtor.dto.response.StepResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
