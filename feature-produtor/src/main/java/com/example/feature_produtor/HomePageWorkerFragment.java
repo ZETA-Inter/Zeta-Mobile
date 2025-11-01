@@ -18,6 +18,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.core.client.ApiPostgresClient;
+import com.example.core.ui.CircularProgressView;
 import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
 
@@ -42,6 +44,8 @@ public class HomePageWorkerFragment extends Fragment
     private static final String TAG = "HomePageWorkerFragment";
     private ImageView perfil, boxIa, iconConfig, iconNotificacao;
     private RecyclerView recyclerTipoConteudo, recyclerCursosAndamento, recyclerCursosConcluidos;
+
+    private CircularProgressView circularProgressGoals, circularProgressPrograms;
     private LessonsCardProgressAdapter andamentoLessonsAdapter;
     private LessonsCardProgressAdapter concludedLessonsAdapter;
     private FilterAdapter filterAdapter;
@@ -77,8 +81,62 @@ public class HomePageWorkerFragment extends Fragment
         setupBottomNav(view);
         setupRecyclers();
         setupClickListeners();
+        setupCircularProgress();
         fetchData();
     }
+
+    private void setupCircularProgress() {
+        circularProgressGoals = requireView().findViewById(R.id.circularProgressGoals);
+        circularProgressPrograms = requireView().findViewById(R.id.circularProgressPrograms);
+        fetchProgress();
+    }
+
+    private void fetchProgress() {
+        Integer workerId = getWorkerIdFromLocalStore();
+        fetchGoalProgress(workerId);
+        fetchProgramProgress(workerId);
+    }
+
+    private void fetchProgramProgress(Integer workerId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
+
+        Call<Integer> call = api.findOverallProgramsProgressById(workerId);
+
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    circularProgressPrograms.setProgress(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de cursos", t);
+            }
+        });
+    }
+
+    private void fetchGoalProgress(Integer workerId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
+
+        Call<Integer> call = api.findOverallGoalsProgressById(workerId);
+
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    circularProgressGoals.setProgress(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de metas", t);
+            }
+        });
+    }
+
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         int workerId = sp.getInt(KEY_WORKER_ID, -1);
