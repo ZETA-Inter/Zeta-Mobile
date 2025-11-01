@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F7FF"
+    tools:context=".GoalsPageWorker">
+
+    <ImageView
+        android:id="@+id/icon_perfil_goals"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Perfil do Usuário"
+        android:src="@drawable/perfil"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/txtPesquisa2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/poppins_medium"
+        android:hint="Pesquisar"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_perfil_goals"
+        app:layout_constraintEnd_toStartOf="@+id/icon_notificacao_goals"
+        app:layout_constraintStart_toEndOf="@+id/icon_perfil_goals"
+        app:layout_constraintTop_toTopOf="@+id/icon_perfil_goals" />
+
+    <ImageView
+        android:id="@+id/icon_notificacao_goals"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
+        android:contentDescription="Notificações"
+        android:src="@drawable/ic_notificationx"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_perfil_goals"
+        app:layout_constraintEnd_toStartOf="@+id/icon_configuracoes_goals"
+        app:layout_constraintTop_toTopOf="@+id/icon_perfil_goals" />
+
+    <ImageView
+        android:id="@+id/icon_configuracoes_goals"
+        android:layout_width="50dp"
+        android:layout_height="53dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="Configurações"
+        android:src="@drawable/iconconfig"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_perfil_goals"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.615" />
+
+    <TextView
+        android:id="@+id/text_metas_titulo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Minhas metas"
+        android:textColor="#0D0000"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/icon_perfil_goals" />
+
+    <LinearLayout
+        android:id="@+id/loading_goals_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_metas_titulo">
+
+        <include layout="@layout/fragment_goals_worker_loading" />
+
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_metas"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_metas_titulo"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_daily_goal" />
+
+
+    <com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom"
+        android:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

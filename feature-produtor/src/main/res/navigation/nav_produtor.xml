@@ -34,23 +34,6 @@
             android:defaultValue="all" />
     </fragment>
 
-
-    <fragment
-        android:id="@+id/SummarizeCourseWorker"
-        android:name="com.example.feature_produtor.SummarizeCourseWorker">
-        <deepLink
-            android:id="@+id/SummarizeCourseWorkerDeepLink"
-            app:uri="app://Worker/SummarizeCourse" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/TrainingPageWorker"
-        android:name="com.example.feature_produtor.TrainingPageWorker">
-        <deepLink
-            android:id="@+id/TrainingPageWorkerDeepLink"
-            app:uri="app://Worker/Training" />
-    </fragment>
-
     <fragment
         android:id="@+id/StepsLessonWorker"
         android:name="com.example.feature_produtor.StepsLessonWorker">
@@ -69,13 +52,6 @@
         <argument
             android:name="classId"
             android:defaultValue="default_id" />
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/Profileworker"
-        android:name="com.example.feature_produtor.Profileworker">
-
     </fragment>
 
     <fragment
@@ -101,10 +77,9 @@
 
 
     <dialog
-        android:id="@+id/CardNotificacao" android:name="com.example.feature_produtor.CardNotificacao"
+        android:id="@+id/CardNotificacao"
+        android:name="com.example.feature_produtor.CardNotificacao"
         tools:layout="@layout/fragment_card_notificacao"/>
-
-
 
 
 </navigation>

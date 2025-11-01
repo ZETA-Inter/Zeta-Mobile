@@ -1,149 +1,254 @@
 package com.example.core;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.core.adapter.LessonsCardProgressAdapter;
 import com.example.core.client.ApiPostgresClient;
-import com.example.core.dto.response.CompanyResponse;
-import com.example.core.dto.response.WorkerResponse;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
+import com.example.core.ui.CircularProgressView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Profile extends AppCompatActivity {
+public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLessonClickListener {
 
     private ApiPostgresClient api;
+    private static final String TAG = "ProfileFragment";
+
+    private RecyclerView recyclerCursosAndamento;
+
+    private View loadingAndamentoLayout;
+
+    private LessonsCardProgressAdapter andamentoLessonsAdapter;
+
+    private CircularProgressView circularProgressGoals, circularProgressPrograms;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        // Inflate layout
+        return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.fragment_profile);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        // Usa Retrofit com Context para evitar NPE no interceptor
-        api = RetrofitClientPostgres.getApiService(this);
+        api = RetrofitClientPostgres.getApiService(getContext());
 
-        RecyclerView lesson = findViewById(R.id.item_lesson);
-        RecyclerView progress_goals = findViewById(R.id.item_progress_goals);
-        RecyclerView recyclerView = findViewById(R.id.item_progress_lesson);
+        recyclerCursosAndamento = view.findViewById(R.id.rv_doing_programs);
+        loadingAndamentoLayout = view.findViewById(R.id.layout_cursos_andamento_loading);
+        circularProgressGoals = view.findViewById(R.id.circularProgressGoals);
+        circularProgressPrograms = view.findViewById(R.id.circularProgressPrograms);
 
-        String kind = getIntent().getStringExtra(ProfileStarter.EXTRA_KIND);
-        int id = getIntent().getIntExtra(ProfileStarter.EXTRA_ID, -1);
+        andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
+        recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
 
-        if (kind == null || id <= 0) {
-            Toast.makeText(this, "Parâmetros inválidos (tipo ou id).", Toast.LENGTH_SHORT).show();
-            finish();
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        int id = sp.getInt("user_id", -1);
+        String kind = sp.getString("tipo_usuario", null);
+        String name = sp.getString("nmae", "Usuário");
+
+        if (id <= 0 || kind == null) {
+            Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        ((TextView)view.findViewById(R.id.nome_worker)).setText(name);
+
         if ("COMPANY".equals(kind)) {
-            loadCompanyById(id);
-            // Se desejar esconder listas no perfil de COMPANY, faça aqui.
-            // findViewById(R.id.item_lesson).setVisibility(View.GONE);
-            // findViewById(R.id.item_progress_lesson).setVisibility(View.GONE);
-            // findViewById(R.id.item_progress_goals).setVisibility(View.GONE);
+            fetchCompanyProgress(id);
+            fetchCompanyPrograms(id);
         } else {
-            loadWorker(id);
-            listProgressGoals(id);
-            listLessonsWorker(id);
-            listProgressLesson(id);
+            fetchWorkerProgress(id);
+            fetchWorkerPrograms(id);
         }
     }
 
-    // ===== COMPANY =====
-    private void loadCompanyById(int companyId) {
-        Call<CompanyResponse> call = api.findCompanyById(companyId);
-        call.enqueue(new Callback<CompanyResponse>() {
-            @Override public void onResponse(@NonNull Call<CompanyResponse> call, @NonNull Response<CompanyResponse> resp) {
-                if (resp.isSuccessful() && resp.body() != null) {
-                    CompanyResponse c = resp.body();
-                    TextView tv = findViewById(R.id.nome_worker);
-                    if (tv != null) tv.setText(c.getName());
-                    // TODO: carregar imagem (Glide/Picasso) se houver c.getImageUrl()
-                } else {
-                    logHttpError(resp);
-                }
-            }
-            @Override public void onFailure(@NonNull Call<CompanyResponse> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "loadCompanyById", t);
-            }
-        });
+
+    private void fetchCompanyProgress(int companyId) {
+        fetchCompanyGoalProgress(companyId);
+        fetchCompanyProgramProgress(companyId);
     }
 
-    // ===== WORKER =====
-    private void loadWorker(int workerId) {
-        api.findWorkerById(workerId).enqueue(new Callback<WorkerResponse>() {
-            @Override public void onResponse(@NonNull Call<WorkerResponse> call, @NonNull Response<WorkerResponse> resp) {
-                if (resp.isSuccessful() && resp.body() != null) {
-                    WorkerResponse w = resp.body();
-                    TextView tv = findViewById(R.id.nome_worker);
-                    if (tv != null) tv.setText(w.getName());
-                    // TODO: carregar imagem se existir
-                } else {
-                    logHttpError(resp);
-                }
-            }
-            @Override public void onFailure(@NonNull Call<WorkerResponse> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "loadWorker", t);
-            }
-        });
-    }
-
-    private void listLessonsWorker(int workerId) {
-        api.findProgramById(String.valueOf(workerId)).enqueue(new Callback<WorkerResponse>() {
-            @Override public void onResponse(@NonNull Call<WorkerResponse> call, @NonNull Response<WorkerResponse> response) {
+    private void fetchCompanyProgramProgress(int companyId) {
+        api.findAverageProgressPercentageById(companyId).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // TODO: montar adapter de lessons
-                } else {
-                    logHttpError(response);
+                    circularProgressPrograms.setProgress(response.body());
                 }
             }
-            @Override public void onFailure(@NonNull Call<WorkerResponse> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "listLessonsWorker", t);
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de cursos", t);
             }
         });
     }
 
-    private void listProgressGoals(int workerId) {
-        api.findProgressGoalsById(String.valueOf(workerId)).enqueue(new Callback<WorkerResponse>() {
-            @Override public void onResponse(@NonNull Call<WorkerResponse> call, @NonNull Response<WorkerResponse> response) {
+    private void fetchCompanyGoalProgress(int companyId) {
+        api.findAverageFinishedGoalsById(companyId).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // TODO: montar adapter de goals
-                } else {
-                    logHttpError(response);
+                    circularProgressGoals.setProgress(response.body());
                 }
             }
-            @Override public void onFailure(@NonNull Call<WorkerResponse> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "listProgressGoals", t);
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de metas", t);
             }
         });
     }
 
-    private void listProgressLesson(int workerId) {
-        api.findLessonsProgressById(String.valueOf(workerId)).enqueue(new Callback<WorkerResponse>() {
-            @Override public void onResponse(@NonNull Call<WorkerResponse> call, @NonNull Response<WorkerResponse> response) {
+    private void fetchWorkerProgress(int workerId) {
+        fetchWorkerGoalProgress(workerId);
+        fetchWorkerProgramProgress(workerId);
+    }
+
+    private void fetchWorkerGoalProgress(int workerId) {
+        api.findOverallGoalsProgressById(workerId).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // TODO: montar adapter de progress de lesson
-                } else {
-                    logHttpError(response);
+                    circularProgressGoals.setProgress(response.body());
                 }
             }
-            @Override public void onFailure(@NonNull Call<WorkerResponse> call, @NonNull Throwable t) {
-                Log.e("API_FAILURE", "listProgressLesson", t);
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de metas", t);
+            }
+        });
+    }
+
+    private void fetchWorkerProgramProgress(int workerId) {
+        api.findOverallProgramsProgressById(workerId).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    circularProgressPrograms.setProgress(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de cursos", t);
+            }
+        });
+    }
+
+    private void fetchCompanyPrograms(int companyId) {
+        recyclerCursosAndamento.setVisibility(View.GONE);
+        loadingAndamentoLayout.setVisibility(View.VISIBLE);
+
+        //chama o endpoint que lista os programs por id do worker
+        api.listActualProgramsByCompanyId(companyId).enqueue(new Callback<List<ProgramWorkerResponseDTO>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Response<List<ProgramWorkerResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    loadingAndamentoLayout.setVisibility(View.GONE);
+                    recyclerCursosAndamento.setVisibility(View.VISIBLE);
+                    List<ProgramWorkerResponseDTO> programs = response.body();
+
+                    // Filtra usando Streams para clareza
+                    List<ProgramWorkerResponseDTO> inProgress = programs.stream()
+                            .filter(p -> p.getProgressPercentage() > 0 && p.getProgressPercentage() < 100)
+                            .collect(Collectors.toList());
+
+                    // Submete às Recyclers
+                    andamentoLessonsAdapter.submitList(new ArrayList<>(inProgress));
+                }
+
+
+                else {
+                    loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                    recyclerCursosAndamento.setVisibility(View.GONE);
+                    Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
+                    //   Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                    // se o erro for 404 td bem pq o worker pode simplismente não ter iniciado nenhum curso ainda
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
+                loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                recyclerCursosAndamento.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Erro de conexão: " + t.getMessage());
+            }
+        });
+    }
+
+    private void fetchWorkerPrograms(Integer workerId) {
+        recyclerCursosAndamento.setVisibility(View.GONE);
+        loadingAndamentoLayout.setVisibility(View.VISIBLE);
+
+        //chama o endpoint que lista os programs por id do worker
+        api.listActualProgramsById(workerId).enqueue(new Callback<List<ProgramWorkerResponseDTO>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Response<List<ProgramWorkerResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    loadingAndamentoLayout.setVisibility(View.GONE);
+                    recyclerCursosAndamento.setVisibility(View.VISIBLE);
+                    List<ProgramWorkerResponseDTO> programs = response.body();
+
+                    // Filtra usando Streams para clareza
+                    List<ProgramWorkerResponseDTO> inProgress = programs.stream()
+                            .filter(p -> p.getProgressPercentage() > 0 && p.getProgressPercentage() < 100)
+                            .collect(Collectors.toList());
+
+                    // Submete às Recyclers
+                    andamentoLessonsAdapter.submitList(new ArrayList<>(inProgress));
+                }
+
+
+                else {
+                    loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                    recyclerCursosAndamento.setVisibility(View.GONE);
+                    Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
+                    //   Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                    // se o erro for 404 td bem pq o worker pode simplismente não ter iniciado nenhum curso ainda
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
+                loadingAndamentoLayout.setVisibility(View.VISIBLE);
+                recyclerCursosAndamento.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Erro de conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Erro de conexão: " + t.getMessage());
             }
         });
     }
 
     private void logHttpError(Response<?> resp) {
-        Log.e("API_ERROR", "HTTP " + resp.code() + " - " + resp.message());
+        Log.e(TAG, "HTTP " + resp.code() + " - " + resp.message());
+    }
+
+    @Override
+    public void onLessonClick(ProgramWorkerResponseDTO item) {
+
     }
 }

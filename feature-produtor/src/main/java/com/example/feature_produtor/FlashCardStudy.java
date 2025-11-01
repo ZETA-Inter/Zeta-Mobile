@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -18,8 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.adapter.FlashCardAdapter;
-import com.example.feature_produtor.model.mongo.FlashCard;
-import com.example.feature_produtor.FlashCardItemTouchHelperCallback;
+import com.example.core.model.mongo.FlashCard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +33,17 @@ public class FlashCardStudy extends Fragment
     private LinearLayout mainRootLayout;
     private ItemTouchHelper itemTouchHelper;
     private FlashCardItemTouchHelperCallback touchHelperCallback;
+    private ImageView backAction;
 
     // Contadores e Título Mock
     private int acertosCount = 0;
     private int errosCount = 0;
-    private static final String CURSO_MOCK_TITLE = "Rastreabilidade Bovina 🐂";
+    private static final String CURSO_MOCK_TITLE = "Rastreabilidade Bovina ";
 
     // Cores (ajustadas para uso direto no código)
     private static final int COLOR_DEFAULT = Color.parseColor("#F0F0F0");
-    private static final int COLOR_GREEN = Color.parseColor("#90EE90");
-    private static final int COLOR_RED = Color.parseColor("#FF6347");
+    private static final int COLOR_GREEN = Color.parseColor("#5F9F7F");
+    private static final int COLOR_RED = Color.parseColor("#18A4E1");
 
     @Nullable
     @Override
@@ -70,12 +71,16 @@ public class FlashCardStudy extends Fragment
         // 3. Configuração dos Botões
         Button btnLearned = view.findViewById(R.id.btn_learned);
         Button btnNotLearned = view.findViewById(R.id.btn_not_learned);
+        backAction = view.findViewById(R.id.icon_back);
 
         btnLearned.setOnClickListener(v -> swipeProgrammatically(ItemTouchHelper.RIGHT));
         btnNotLearned.setOnClickListener(v -> swipeProgrammatically(ItemTouchHelper.LEFT));
 
         loadMockData();
+        setupOnClick();
         return view;
+
+
     }
 
 
@@ -84,10 +89,15 @@ public class FlashCardStudy extends Fragment
 
     }
 
+    public void setupOnClick(){
+        backAction.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
+    }
 
-    // FlashCardStudy.java
 
-// ... (métodos e variáveis da classe) ...
+
+
 
     private void swipeProgrammatically(int direction) {
         final int topPosition = 0;
@@ -171,7 +181,7 @@ public class FlashCardStudy extends Fragment
         }
     }
 
-// ... (O restante do código de FlashCardStudy.java permanece o mesmo)
+
 
     private void loadMockData() {
         flashCardList.clear();

@@ -47,6 +47,7 @@
                     android:id="@+id/tvTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
                     android:text="Cadastro"
                     android:textColor="@color/primary_dark"
@@ -245,23 +246,25 @@
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                 <!-- Botão Cadastrar -->
+
+                <!-- "Já possui uma conta? Entre com ela." -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCadastrar"
                     style="@style/NoStrokeButton"
                     android:layout_width="300dp"
                     android:layout_height="54dp"
+                    android:layout_marginTop="28dp"
                     android:text="Cadastrar"
                     android:textAllCaps="false"
-                    android:textSize="16dp"
                     android:textColor="@color/white"
+                    android:textSize="16dp"
                     app:backgroundTint="@color/primary_dark"
                     app:cornerRadius="15dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/tvLegal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.492"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toBottomOf="@id/tvLegal" />
 
-                <!-- "Já possui uma conta? Entre com ela." -->
                 <TextView
                     android:id="@+id/tvJaConta"
                     android:layout_width="0dp"

@@ -2,6 +2,7 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +19,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
+import com.example.core.client.ApiPostgresClient;
+import com.example.core.ui.CircularProgressView;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
 
 import com.example.feature_produtor.adapter.FilterAdapter;
-import com.example.feature_produtor.adapter.LessonsCardProgressAdapter;
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.core.adapter.LessonsCardProgressAdapter;
+import com.example.core.model.Segment;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.example.feature_produtor.api.ApiPostgres;
 import java.util.ArrayList;
@@ -42,6 +45,8 @@ public class HomePageWorkerFragment extends Fragment
     private static final String TAG = "HomePageWorkerFragment";
     private ImageView perfil, boxIa, iconConfig, iconNotificacao;
     private RecyclerView recyclerTipoConteudo, recyclerCursosAndamento, recyclerCursosConcluidos;
+
+    private CircularProgressView circularProgressGoals, circularProgressPrograms;
     private LessonsCardProgressAdapter andamentoLessonsAdapter;
     private LessonsCardProgressAdapter concludedLessonsAdapter;
     private FilterAdapter filterAdapter;
@@ -77,8 +82,62 @@ public class HomePageWorkerFragment extends Fragment
         setupBottomNav(view);
         setupRecyclers();
         setupClickListeners();
+        setupCircularProgress();
         fetchData();
     }
+
+    private void setupCircularProgress() {
+        circularProgressGoals = requireView().findViewById(R.id.circularProgressGoals);
+        circularProgressPrograms = requireView().findViewById(R.id.circularProgressPrograms);
+        fetchProgress();
+    }
+
+    private void fetchProgress() {
+        Integer workerId = getWorkerIdFromLocalStore();
+        fetchGoalProgress(workerId);
+        fetchProgramProgress(workerId);
+    }
+
+    private void fetchProgramProgress(Integer workerId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
+
+        Call<Integer> call = api.findOverallProgramsProgressById(workerId);
+
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    circularProgressPrograms.setProgress(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de cursos", t);
+            }
+        });
+    }
+
+    private void fetchGoalProgress(Integer workerId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
+
+        Call<Integer> call = api.findOverallGoalsProgressById(workerId);
+
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    circularProgressGoals.setProgress(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro ao buscar progresso de metas", t);
+            }
+        });
+    }
+
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         int workerId = sp.getInt(KEY_WORKER_ID, -1);
@@ -133,8 +192,6 @@ public class HomePageWorkerFragment extends Fragment
                     // Submete às Recyclers
                     andamentoLessonsAdapter.submitList(new ArrayList<>(allPrograms));
                     concludedLessonsAdapter.submitList(new ArrayList<>(concludedPrograms));
-
-
                 }
 
 
@@ -262,12 +319,11 @@ public class HomePageWorkerFragment extends Fragment
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
 
-            bottom.bindNavController(nav, R.id.HomePageWorker, R.id.LessonsWorker, R.id.GoalsPageWorker);
+            bottom.bindNavController(nav, R.id.LessonsWorker, R.id.HomePageWorker, R.id.GoalsPageWorker);
             bottom.setActive(WorkerBottomNavView.Item.HOME, false);
         }
     }
 
-    //iniciando os recilers
     private void setupRecyclers() {
 
         andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
@@ -291,9 +347,10 @@ public class HomePageWorkerFragment extends Fragment
     private void setupClickListeners() {
         NavController nav = NavHostFragment.findNavController(this);
 
-        perfil.setOnClickListener(v -> nav.navigate(R.id.Profileworker));
+        Uri deeplink = Uri.parse("app://Core/Profile");
+        perfil.setOnClickListener(v -> nav.navigate(deeplink));
         boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotPageWorker));
-        iconConfig.setOnClickListener(v -> { });
+        iconConfig.setOnClickListener(v -> { nav.navigate(R.id.FlashCardStudy);});
         iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
 
 
