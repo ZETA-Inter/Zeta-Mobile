@@ -19,8 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.adapter.FlashCardAdapter;
-import com.example.feature_produtor.model.mongo.FlashCard;
-import com.example.feature_produtor.FlashCardItemTouchHelperCallback;
+import com.example.core.model.mongo.FlashCard;
 
 import java.util.ArrayList;
 import java.util.List;

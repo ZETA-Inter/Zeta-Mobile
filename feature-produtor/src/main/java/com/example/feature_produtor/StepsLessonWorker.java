@@ -33,9 +33,8 @@ import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres; // <-- Assumindo que você criou ApiPostgres
 import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.api.ProgressApiHelper;
-import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
-import com.example.feature_produtor.model.mongo.Class;
-import com.example.feature_produtor.model.postegres.Program;
+import com.example.core.model.mongo.Class;
+import com.example.core.model.Program;
 import com.example.feature_produtor.model.redis.StepResponse;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 
@@ -268,7 +267,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
     private void setupClickListeners(Integer programId) {
-        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
+        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(com.example.core.R.id.Profile));
 
         config.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();

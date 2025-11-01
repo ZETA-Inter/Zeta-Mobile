@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
+import com.example.core.model.mongo.Activity.Question.Answer;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.Objects;

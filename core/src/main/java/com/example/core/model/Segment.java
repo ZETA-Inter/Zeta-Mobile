@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model.postegres;
+package com.example.core.model;
 
 public class Segment {
 

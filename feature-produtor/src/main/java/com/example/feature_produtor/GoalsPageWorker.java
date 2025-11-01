@@ -184,7 +184,7 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
 
-            bottom.bindNavController(nav, R.id.HomePageWorker, R.id.LessonsWorker, R.id.GoalsPageWorker);
+            bottom.bindNavController(nav, R.id.LessonsWorker, R.id.HomePageWorker, R.id.GoalsPageWorker);
             bottom.setActive(WorkerBottomNavView.Item.GOALS, false);
         }
     }

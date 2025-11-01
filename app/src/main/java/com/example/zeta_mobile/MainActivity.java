@@ -48,19 +48,6 @@ public class MainActivity extends AppCompatActivity {
             );
             Log.d("MainActivity", "Notificação enviada com sucesso!");
 
-            Uri deepLink;
-            if ("WORKER".equalsIgnoreCase(userType)) {
-                Log.d("MainActivity", "Indo para a home de Worker");
-                deepLink = Uri.parse("app://Worker/Home");
-            } else if ("COMPANY".equalsIgnoreCase(userType)) {
-                Log.d("MainActivity", "Indo para a home de Company");
-                deepLink = Uri.parse("app://Company/Home");
-            } else {
-                // Tipo não reconhecido → volta pro login
-                Log.w("MainActivity", "Tipo de usuário desconhecido. Redirecionando para login...");
-                return;
-            }
-
             try {
                 navController.navigate(com.example.core.R.id.SplashScreen);
             } catch (Exception e) {
