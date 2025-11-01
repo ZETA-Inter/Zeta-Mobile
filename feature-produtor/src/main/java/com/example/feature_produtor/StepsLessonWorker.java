@@ -32,6 +32,7 @@ import com.example.feature_produtor.adapter.StepsLessonAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres; // <-- Assumindo que você criou ApiPostgres
 import com.example.feature_produtor.api.ApiRedis;
+import com.example.feature_produtor.api.ProgressApiHelper;
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.model.postegres.Program;
@@ -128,40 +129,40 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
 
-   //pegando o id do worker
+    //pegando o id do worker
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int workerId = sp.getInt("user_id", -1);
         return workerId != -1 ? workerId : null;
     }
 
-   //atualizado progresso do curso
-    private void updateProgramProgress(int programId, int percentage) {
-        Integer workerId = getWorkerIdFromLocalStore();
-        if (workerId == null) return;
-
-        ApiPostgres client = RetrofitClientPostgres
-                .getInstance(requireContext())
-                .create(ApiPostgres.class);
-
-        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-
-        client.updateProgramProgress(workerId, request)
-                .enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Log.d("PROGRESS", "Progresso atualizado para " + percentage + "% no programa " + programId);
-                        } else {
-                            Log.e("PROGRESS", "Falha ao atualizar progresso. Code: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Log.e("PROGRESS", "Erro de conexão ao atualizar progresso: " + t.getMessage());
-                    }
-                });
-    }
+    //atualizando progresso do curso
+//    private void updateProgramProgress(int programId, int percentage) {
+//        Integer workerId = getWorkerIdFromLocalStore();
+//        if (workerId == null) return;
+//
+//        ApiPostgres client = RetrofitClientPostgres
+//                .getInstance(requireContext())
+//                .create(ApiPostgres.class);
+//
+//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
+//
+//        client.updateProgramProgress(workerId, request)
+//                .enqueue(new Callback<Void>() {
+//                    @Override
+//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+//                        if (response.isSuccessful()) {
+//                            Log.d("PROGRESS", "Progresso atualizado para " + percentage + "% no programa " + programId);
+//                        } else {
+//                            Log.e("PROGRESS", "Falha ao atualizar progresso. Code: " + response.code());
+//                        }
+//                    }
+//                    @Override
+//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+//                        Log.e("PROGRESS", "Erro de conexão ao atualizar progresso: " + t.getMessage());
+//                    }
+//                });
+//    }
 
 
     //pega a descrição do curso
@@ -209,36 +210,36 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             }
         });
     }
-    
+
     private void fetchClassesByProgramId(Integer id) {
         ApiMongo apiMongo = RetrofitClientMongo
                 .getInstance(requireContext())
                 .create(ApiMongo.class);
 
 
-            Log.d(TAG, "Tentando buscar classes para programId: " + id);
-            Call<List<Class>> call = apiMongo.getClassByProgramId(id);
+        Log.d(TAG, "Tentando buscar classes para programId: " + id);
+        Call<List<Class>> call = apiMongo.getClassByProgramId(id);
 
-            call.enqueue(new Callback<List<Class>>() {
-                @Override
-                public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        allLessons = response.body();
+        call.enqueue(new Callback<List<Class>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allLessons = response.body();
 
-                        totalClasses = allLessons.size();
-                        if (totalClasses > 0) {
-                            // 100% dividido pelo número de aulas
-                            progressPerClass = 100.0 / totalClasses;
-                            Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
-                        }
-
-                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + totalClasses);
-
-                        stepsLessonAdapter.submitList(allLessons);
-                    } else {
-                        Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
+                    totalClasses = allLessons.size();
+                    if (totalClasses > 0) {
+                        // 100% dividido pelo número de aulas
+                        progressPerClass = 100.0 / totalClasses;
+                        Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
                     }
+
+                    Log.d(TAG, "Classes carregadas com sucesso. Total: " + totalClasses);
+
+                    stepsLessonAdapter.submitList(allLessons);
+                } else {
+                    Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
                 }
+            }
 
             @Override
             public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
@@ -297,11 +298,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
 
-                        if (stepNumber > allLessons.size()) {
-                            Toast.makeText(getContext(), "Curso já concluído! Clique na etapa desejada para repeti-la", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
                         Class firstLesson = allLessons.get(stepNumber - 1);
 
                         Log.d(TAG, "Step: " + firstLesson);
@@ -328,6 +324,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         notificacao.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
         });
+
     }
 
     private void setupSearchListener() {
@@ -367,29 +364,40 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
     public void onStepClick(Class item, Integer stepNumber) {
         if (programId == null || allLessons.isEmpty()) return;
 
-        double progressIncrease = progressPerClass / 2.0;
-        int newProgress = (int) Math.round(currentProgramProgress + progressIncrease);
+        // divisão de progresso (1/4, 1/4 e 2/4 para atividades)
+        double initialProgress = progressPerClass / 4.0;
 
+        // somente 25% do progresso da etapa é concluido nessa tela
+        double remainingStepProgress = progressPerClass * 0.75;
+
+        int newProgress = (int) Math.round(currentProgramProgress + initialProgress);
         newProgress = Math.min(newProgress, 100);
 
+        Log.d(TAG, "Step Clicked: " + item.getTitle() + " | Initial Gain: " + initialProgress + "%");
 
         int clickedIndex = allLessons.indexOf(item);
 
-        if (clickedIndex == 0 && currentProgramProgress == 0) {
-            updateProgramProgress(programId, newProgress);
+        if (clickedIndex >= 0) {
+            Integer workerId = getWorkerIdFromLocalStore();
+            if (workerId != null && programId != null) {
+                ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
+            }
+            currentProgramProgress = newProgress; // Atualiza o valor interno
         }
 
-        Integer lessonId = item.getId();
+        Integer classId = item.getId();
 
-        bundle.putInt("stepId", lessonId);
+        bundle.putInt("stepId", classId);
         bundle.putInt("stepNumber", stepNumber);
         bundle.putInt("programId", programId);
-        bundle.putDouble("progressIncrease", progressIncrease);
-        bundle.putInt("currentProgress", newProgress);
 
+        // Passa o valor restante (75%) e o novo progresso total
+        bundle.putDouble("remainingStepProgress", remainingStepProgress);
+        bundle.putInt("currentProgramProgress", currentProgramProgress);
 
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
         }
+
     }
 }

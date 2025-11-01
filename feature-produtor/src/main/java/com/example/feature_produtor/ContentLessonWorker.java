@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.core.network.RetrofitClientPostgres;
+import com.example.feature_produtor.api.ProgressApiHelper;
 import com.example.feature_produtor.model.mongo.Class;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres;
@@ -51,7 +52,7 @@ public class ContentLessonWorker extends Fragment {
 
     private Bundle bundle;
 
-    private double remainingProgressValue = 0.0;
+    private double remainingStepProgress = 0.0;
     private int currentProgramProgress = 0;
 
     private List<String> contentPages;
@@ -100,11 +101,11 @@ public class ContentLessonWorker extends Fragment {
             programId = bundle.getInt("programId", -1);
             if (programId == -1) programId = null;
 
-            // RECEBE OS VALORES PARA REPASSAR À PRÓXIMA TELA
-            remainingProgressValue = bundle.getDouble("remainingProgressValue", 0.0);
+            // RECEBE O VALOR TOTAL RESTANTE DO STEP (75% = 25% Conteúdo + 50% Atividade)
+            remainingStepProgress = bundle.getDouble("remainingStepProgress", 0.0); // Renomeado
             currentProgramProgress = bundle.getInt("currentProgramProgress", 0);
 
-            Log.d(TAG, "Progresso recebido: " + currentProgramProgress + " | Aumento restante: " + remainingProgressValue);
+            Log.d(TAG, "Progresso recebido: " + currentProgramProgress + " | Aumento restante total: " + remainingStepProgress);
         }
     }
 
@@ -126,13 +127,30 @@ public class ContentLessonWorker extends Fragment {
                 return;
             }
 
+            int totalPages = contentPages.size();
+            int transitions = Math.max(1, totalPages - 1);
+            double contentPaginationValue = remainingStepProgress / 3.0;
+            double progressPerClick = contentPaginationValue / transitions;
+
             if (currentPageIndex < contentPages.size() - 1) {
-                // AVANÇA PÁGINA
+
                 currentPageIndex++;
                 displayCurrentPage();
+            }
 
-            } else {
-                // ÚLTIMA PÁGINA: NAVEGA PARA A PRÓXIMA TELA (ATIVIDADE)
+            if (currentPageIndex > 0) {
+                currentProgramProgress = (int) Math.round(currentProgramProgress + progressPerClick);
+                currentProgramProgress = Math.min(currentProgramProgress, 100);
+
+                Integer workerId = getWorkerIdFromLocalStore();
+                if (workerId != null && programId != null) {
+                    ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
+                }
+
+                // 3. Atualiza o remainingStepProgress para refletir que este valor foi gasto
+                remainingStepProgress -= progressPerClick;
+            }else {
+
                 navigateToNextScreen();
             }
         });
@@ -142,8 +160,8 @@ public class ContentLessonWorker extends Fragment {
     private void navigateToNextScreen() {
         if (currentLesson != null && currentLesson.getId() != null && programId != null) {
 
-            bundle.putDouble("progressValue", remainingProgressValue);
-            bundle.putInt("currentProgress", currentProgramProgress);
+            bundle.putDouble("activityProgressValue", remainingStepProgress);
+            bundle.putInt("currentProgramProgress", currentProgramProgress);
 
             if(getView() != null) {
                 // Navega para a tela ActivityLessonWorker
@@ -227,30 +245,30 @@ public class ContentLessonWorker extends Fragment {
         return workerId != -1 ? workerId : null;
     }
 
-    private void updateProgramProgress(int programId, int percentage) {
-        Integer workerId = getWorkerIdFromLocalStore();
-        if (workerId == null) return;
-
-        ApiPostgres client = RetrofitClientPostgres
-                .getInstance(requireContext())
-                .create(ApiPostgres.class);
-
-        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-
-        client.updateProgramProgress(workerId, request)
-                .enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
-                        } else {
-                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
-                    }
-                });
-    }
+//    private void updateProgramProgress(int programId, int percentage) {
+//        Integer workerId = getWorkerIdFromLocalStore();
+//        if (workerId == null) return;
+//
+//        ApiPostgres client = RetrofitClientPostgres
+//                .getInstance(requireContext())
+//                .create(ApiPostgres.class);
+//
+//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
+//
+//        client.updateProgramProgress(workerId, request)
+//                .enqueue(new Callback<Void>() {
+//                    @Override
+//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+//                        if (response.isSuccessful()) {
+//                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
+//                        } else {
+//                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
+//                        }
+//                    }
+//                    @Override
+//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+//                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
+//                    }
+//                });
+//    }
 }

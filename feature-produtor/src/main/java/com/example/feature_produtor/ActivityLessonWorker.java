@@ -28,6 +28,7 @@ import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.api.ApiPostgres;
+import com.example.feature_produtor.api.ProgressApiHelper;
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 
 import com.example.feature_produtor.adapter.AnswerAdapter;
@@ -125,8 +126,8 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             programId = bundle.getInt("programId", -1);
             if (programId == -1) programId = null;
 
-            progressValue = bundle.getDouble("progressValue", 0.0);
-            currentProgramProgress = bundle.getInt("currentProgress", 0);
+            progressValue = bundle.getDouble("activityProgressValue", 0.0);
+            currentProgramProgress = bundle.getInt("currentProgramProgress", 0);
         }
     }
 
@@ -136,32 +137,32 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         return workerId != -1 ? workerId : null;
     }
 
-    private void updateProgramProgress(int programId, int percentage) {
-        Integer workerId = getWorkerIdFromLocalStore();
-        if (workerId == null) return;
-
-        ApiPostgres client = RetrofitClientPostgres
-                .getInstance(requireContext())
-                .create(ApiPostgres.class);
-
-        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-
-        client.updateProgramProgress(workerId, request)
-                .enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
-                        } else {
-                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
-                    }
-                });
-    }
+//    private void updateProgramProgress(int programId, int percentage) {
+//        Integer workerId = getWorkerIdFromLocalStore();
+//        if (workerId == null) return;
+//
+//        ApiPostgres client = RetrofitClientPostgres
+//                .getInstance(requireContext())
+//                .create(ApiPostgres.class);
+//
+//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
+//
+//        client.updateProgramProgress(workerId, request)
+//                .enqueue(new Callback<Void>() {
+//                    @Override
+//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+//                        if (response.isSuccessful()) {
+//                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
+//                        } else {
+//                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
+//                        }
+//                    }
+//                    @Override
+//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+//                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
+//                    }
+//                });
+//    }
 
     private void fetchActivityByClassId(int id) {
 
@@ -181,16 +182,25 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                             .collect(Collectors.toList());
 
                     if (!allQuestions.isEmpty()) {
+
+                        // CALCULA O VALOR DE PROGRESSO POR PERGUNTA
+                        if (progressValue > 0 && allQuestions.size() > 0) {
+                            // progressValue é os 50% do Step
+                            progressValue = progressValue / allQuestions.size();
+                            Log.d(TAG, "Progresso por pergunta (50% do Step) ajustado para: " + progressValue + "%");
+                        } else {
+                            // Caso não haja perguntas, ou progressValue seja 0, evita divisão por zero.
+                            progressValue = 0.0;
+                        }
                         currentQuestionIndex = 0;
                         displayCurrentQuestion();
+
+
+
                     } else {
-                        txtPergunta.setText("Nenhuma pergunta encontrada para esta atividade.");
+                        txtPergunta.setText("Falha ao carregar atividade: " + response.code());
                         btContinuar.setEnabled(false);
                     }
-
-                } else {
-                    txtPergunta.setText("Falha ao carregar atividade: " + response.code());
-                    btContinuar.setEnabled(false);
                 }
             }
 
@@ -246,7 +256,16 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             if (selectedAnswer == null) return;
 
             if (selectedAnswer.isCorrect()) {
-                if (currentQuestionIndex < allQuestions.size() - 1) {
+
+                // APLICA PROGRESSO PELA RESPOSTA CORRETA
+                if (progressValue > 0) {
+                    currentProgramProgress = (int) Math.round(currentProgramProgress + progressValue);
+                    currentProgramProgress = Math.min(currentProgramProgress, 100);
+                    Integer workerId = getWorkerIdFromLocalStore();
+                    if (workerId != null && programId != null) {
+                        ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
+                    }
+                } if (currentQuestionIndex < allQuestions.size() - 1) {
                     currentQuestionIndex++;
                     displayCurrentQuestion();
                 } else {
@@ -285,8 +304,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                             }
                         });
 
-                        finalizeActivityAndApplyProgress();
-
+                        Toast.makeText(getContext(), "Etapa concluída! Progresso: " + currentProgramProgress + "%", Toast.LENGTH_LONG).show();
                         Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
                     }
                 }
@@ -297,36 +315,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             }
         });
     }
-    private void finalizeActivityAndApplyProgress() {
-        if (programId == null || progressValue == 0.0) {
-            Log.e(TAG, "Falha ao finalizar: programId é nulo ou progressValue é 0.");
-            Toast.makeText(getContext(), "Erro ao finalizar a etapa (dados de progresso ausentes).", Toast.LENGTH_LONG).show();
-            if (getView() != null)
-                Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker);
-            return;
-        }
 
-        // Soma o progresso atual com o valor restante da atividade (os 50% finais)
-        int finalProgress = (int) Math.round(currentProgramProgress + progressValue);
-        finalProgress = Math.min(finalProgress, 100);
-
-        // Envia a atualização para a API
-        updateProgramProgress(programId, finalProgress);
-
-        // Feedback para o usuário
-        if (finalProgress >= 100) {
-            Toast.makeText(getContext(), "Curso concluído! Parabéns!", Toast.LENGTH_LONG).show();
-            // Volta para a Home ou para a lista de cursos (dependendo do fluxo)
-            if (getView() != null) Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
-        } else {
-            Toast.makeText(getContext(), "Etapa concluída! Progresso: " + finalProgress + "%", Toast.LENGTH_SHORT).show();
-            // Volta para a lista de Etapas
-            if (getView() != null) {
-                Navigation.findNavController(getView()).navigate(R.id.StepsLessonWorker);
-            }
-        }
-
-    }
     @Override
     public void onAnswerSelected(Answer selectedAnswer, int position) {
         this.selectedAnswer = selectedAnswer;

@@ -223,37 +223,41 @@
                     app:layout_constraintTop_toBottomOf="@id/lblConfirmar"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtConfirmar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Digite sua senha"
-                        android:inputType="textPassword"/>
+                        android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Texto legal/termos -->
-                <TextView
-                    android:id="@+id/tvLegal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Ao se cadastrar, você confirma que aceita os Termos e Condições e nossa Política de privacidade.*"
-                    android:textSize="12sp"
-                    android:textColor="@color/label_grey"
-                    android:gravity="center"
-                    android:layout_marginTop="14dp"
-                    app:layout_constraintTop_toBottomOf="@id/tilConfirmar"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
 
                 <!-- Botão Cadastrar -->
 
                 <!-- "Já possui uma conta? Entre com ela." -->
+
+                <TextView
+                    android:id="@+id/tvLegal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="Ao se cadastrar, você confirma que aceita os Termos e Condições e nossa Política de privacidade.*"
+                    android:textColor="@color/label_grey"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tilConfirmar" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCadastrar"
                     style="@style/NoStrokeButton"
-                    android:layout_width="300dp"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="315dp"
+                    android:layout_height="68dp"
+                    android:layout_marginTop="84dp"
                     android:text="Cadastrar"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -261,7 +265,7 @@
                     app:backgroundTint="@color/primary_dark"
                     app:cornerRadius="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.492"
+                    app:layout_constraintHorizontal_bias="0.494"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvLegal" />
 
@@ -269,14 +273,15 @@
                     android:id="@+id/tvJaConta"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Já possui uma conta? Entre com ela."
-                    android:textSize="13sp"
-                    android:textColor="@color/label_grey"
+                    android:layout_marginTop="4dp"
                     android:gravity="center"
-                    android:layout_marginTop="12dp"
-                    app:layout_constraintTop_toBottomOf="@id/btnCadastrar"
+                    android:text="Já possui uma conta? Entre com ela."
+                    android:textColor="@color/label_grey"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toBottomOf="@id/btnCadastrar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
