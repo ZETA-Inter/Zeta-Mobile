@@ -5,90 +5,91 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F7FF"
-    android:backgroundTint="#F6F7FF"
     android:fitsSystemWindows="true"
     tools:context=".LessonsWorker">
 
     <ImageView
         android:id="@+id/perfil3"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/perfil" />
+        app:srcCompat="@drawable/perfil"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/txtPesquisa3"
-        android:layout_width="191dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:hint="Pesquisar"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/perfil3"
         app:layout_constraintEnd_toStartOf="@+id/icon_notifica"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/perfil3"
-        app:layout_constraintTop_toTopOf="@+id/perfil3"
-        app:layout_constraintVertical_bias="0.588" />
+        app:layout_constraintTop_toTopOf="@+id/perfil3" />
 
     <ImageView
         android:id="@+id/icon_notifica"
-        android:layout_width="49dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="62dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_notification" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/perfil3"
+        app:layout_constraintEnd_toStartOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/perfil3"
+        app:srcCompat="@drawable/ic_notificationx"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/imageView5"
-        android:layout_width="46dp"
-        android:layout_height="53dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/perfil3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/iconconfig" />
+        app:layout_constraintTop_toTopOf="@+id/perfil3"
+        app:srcCompat="@drawable/iconconfig"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/txtCursos"
-        android:layout_width="107dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="Cursos"
         android:textColor="#3A3A3A"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/perfil3" />
 
     <TextView
         android:id="@+id/txtDescubra"
-        android:layout_width="455dp"
-        android:layout_height="39dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_medium"
         android:text="Descubra sua nova jornada de aprendizado"
         android:textColor="#4D4D4D"
-        android:textSize="16sp"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtCursos" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cursos"
-        android:layout_width="398dp"
-        android:layout_height="467dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"

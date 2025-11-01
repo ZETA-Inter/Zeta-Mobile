@@ -95,175 +95,189 @@
                     tools:ignore="ContentDescription" />
             </LinearLayout>
         </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/podium"
-            android:layout_width="match_parent"
-            android:layout_height="280dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="8dp"
-            android:background="@color/white"
-            android:clipChildren="false"
-            android:clipToPadding="false">
-
-            <ImageView
-                android:id="@+id/podiumBg"
-                android:layout_width="381dp"
-                android:layout_height="301dp"
-                android:src="@drawable/bg_ranking_podium"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription" />
-
-            <LinearLayout
-                android:id="@+id/slotFirst"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="84dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.503"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgFirst"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/perfil"
-                    app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="2dp" />
-
-                <TextView
-                    android:id="@+id/nameFirst"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Ana Clara Moreira"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/ptsFirst"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="247 pts"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/slotThird"
-                android:layout_width="104dp"
-                android:layout_height="124dp"
-                android:layout_marginTop="148dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toStartOf="@id/slotFirst"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgThird"
-                    android:layout_width="65dp"
-                    android:layout_height="65dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/perfil"
-                    app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="2dp" />
-
-                <TextView
-                    android:id="@+id/nameThird"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_marginTop="6dp"
-                    android:text="Gabriel Claro Ferreiro"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/ptsThird"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="135 pts"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/slotSecond"
-                android:layout_width="111dp"
-                android:layout_height="141dp"
-                android:layout_marginTop="128dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@id/slotFirst"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgSecond"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/perfil"
-                    app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="2dp" />
-
-                <TextView
-                    android:id="@+id/nameSecond"
-                    android:layout_width="100dp"
-                    android:layout_height="35dp"
-                    android:layout_marginTop="6dp"
-                    android:text="Beatriz Souza           Lima"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/ptsSecond"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="228 pts"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvRanking"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:clipToPadding="false"
-            android:paddingBottom="56dp"
-            android:overScrollMode="never"/>
     </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/podium"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:paddingTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@color/white"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:id="@+id/podiumBg"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/bg_ranking_podium"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="ContentDescription" />
+
+                <LinearLayout
+                    android:id="@+id/slotFirst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="84dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgFirst"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/perfil"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="2dp" />
+
+                    <TextView
+                        android:id="@+id/nameFirst"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Ana Clara Moreira"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ptsFirst"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="247 pts"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/slotThird"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/slotFirst"
+                    app:layout_constraintTop_toTopOf="@id/slotFirst"
+                    app:layout_constraintVertical_bias="0.85"
+                    android:layout_marginEnd="8dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgThird"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/perfil"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="2dp" />
+
+                    <TextView
+                        android:id="@+id/nameThird"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Gabriel Claro Ferreiro"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ptsThird"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="135 pts"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/slotSecond"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/slotFirst"
+                    app:layout_constraintTop_toTopOf="@id/slotFirst"
+                    app:layout_constraintVertical_bias="0.65"
+                    android:layout_marginStart="8dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgSecond"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/perfil"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="2dp" />
+
+                    <TextView
+                        android:id="@+id/nameSecond"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Beatriz Souza Lima"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ptsSecond"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="228 pts"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRanking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="56dp"
+                tools:listitem="@layout/item_ranking_row" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView
         android:id="@+id/bottomNav"

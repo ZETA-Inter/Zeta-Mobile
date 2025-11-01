@@ -128,14 +128,14 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
 
-   //pegando o id do worker
+    //pegando o id do worker
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int workerId = sp.getInt("user_id", -1);
         return workerId != -1 ? workerId : null;
     }
 
-   //atualizado progresso do curso
+    //atualizado progresso do curso
     private void updateProgramProgress(int programId, int percentage) {
         Integer workerId = getWorkerIdFromLocalStore();
         if (workerId == null) return;
@@ -209,36 +209,36 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             }
         });
     }
-    
+
     private void fetchClassesByProgramId(Integer id) {
         ApiMongo apiMongo = RetrofitClientMongo
                 .getInstance(requireContext())
                 .create(ApiMongo.class);
 
 
-            Log.d(TAG, "Tentando buscar classes para programId: " + id);
-            Call<List<Class>> call = apiMongo.getClassByProgramId(id);
+        Log.d(TAG, "Tentando buscar classes para programId: " + id);
+        Call<List<Class>> call = apiMongo.getClassByProgramId(id);
 
-            call.enqueue(new Callback<List<Class>>() {
-                @Override
-                public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        allLessons = response.body();
+        call.enqueue(new Callback<List<Class>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Class>> call, @NonNull Response<List<Class>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allLessons = response.body();
 
-                        totalClasses = allLessons.size();
-                        if (totalClasses > 0) {
-                            // 100% dividido pelo número de aulas
-                            progressPerClass = 100.0 / totalClasses;
-                            Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
-                        }
-
-                        Log.d(TAG, "Classes carregadas com sucesso. Total: " + totalClasses);
-
-                        stepsLessonAdapter.submitList(allLessons);
-                    } else {
-                        Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
+                    totalClasses = allLessons.size();
+                    if (totalClasses > 0) {
+                        // 100% dividido pelo número de aulas
+                        progressPerClass = 100.0 / totalClasses;
+                        Log.d(TAG, "Progresso por etapa (Total): " + progressPerClass + "%");
                     }
+
+                    Log.d(TAG, "Classes carregadas com sucesso. Total: " + totalClasses);
+
+                    stepsLessonAdapter.submitList(allLessons);
+                } else {
+                    Log.e(TAG, "Falha ao buscar Classes: Código " + response.code());
                 }
+            }
 
             @Override
             public void onFailure(@NonNull Call<List<Class>> call, @NonNull Throwable t) {
@@ -296,11 +296,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                         }
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
-
-                        if (stepNumber > allLessons.size()) {
-                            Toast.makeText(getContext(), "Curso já concluído! Clique na etapa desejada para repeti-la", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
 
                         Class firstLesson = allLessons.get(stepNumber - 1);
 
