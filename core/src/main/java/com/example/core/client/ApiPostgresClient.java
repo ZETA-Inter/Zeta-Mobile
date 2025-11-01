@@ -42,6 +42,12 @@ public interface ApiPostgresClient {
     @GET("api/goals/progress-goals/{workerId}")
     Call<WorkerResponse> findProgressGoalsById(@Path("workerId") String workerId);
 
+    @GET("api/workers/overall-programs-progress/{workerId}")
+    Call<Integer> findOverallProgramsProgressById(@Path("workerId") Integer workerId);
+
+    @GET("api/workers/overall-goals-progress/{workerId}")
+    Call<Integer> findOverallGoalsProgressById(@Path("workerId") Integer workerId);
+
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);
 
