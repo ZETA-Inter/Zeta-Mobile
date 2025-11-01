@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sendEmailRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_light"
+    tools:context=".SendEmail">
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="95dp"
+        android:layout_height="92dp"
+        android:layout_marginTop="60dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/boinoite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@id/tvTitle" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center"
+        android:text="Email enviado"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tvLine1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgLogo"
+        app:layout_constraintWidth_max="500dp" />
+
+    <TextView
+        android:id="@+id/tvLine1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
+        android:autoLink="email"
+        android:gravity="center"
+        android:linksClickable="true"
+        android:text="Enviamos um e-mail para teste@gmail.com."
+        android:textColor="@color/label_grey"
+        android:textColorLink="@color/link_blue"
+        android:textSize="14sp"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tvLine2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintWidth_max="500dp" />
+
+    <TextView
+        android:id="@+id/tvLine2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center"
+        android:text="Se esse e-mail estiver associado a uma conta, você poderá redefinir sua senha."
+        android:textColor="@color/label_grey"
+        android:textSize="14sp"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tvHelp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLine1"
+        app:layout_constraintWidth_max="500dp" />
+
+    <TextView
+        android:id="@+id/tvHelp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center"
+        android:text="Não recebeu o e-mail? Verifique sua caixa de spam."
+        android:textColor="@color/label_grey"
+        android:textSize="12sp"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/btnVoltarLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLine2"
+        app:layout_constraintWidth_max="500dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVoltarLogin"
+        style="@style/NoStrokeButton"
+        android:layout_width="0dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:text="Voltar para login"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:backgroundTint="@color/primary_dark"
+        app:cornerRadius="10dp"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvHelp"
+        app:layout_constraintWidth_max="350dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

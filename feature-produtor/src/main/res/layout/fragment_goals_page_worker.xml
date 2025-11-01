@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -29,90 +30,90 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/txtPesquisa2"
-        android:layout_width="214dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="96dp"
-        android:fontFamily="@font/poppins_medium"
-        android:hint="Pesquisar"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/perfil3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/perfil3"
-        app:layout_constraintTop_toTopOf="@+id/perfil3" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txtPesquisa2"
+            android:layout_width="214dp"
+            android:layout_height="62dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="96dp"
+            android:fontFamily="@font/poppins_medium"
+            android:hint="Pesquisar"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/perfil3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/perfil3"
+            app:layout_constraintTop_toTopOf="@+id/perfil3" />
 
-    <ImageView
-        android:id="@+id/icon_perfil_goals"
-        android:layout_width="56dp"
-        android:layout_height="52dp"
-        android:contentDescription="Perfil do Usuário"
-        android:src="@drawable/perfil"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/icon_perfil_goals"
+            android:layout_width="56dp"
+            android:layout_height="52dp"
+            android:contentDescription="Perfil do Usuário"
+            android:src="@drawable/perfil"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/icon_notificacao_goals"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Notificações"
-        android:src="@drawable/ic_notification"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/icon_configuracoes_goals"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/icon_notificacao_goals"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="Notificações"
+            android:src="@drawable/ic_notificationx"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/icon_configuracoes_goals"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.622" />
 
-    <ImageView
-        android:id="@+id/icon_configuracoes_goals"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="Configurações"
-        android:src="@drawable/iconconfig"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/icon_configuracoes_goals"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="Configurações"
+            android:src="@drawable/iconconfig"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/text_metas_titulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:fontFamily="@font/poppins_medium"
-        android:text="Minhas metas"
+        android:text="MInhas metas"
         android:textColor="#0D0000"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/goals_header_layout" />
+        tools:layout_editor_absoluteY="113dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_metas"
         android:layout_width="391dp"
-        android:layout_height="0dp"
+        android:layout_height="497dp"
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_metas_titulo"
-        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_daily_goal" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/loading_goals_container"
         android:layout_width="391dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="283dp"
+        android:layout_marginTop="236dp"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_metas_titulo">
+        app:layout_constraintTop_toTopOf="parent">
 
         <include layout="@layout/fragment_goals_worker_loading" />
 
