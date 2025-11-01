@@ -1,5 +1,7 @@
 package com.example.core.client;
 
+import com.example.core.dto.request.CompanyPatchRequest;
+import com.example.core.dto.request.WorkerPatchRequest;
 import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.PlanResponse;
 import com.example.core.dto.response.UserResponse;
@@ -8,10 +10,12 @@ import com.example.core.dto.request.CompanyRequest;
 import com.example.core.dto.request.WorkerRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -47,5 +51,13 @@ public interface ApiPostgresClient {
 
     @POST("api/companies/create")
     Call<CompanyResponse> createCompany(@Body CompanyRequest request);
+
+    @PATCH("api/workers/update/{id}")
+    Call<WorkerResponse> patchWorker(@Path("id") int id, @Body WorkerPatchRequest body);
+
+    @PATCH("api/companies/update/{id}")
+    Call<CompanyResponse> patchCompany(@Path("id") int id, @Body CompanyPatchRequest body);
+
+
 
 }

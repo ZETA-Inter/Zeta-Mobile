@@ -5,4 +5,9 @@
     <string name="sign_in_facebook">Entrar com Facebook</string>
     <string name="sign_in_apple">Entrar com Apple</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="cloudinary_cloud_name">ddclobe5d</string>
+    <string name="cloudinary_upload_preset">android_unsigned</string>
+    <string name="profile_image">profile_image</string>
+    <string name="tirar_foto">tirar_foto</string>
 </resources>

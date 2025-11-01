@@ -1,10 +1,13 @@
 package com.example.feature_fornecedor;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.core.ProfileStarter;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 public class HomePageCompany extends Fragment {
@@ -73,11 +77,26 @@ public class HomePageCompany extends Fragment {
         // Ícone de perfil
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
-//        imgProfile.setOnClickListener(v -> {
-//            // Navega diretamente para o destino do grafo de navegação do core
-//            NavController navController = NavHostFragment.findNavController(this);
-//            navController.navigate(com.example.core.R.id.Profile);
-//        });
+        imgProfile.setOnClickListener(v -> {
+            android.content.SharedPreferences sp =
+                    requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
+
+            int companyId = sp.getInt("user_id", -1); // ID numérico do COMPANY salvo na sessão
+
+            if (companyId <= 0) {
+                android.widget.Toast.makeText(requireContext(),
+                        "Perfil indisponível: ID do usuário não encontrado na sessão.",
+                        android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            android.content.Intent it = new android.content.Intent(requireContext(), com.example.core.Profile.class);
+            it.putExtra(com.example.core.ProfileStarter.EXTRA_KIND, "COMPANY");
+            it.putExtra(com.example.core.ProfileStarter.EXTRA_ID, companyId);
+            startActivity(it);
+        });
+
+
 
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
@@ -88,6 +107,9 @@ public class HomePageCompany extends Fragment {
                     R.id.HomePageCompany,       // home
                     R.id.WorkerListPageCompany  // pessoas
             );
+            // Marca a aba atual sem navegar
+            bottom.setActive(CompanyBottomNavView.Item.HOME, false);
         }
     }
+
 }
