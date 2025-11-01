@@ -297,6 +297,11 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
 
+                        if (stepNumber > allLessons.size()) {
+                            Toast.makeText(getContext(), "Curso já concluído! Clique na etapa desejada para repeti-la", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         Class firstLesson = allLessons.get(stepNumber - 1);
 
                         Log.d(TAG, "Step: " + firstLesson);
