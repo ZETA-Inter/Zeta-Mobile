@@ -6,7 +6,7 @@ public class WorkerPatchRequest {
     private String name;
     private String email;
 
-    @SerializedName("imageUrl")
+    @SerializedName("image_url")
     private String imageUrl;
 
     @SerializedName("plan_info")
