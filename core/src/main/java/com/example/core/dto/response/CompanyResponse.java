@@ -2,10 +2,15 @@ package com.example.core.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public class CompanyResponse extends UserResponse {
 
     @SerializedName("plan_name")
     private String planName;
+
+    private String imageUrl;
 
     public CompanyResponse() {}
 
@@ -13,8 +18,9 @@ public class CompanyResponse extends UserResponse {
         super(id, name, email);
     }
 
-    public CompanyResponse(Integer id, String name, String email, String planName) {
+    public CompanyResponse(Integer id, String name, String email, String planName, String imageUrl) {
         super(id, name, email);
+        this.imageUrl = imageUrl;
         this.planName = planName;
     }
     public String getPlanName() {
@@ -23,5 +29,13 @@ public class CompanyResponse extends UserResponse {
 
     public void setPlanName(String planName) {
         this.planName = planName;
+    }
+
+    public Collection<Object> getImageUrl() {
+        return Collections.singleton(imageUrl);
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
