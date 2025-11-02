@@ -55,8 +55,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/ChatBotPageWorker"
-        android:name="com.example.feature_produtor.ChatBotPageWorker">
+        android:id="@+id/ChatBotWorker"
+        android:name="com.example.feature_produtor.ChatBotWorker">
     </fragment>
 
     <fragment

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatBotPageWorker">
+    android:background="#F9F5FF"
+    tools:context=".ChatBotWorker">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
             android:layout_width="39dp"
             android:layout_height="38dp"
             android:layout_marginTop="20dp"
+            android:contentDescription="Voltar"
             android:src="@drawable/voltarchat"
             app:layout_constraintEnd_toStartOf="@+id/titulo_chat"
             app:layout_constraintHorizontal_bias="0.126"
@@ -29,6 +31,7 @@
             android:text="Chatbot Zeta"
             android:textColor="#333333"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -38,24 +41,49 @@
             android:layout_width="47dp"
             android:layout_height="40dp"
             android:layout_marginTop="24dp"
+            android:contentDescription="Ícone Chatbot"
             android:src="@drawable/boichat"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.86"
             app:layout_constraintStart_toEndOf="@+id/titulo_chat"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Área de mensagens -->
+        <View
+            android:id="@+id/separator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="#e0e0e0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titulo_chat" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recicler_bot"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/inputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator"
+            app:layout_constraintVertical_bias="0.0" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="415dp"
-            android:layout_height="137dp"
-            android:background="@android:color/white"
+            android:id="@+id/inputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="676dp"
+            android:background="#F9F5FF"
             android:orientation="horizontal"
             android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <EditText
                 android:id="@+id/editMessage"
@@ -63,9 +91,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/edittext_bg"
-                android:hint="mensagem..."
-                android:inputType="text"
-                android:padding="12dp"
+                android:hint="   Mensagem..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="5"
+                android:minHeight="48dp"
+                android:scrollbars="vertical"
                 android:textColor="#000"
                 android:textColorHint="#888" />
 
@@ -73,8 +103,10 @@
                 android:id="@+id/btnSend"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
+                android:contentDescription="Enviar"
                 android:src="@drawable/btnenviarchat"
                 app:tint="#7B4DFF" />
         </LinearLayout>

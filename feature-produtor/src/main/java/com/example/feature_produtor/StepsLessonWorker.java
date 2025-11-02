@@ -26,16 +26,22 @@ import android.widget.Toast;
 
 
 import com.example.core.network.RetrofitClientMongo;
-import com.example.core.network.RetrofitClientPostgres; // <-- IMPORTANTE: Cliente Postgres
-import com.example.core.network.RetrofitClientRedis;
+import com.example.core.network.RetrofitClientPostgres;
+import com.example.core.network.RetrofitClientIA;
 import com.example.feature_produtor.adapter.StepsLessonAdapter;
 import com.example.feature_produtor.api.ApiMongo;
-import com.example.feature_produtor.api.ApiPostgres; // <-- Assumindo que você criou ApiPostgres
+import com.example.feature_produtor.api.ApiPostgres;
 import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.api.ProgressApiHelper;
+
+import com.example.feature_produtor.model.mongo.Class;
+import com.example.feature_produtor.model.postegres.Program;
+import com.example.feature_produtor.dto.response.StepResponse;
+
 import com.example.core.model.mongo.Class;
 import com.example.core.model.Program;
 import com.example.feature_produtor.model.redis.StepResponse;
+
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 
 
@@ -275,7 +281,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
-                ApiRedis apiRedis = RetrofitClientRedis
+                ApiRedis apiRedis = RetrofitClientIA
                         .getInstance(requireContext())
                         .create(ApiRedis.class);
 
