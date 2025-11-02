@@ -59,8 +59,8 @@ public interface ApiPostgresClient {
     @GET("api/companies/average-progress-percentage/{companyId}")
     Call<Integer> findAverageProgressPercentageById(@Path("companyId") Integer companyId);
 
-    @GET("api/goals/average-finished-goals/{companyId}")
-    Call<Integer> findAverageFinishedGoalsById(@Path("companyId") Integer companyId);
+    @GET("api/goals/finished-goals-percentage/{companyId}")
+    Call<Integer> findPercentageFinishedGoalsById(@Path("companyId") Integer companyId);
 
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);
