@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.example.core.client.ApiPostgresClient;
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientIA;
@@ -295,8 +296,11 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                         StepResponse step = response.body();
 
                         int stepNumber = 1;
+                        assert step != null;
                         if (step.getStatus() == 200) {
                             stepNumber = Integer.parseInt(step.getValue());
+                        } else if (step.getStatus() == 404) {
+                            assignProgram(workerId, programId);
                         }
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
@@ -333,6 +337,24 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
         });
 
+    }
+
+    private void assignProgram(Integer workerId, Integer programId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
+
+        api.assignProgram(workerId, programId).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String message = response.body();
+                assert message != null;
+                Log.d(TAG, message);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG,  "Falha na conexão: " + t.getMessage());
+            }
+        });
     }
 
     private void setupSearchListener() {
@@ -421,6 +443,55 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         Integer workerId = getWorkerIdFromLocalStore();
 
         if (workerId != null && programId != null) {
+
+            ApiRedis apiRedis = RetrofitClientRedis
+                    .getInstance(requireContext())
+                    .create(ApiRedis.class);
+
+            Log.d(TAG, "Tentando buscar a etapa para programId=" + programId +" e workerId=" + workerId );
+            Call<StepResponse> call = apiRedis.getStep(workerId, programId);
+
+            call.enqueue(new Callback<StepResponse>() {
+                @Override
+                public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
+                    StepResponse step = response.body();
+
+                    int redisStep = 1;
+                    assert step != null;
+                    if (step.getStatus() == 200) {
+                        redisStep = Integer.parseInt(step.getValue());
+                    } else if (step.getStatus() == 404) {
+                        if (stepNumber > 1) {
+                            Toast.makeText(getContext(), "Curso não iniciado! Comece pela etapa 1.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        assignProgram(workerId, programId);
+                    }
+
+                    Log.d(TAG, "Número da etapa: "+stepNumber);
+
+                    if (stepNumber > redisStep) {
+                        Toast.makeText(getContext(), "Etapas anteriores ainda não concluídas.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (stepNumber > allLessons.size()) {
+                        Toast.makeText(getContext(), "Curso já concluido!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Class firstLesson = allLessons.get(stepNumber - 1);
+
+                    Log.d(TAG, "Step: " + firstLesson);
+
+                    onStepClick(firstLesson, stepNumber);
+                }
+
+                @Override
+                public void onFailure(Call<StepResponse> call, Throwable throwable) {
+                    Log.e(TAG, "Falha na requisição de step no Redis: " + throwable.getMessage() + throwable);
+                }
+            });
 
             // PONTOS: No clique inicial, o ganho de pontos é ZERO
             int pointsGain = 0;
