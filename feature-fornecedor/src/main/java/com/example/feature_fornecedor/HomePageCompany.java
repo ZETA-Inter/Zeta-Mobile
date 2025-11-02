@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 public class HomePageCompany extends Fragment {
@@ -66,8 +67,21 @@ public class HomePageCompany extends Fragment {
         // Ícone de perfil
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(imgProfile);
+        } else {
+            imgProfile.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
         imgProfile.setOnClickListener(v -> {
-            SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
             int companyId = sp.getInt("user_id", -1);
             if (companyId <= 0) {
                 Toast.makeText(requireContext(), "Perfil indisponível: ID do usuário não encontrado na sessão.", Toast.LENGTH_SHORT).show();

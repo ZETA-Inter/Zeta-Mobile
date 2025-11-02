@@ -8,7 +8,7 @@
 
     <!-- FOTO DO PERFIL -->
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView"
+        android:id="@+id/photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
@@ -22,16 +22,17 @@
     <!-- BOTÃO DE CÂMERA SOBREPOSTO NA BASE DIREITA DA FOTO -->
     <ImageButton
         android:id="@+id/btnCamera"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:background="@drawable/bg_circle_camera"
-        android:padding="8dp"
-        android:contentDescription="@string/tirar_foto"
-        app:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@id/imageView"
-        app:layout_constraintEnd_toEndOf="@id/imageView"
+        android:layout_width="123dp"
+        android:layout_height="122dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bg_circle_camera"
+        android:contentDescription="@string/tirar_foto"
+        android:padding="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/photo"
+        app:layout_constraintEnd_toEndOf="@id/photo"
+        app:tint="@android:color/white" />
 
     <!-- NOME DO USUÁRIO -->
     <TextView
@@ -43,7 +44,7 @@
         android:textColor="#000000"
         android:textSize="16sp"
         android:fontFamily="@font/spartan_medium"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/photo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498" />

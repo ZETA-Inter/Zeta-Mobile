@@ -161,7 +161,8 @@ public class Login extends Fragment {
                             repo.upsertFromAuth(r.getUser(), null)
                                     .addOnSuccessListener(aVoid -> {
                                         String uid = r.getUser().getUid();
-                                        salvarSessaoBasica(uid, r.getUser().getEmail(), r.getUser().getDisplayName());
+                                        AuthAdapter adapter = new AuthAdapter();
+                                        adapter.verificarPerfil(uid, tipoAtual, getContext(), r.getUser().getEmail());
                                         navegarDepoisLogin(requireView());
                                         bloquearUI(false);
                                     })
@@ -181,17 +182,7 @@ public class Login extends Fragment {
         }
     }
 
-    // ===== Helpers: sessão + navegação =====
-
-    private void salvarSessaoBasica(@NonNull String uid, @Nullable String email, @Nullable String nome) {
-        SharedPreferences sp = requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
-        sp.edit()
-                .putString("company_id", uid)
-                .putString("email", email != null ? email : "")
-                .putString("name", nome != null ? nome : "")
-                .putString("tipo_usuario", tipoAtual != null ? tipoAtual.name() : "")
-                .apply();
-    }
+    // ===== Helpers: sessão + navegação ====
 
     private void navegarDepoisLogin(@NonNull View navView) {
         String deeplink = (tipoAtual == TipoUsuario.WORKER) ? "app://Worker/Home" : "app://Company/Home";

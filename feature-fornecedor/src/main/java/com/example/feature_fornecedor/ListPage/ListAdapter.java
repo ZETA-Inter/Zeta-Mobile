@@ -5,11 +5,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.feature_fornecedor.R;
 
 import java.util.ArrayList;
@@ -62,18 +64,27 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     static class ListViewHolder extends RecyclerView.ViewHolder {
         private final TextView name;
         private final TextView email;
+
+        private final ImageView photo;
         private OnWorkerClickListener clickListener;
 
         ListViewHolder(@NonNull View itemView, OnWorkerClickListener listener){
             super(itemView);
             name = itemView.findViewById(R.id.name);
             email = itemView.findViewById(R.id.email);
+            photo = itemView.findViewById(R.id.imageView3);
             this.clickListener = listener;
         }
 
         void bind(@NonNull final Worker worker) {
             name.setText(worker.getName());
             email.setText(worker.getEmail());
+
+            Glide.with(photo.getContext())
+                    .load(worker.getImageUrl())
+                    .placeholder(R.drawable.perfil)
+                    .error(R.drawable.perfil)
+                    .into(photo);
 
             itemView.setOnClickListener(v -> {
                 if (clickListener != null) {

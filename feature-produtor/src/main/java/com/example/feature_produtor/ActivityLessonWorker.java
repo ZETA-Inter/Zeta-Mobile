@@ -270,7 +270,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                     displayCurrentQuestion();
                 } else {
                     if (getView() != null) {
-                        ApiRedis apiRedis = RetrofitClientIA
+                        ApiRedis apiRedis = RetrofitClientRedis
                                 .getInstance(requireContext())
                                 .create(ApiRedis.class);
 
