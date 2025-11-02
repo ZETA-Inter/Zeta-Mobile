@@ -20,13 +20,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.core.network.RetrofitClientIA;
 import com.example.core.network.RetrofitClientPostgres;
 
+
+import com.example.feature_produtor.adapter.LessonsCardAdapter;
+import com.example.feature_produtor.api.ApiIA;
+import com.example.feature_produtor.api.ApiPostgres;
+
+import com.example.feature_produtor.dto.request.SearchRequest;
+import com.example.feature_produtor.dto.response.SearchResponse;
+//import com.example.feature_produtor.model.postegres.Program; centralização feita no core
 
 import com.example.core.adapter.LessonsCardAdapter;
 import com.example.feature_produtor.api.ApiPostgres;
 
 import com.example.core.model.Program;
+
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -53,6 +63,9 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     private String initialSegmentFilter = null;
 
     private static final String TAG = "LessonsWorker";
+
+    private ApiIA apiSearchAgent;
+    private Call<SearchResponse> currentSearchCall; //
 
     @Nullable
     @Override
@@ -82,6 +95,7 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
         lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
         recyclerCursos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerCursos.setAdapter(lessonsCardAdapter);
+
 
 
         //chmada metodos
@@ -158,34 +172,89 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
         }
     }
 
-
+// listener botão
     private void setupSearchListener() {
         if (searchView != null) {
             searchView.addTextChangedListener(new TextWatcher() {
                 @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
                 @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    filterPrograms(s.toString());
+                    // Chama o novo método para pesquisa via IA
+                    searchProgramsWithIA(s.toString());
                 }
                 @Override public void afterTextChanged(Editable s) {}
             });
         }
     }
 
-    private void filterPrograms(String query) {
-        String lowerCaseQuery = query.toLowerCase();
-        List<Program> filteredList = new ArrayList<>();
+    //pesquisa com ia
 
-        if (lowerCaseQuery.isEmpty()) {
-            filteredList.addAll(allPrograms);
-        } else {
-            for (Program program : allPrograms) {
-                if ((program.getName() != null && program.getName().toLowerCase().contains(lowerCaseQuery)) ||
-                        (program.getDescription() != null && program.getDescription().toLowerCase().contains(lowerCaseQuery))) {
-                    filteredList.add(program);
-                }
-            }
+    private void searchProgramsWithIA(String query) {
+        // 1. Limpa a pesquisa anterior
+        if (currentSearchCall != null) {
+            currentSearchCall.cancel();
         }
-        lessonsCardAdapter.submitList(filteredList);
+
+        if (query.trim().isEmpty()) {
+            // Se a busca estiver vazia, exibe todos os programas.
+            lessonsCardAdapter.submitList(new ArrayList<>(allPrograms));
+            return;
+        }
+
+        apiSearchAgent = RetrofitClientIA
+                .getInstance(requireContext())
+                .create(ApiIA.class);
+
+        // 2. Faz a chamada à API da IA
+        SearchRequest request = new SearchRequest(query);
+        currentSearchCall = apiSearchAgent.searchPrograms(request);
+
+        currentSearchCall.enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<SearchResponse> call, @NonNull Response<SearchResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Integer> resultIds = response.body().getProgramIds();
+
+                    // 3. Filtra a lista local com base nos IDs retornados
+                    List<Program> filteredList = filterLocalProgramsByIA(resultIds);
+                    lessonsCardAdapter.submitList(filteredList);
+
+                } else {
+                    Log.e(TAG, "Search IA FAILED. Code: " + response.code());
+                    Toast.makeText(getContext(), "Erro na pesquisa (IA): " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Em caso de falha, limpa a lista
+                    lessonsCardAdapter.submitList(new ArrayList<>());
+                }
+                currentSearchCall = null;
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SearchResponse> call, @NonNull Throwable t) {
+                if (call.isCanceled()) {
+                    Log.d(TAG, "Search IA: Request cancelado.");
+                    return;
+                }
+                Toast.makeText(getContext(), "Erro de conexão (IA): " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Erro de rede (IA): " + t.getMessage());
+                lessonsCardAdapter.submitList(new ArrayList<>());
+                currentSearchCall = null;
+            }
+        });
+    }
+
+
+    //filtro com IA
+
+    private List<Program> filterLocalProgramsByIA(List<Integer> resultIds) {
+        if (resultIds == null || resultIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Cria um mapa para pesquisa rápida de IDs
+        // Filtra a lista completa de programas (allPrograms) para incluir apenas aqueles com IDs na lista da IA
+        return allPrograms.stream()
+                .filter(program -> resultIds.contains(program.getId()))
+                .collect(Collectors.toList());
     }
 
     //click no curso para o program id para poder pegar as etapas corretas (na classe class)

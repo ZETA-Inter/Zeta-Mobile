@@ -19,17 +19,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.core.network.RetrofitClientMongo;
+
+import com.example.core.network.RetrofitClientIA;
+
 import com.example.core.network.RetrofitClientRedis;
+
 import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.api.ProgressApiHelper;
 
-import com.example.core.model.mongo.Activity;
-import com.example.core.model.mongo.Activity.Question;
-import com.example.core.model.mongo.Activity.Question.Answer;
-import com.example.feature_produtor.model.redis.StepRequest;
-import com.example.feature_produtor.model.redis.StepResponse;
+import com.example.feature_produtor.model.mongo.Activity;
+import com.example.feature_produtor.model.mongo.Activity.Question;
+import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
+import com.example.feature_produtor.dto.request.StepRequest;
+import com.example.feature_produtor.dto.response.StepResponse;
+
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -66,6 +71,8 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     private AnswerAdapter answerAdapter;
     private Answer selectedAnswer = null;
 
+    private ImageView chatbot;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +93,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         txtPergunta = view.findViewById(R.id.txtPergunta);
         recyclerAnswers = view.findViewById(R.id.recycler_answers);
         btContinuar = view.findViewById(R.id.btContinuar2);
+        chatbot = view.findViewById(R.id.chatbot);
 
         answerAdapter = new AnswerAdapter(this);
         recyclerAnswers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -263,7 +271,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                     displayCurrentQuestion();
                 } else {
                     if (getView() != null) {
-                        ApiRedis apiRedis = RetrofitClientRedis
+                        ApiRedis apiRedis = RetrofitClientIA
                                 .getInstance(requireContext())
                                 .create(ApiRedis.class);
 

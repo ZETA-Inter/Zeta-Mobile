@@ -171,8 +171,8 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="459dp"
+                        android:layout_height="184dp"
                         android:padding="16dp">
 
                         <TextView
@@ -354,12 +354,12 @@
 
             <ImageView
                 android:id="@+id/boxIA"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_marginTop="12dp"
+                android:layout_width="588dp"
+                android:layout_height="53dp"
+                android:layout_marginTop="16dp"
                 android:src="@drawable/ia_barra"
                 app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.535"
                 app:layout_constraintStart_toStartOf="@id/guideline_start"
                 app:layout_constraintTop_toTopOf="parent" />
 

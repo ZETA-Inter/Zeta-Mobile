@@ -181,7 +181,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btContinuar2">
 
             <ImageView
-                android:id="@+id/imageView9"
+                android:id="@+id/chatbot"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"

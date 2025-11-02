@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model.redis;
+package com.example.feature_produtor.dto.response;
 
 public class StepResponse {
     private String key;

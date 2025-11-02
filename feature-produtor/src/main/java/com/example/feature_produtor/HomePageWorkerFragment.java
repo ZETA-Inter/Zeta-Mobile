@@ -347,9 +347,11 @@ public class HomePageWorkerFragment extends Fragment
     private void setupClickListeners() {
         NavController nav = NavHostFragment.findNavController(this);
 
+
         Uri deeplink = Uri.parse("app://Core/Profile");
         perfil.setOnClickListener(v -> nav.navigate(deeplink));
-        boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotPageWorker));
+        boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotWorker));
+
         iconConfig.setOnClickListener(v -> { nav.navigate(R.id.FlashCardStudy);});
         iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
 
