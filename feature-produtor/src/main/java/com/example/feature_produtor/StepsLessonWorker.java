@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
-import com.example.core.network.RetrofitClientChatBot;
+import com.example.core.network.RetrofitClientIA;
 import com.example.feature_produtor.adapter.StepsLessonAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres;
@@ -275,7 +275,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
-                ApiRedis apiRedis = RetrofitClientChatBot
+                ApiRedis apiRedis = RetrofitClientIA
                         .getInstance(requireContext())
                         .create(ApiRedis.class);
 

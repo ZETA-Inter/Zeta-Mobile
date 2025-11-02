@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.feature_produtor.api.ApiChatBot;
-import com.example.core.network.RetrofitClientChatBot;
+import com.example.feature_produtor.api.ApiIA;
+import com.example.core.network.RetrofitClientIA;
 import com.example.feature_produtor.adapter.MessageAdapter;
 import com.example.feature_produtor.dto.request.ChatRequest;
 import com.example.feature_produtor.dto.response.ChatResponse;
@@ -37,7 +37,7 @@ public class ChatBotWorker extends Fragment {
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
     private List<Message> messageList;
-    private ApiChatBot apiService;
+    private ApiIA apiService;
 
     // NOVO: Variável para rastrear o balão de carregamento/resposta atual.
     private Message currentBotMessage;
@@ -71,7 +71,7 @@ public class ChatBotWorker extends Fragment {
         recyclerView.setAdapter(messageAdapter);
 
         // 3. Inicialização do Cliente API
-        apiService = RetrofitClientChatBot.getInstance(requireContext()).create(ApiChatBot.class);
+        apiService = RetrofitClientIA.getInstance(requireContext()).create(ApiIA.class);
 
         // Mensagem inicial do chatbot
         addBotMessage("Olá! Sou o Chatbot Zeta. Como posso te ajudar?");

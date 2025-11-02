@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.core.network.RetrofitClientMongo;
-import com.example.core.network.RetrofitClientChatBot;
+import com.example.core.network.RetrofitClientIA;
 import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
@@ -266,7 +266,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                     displayCurrentQuestion();
                 } else {
                     if (getView() != null) {
-                        ApiRedis apiRedis = RetrofitClientChatBot
+                        ApiRedis apiRedis = RetrofitClientIA
                                 .getInstance(requireContext())
                                 .create(ApiRedis.class);
 
