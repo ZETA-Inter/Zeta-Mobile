@@ -1,7 +1,7 @@
 package com.example.feature_produtor.api;
 
-import com.example.feature_produtor.dto.request.GradeRequestDTO;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
+import com.example.feature_produtor.dto.request.ProgressAddRequestDTO;
 import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
 import com.example.core.model.Program;
@@ -14,6 +14,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -28,19 +29,12 @@ public interface ApiPostgres {
     @GET("/api/segments/list-segments")
     Call<List<Segment>> getAllSegments();
 
-    @PATCH("/api/worker-programs/grade")
-    Call<Void> updateProgramProgress(
-            @Body GradeRequestDTO request
-    );
-
     @GET("/api/workers/list-actual-programs-by-id/{id}")
     Call<List<ProgramWorkerResponseDTO>> listWorkerProgramsWithProgress(@Path("id") Integer workerId);
 
 
     @GET("api/goals/list-goals-by-worker-id/{workerId}")
     Call<List<Goal>> getGoalsByWorkerId(@Path("workerId") int id);
-
-
 
     @GET("api/goals/list-goals-by-company/{workerId}/{companyId}")
     Call<Goal> getGoalsByCompany(@Path("companyId") int companyId);
@@ -50,6 +44,11 @@ public interface ApiPostgres {
 
     @PATCH("api/worker-goals/complete-goal/{workerId}/{goalId}")
     Call<ResponseBody> completeGoal(@Path("workerId") int workerId, @Path("goalId") int goalId);
+
+    @POST("/api/worker-programs/add-progress")
+    Call<Void> addProgramProgress(
+            @Body ProgressAddRequestDTO request
+    );
 
 }
 

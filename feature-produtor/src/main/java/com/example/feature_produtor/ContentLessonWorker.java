@@ -55,6 +55,8 @@ public class ContentLessonWorker extends Fragment {
     private List<String> contentPages;
     private int currentPageIndex = 0;
 
+    private ImageView logo;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class ContentLessonWorker extends Fragment {
         lessonTitleTextView = view.findViewById(R.id.titulocontent);
         conteudo = view.findViewById(R.id.tvConteudo);
         btContinuar = view.findViewById(R.id.btComeçar);
+        logo = view.findViewById(R.id.icon_logo_boi);
 
         setupClickListeners();
 
@@ -118,6 +121,9 @@ public class ContentLessonWorker extends Fragment {
             }
         });
 
+        logo.setOnClickListener(v->
+                Navigation.findNavController(v).navigate(R.id.HomePageWorker));
+
         btContinuar.setOnClickListener(v -> {
             if (contentPages == null || contentPages.isEmpty()) {
                 Toast.makeText(getContext(), "Conteúdo não carregado.", Toast.LENGTH_SHORT).show();
@@ -140,26 +146,35 @@ public class ContentLessonWorker extends Fragment {
             // 2. DISTRIBUI ESTE VALOR PELOS CLIQUES
             double progressPerClick = contentPaginationValue / transitions;
 
-            // 3. CALCULA O NOVO PROGRESSO DO CURSO A SER ENVIADO
-            final int progressToSend = (int) Math.round(currentProgramProgress + progressPerClick);
+            final int percentageGain = (int) Math.round(progressPerClick); // Ganho em %
             final double progressSpent = progressPerClick;
+
+            // PONTOS: No avanço do conteúdo, o ganho de pontos é ZERO
+            final int pointsGain = 0;
+
+            // O progresso total do CURSO que tentaremos salvar (agora passado como currentProgramProgress)
+            // final int progressToSend = (int) Math.round(currentProgramProgress + progressPerClick);
 
             Integer workerId = getWorkerIdFromLocalStore();
 
             if (workerId != null && programId != null) {
-                // CHAMA A API COM O CALLBACK
-                ProgressApiHelper.updateProgramProgress(requireContext(), programId, Math.min(progressToSend, 100), workerId,
+                // CHAMA A API COM O CALLBACK (usando a nova assinatura)
+                ProgressApiHelper.updateProgramProgress(
+                        requireContext(),
+                        programId,
+                        percentageGain,
+                        pointsGain,
+                        currentProgramProgress,
+                        workerId,
                         new ProgressApiHelper.ProgressUpdateCallback() {
                             @Override
                             public void onProgressUpdated(int newPercentage) {
                                 // SUCESSO: ATUALIZA ESTADO E AVANÇA A PÁGINA
                                 currentProgramProgress = newPercentage;
                                 remainingStepProgress -= progressSpent; // Reduz o valor gasto
-
                                 currentPageIndex++;
                                 displayCurrentPage();
                             }
-
                             @Override
                             public void onError(String message) {
                                 // FALHA: ALERTA E PERMANECE NA PÁGINA

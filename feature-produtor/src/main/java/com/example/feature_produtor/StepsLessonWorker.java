@@ -382,10 +382,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         // progressPerClass é o 20% do curso que esta etapa vale.
         // initialGainValue é 25% * progressPerClass
         double initialGainValue = progressPerClass * 0.25;
-
-        // O progresso total do CURSO que tentaremos salvar
-        int progressToSend = (int) Math.round(currentProgramProgress + initialGainValue);
-        progressToSend = Math.min(progressToSend, 100);
+        int percentageGain = (int) Math.round(initialGainValue);
 
         // O valor que será passado para a próxima tela (75% do valor da etapa)
         double remainingStepProgress = progressPerClass * 0.75;
@@ -396,13 +393,22 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         if (workerId != null && programId != null) {
 
-            // CHAMA A API COM O CALLBACK
-            ProgressApiHelper.updateProgramProgress(requireContext(), workerId, programId, progressToSend,
+            // PONTOS: No clique inicial, o ganho de pontos é ZERO
+            int pointsGain = 0;
+
+
+            ProgressApiHelper.updateProgramProgress(
+                    requireContext(),
+                    programId,
+                    percentageGain,
+                    pointsGain,
+                    currentProgramProgress,
+                    workerId,
                     new ProgressApiHelper.ProgressUpdateCallback() {
                         @Override
-                        public void onProgressUpdated(int percentageSaved) {
-                            // SUCESSO: ATUALIZA O ESTADO LOCAL E NAVEGA
-                            currentProgramProgress = percentageSaved;
+                        public void onProgressUpdated(int newPercentage) {
+
+                            currentProgramProgress = newPercentage;
                             navigateToLesson(item, stepNumber, remainingStepProgress);
                         }
 

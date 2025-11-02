@@ -183,7 +183,7 @@ public class HomePageWorkerFragment extends Fragment
                             .collect(Collectors.toList());
 
                     List<ProgramWorkerResponseDTO> completed = programs.stream()
-                            .filter(p -> p.getProgressPercentage() >= 100)
+                            .filter(p -> p.getProgressPercentage() >= 100 )
                             .collect(Collectors.toList());
 
                     allPrograms.addAll(inProgress);
