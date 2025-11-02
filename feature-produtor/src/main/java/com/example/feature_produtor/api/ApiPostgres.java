@@ -19,22 +19,22 @@ import retrofit2.http.Query;
 
 public interface ApiPostgres {
 
-    @GET("/api/programs/list-all")
+    @GET("api/programs/list-all")
     Call<List<Program>> getAllPrograms();
 
-    @GET("/api/programs/find-id/{id}")
+    @GET("api/programs/find-id/{id}")
     Call<Program> getProgramById(@Path("id") Integer id);
 
-    @GET("/api/segments/list-segments")
+    @GET("api/segments/list-segments")
     Call<List<Segment>> getAllSegments();
 
-    @PATCH("/api/workers/update/{id}")
+    @PATCH("api/workers/update/{id}")
     Call<Void> updateProgramProgress(
             @Path("id") int workerId,
             @Body ProgressUpdatePayload request
     );
 
-    @GET("/api/workers/list-actual-programs-by-id/{id}")
+    @GET("api/workers/list-actual-programs-by-id/{id}")
     Call<List<ProgramWorkerResponseDTO>> listWorkerProgramsWithProgress(@Path("id") Integer workerId);
 
 

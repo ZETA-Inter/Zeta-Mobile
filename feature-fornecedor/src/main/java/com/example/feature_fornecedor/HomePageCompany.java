@@ -85,11 +85,10 @@ public class HomePageCompany extends Fragment {
             NavController nav = NavHostFragment.findNavController(this);
             bottom.bindNavController(
                     nav,
-                    R.id.RankingPageCompany,    // troféu
-                    R.id.HomePageCompany,       // home
-                    R.id.WorkerListPageCompany  // pessoas
+                    R.id.RankingPageCompany,
+                    R.id.HomePageCompany,
+                    R.id.WorkerListPageCompany
             );
-            // Marca a aba atual sem navegar
             bottom.setActive(CompanyBottomNavView.Item.HOME, false);
         }
     }

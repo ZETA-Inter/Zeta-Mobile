@@ -1,11 +1,9 @@
 package com.example.core;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,17 +20,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.adapter.LessonsCardProgressAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.request.CompanyPatchRequest;
 import com.example.core.dto.request.WorkerPatchRequest;
-import com.example.core.dto.response.GoalProgress;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.WorkerResponse;
@@ -85,16 +80,6 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     // Cloudinary (OkHttp singleton)
     private final OkHttpClient http = new OkHttpClient();
 
-    private final ActivityResultLauncher<String> requestCameraPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    dispatchTakePictureIntent();
-                } else {
-                    Toast.makeText(getContext(), "Permissão de câmera negada", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
     private final ActivityResultLauncher<Intent> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -140,13 +125,12 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         btnCamera = view.findViewById(R.id.btnCamera);
 
         andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
-        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int id = sp.getInt("user_id", -1);
         String kind = sp.getString("tipo_usuario", null);
-        String name = sp.getString("name", "Usuário");
+        String name = sp.getString("nmae", "Usuário"); // (atenção: sua chave está como "nmae")
 
         if (id <= 0 || kind == null) {
             Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();
@@ -156,14 +140,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         ((TextView) view.findViewById(R.id.nome_worker)).setText(name);
 
         if (btnCamera != null) {
-            btnCamera.setOnClickListener(v -> {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
-                } else {
-                    dispatchTakePictureIntent();
-                }
-            });
+            btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
         } else {
             Log.e(TAG, "btnCamera não encontrado no layout. Verifique @+id/btnCamera no XML.");
         }
@@ -178,32 +155,25 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     }
 
     // ---------------------- CÂMERA ----------------------
-    // ---------------------- CÂMERA ----------------------
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // Verifica se existe app de câmera
         if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            File photoFile = null;
+            File photoFile;
             try {
                 photoFile = createImageFile();
-            } catch (IOException e) {
-                Log.e(TAG, "Erro ao criar arquivo de imagem", e);
+            } catch (IOException ex) {
+                Log.e(TAG, "Erro ao criar arquivo de imagem", ex);
                 Toast.makeText(getContext(), "Erro ao criar arquivo de imagem.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(
+                Uri photoURI = FileProvider.getUriForFile(
                         requireContext(),
                         requireContext().getPackageName() + ".fileprovider",
                         photoFile
                 );
-
-                // Adiciona permissões temporárias para o app de câmera
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 cameraLauncher.launch(takePictureIntent);
             }
         } else {
@@ -214,24 +184,11 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-
-        // Use getExternalFilesDir para que fique privado do app
         File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        if (storageDir != null && !storageDir.exists()) {
-            storageDir.mkdirs();
-        }
-
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
-
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
 
     // ---------------------- CLOUDINARY + PATCH ----------------------
     private void uploadAndSaveProfilePicture(File photoFile) {
@@ -292,38 +249,30 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                 .post(mb.build())
                 .build();
 
-        http.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+        http.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e(TAG, "Cloudinary upload falhou", e);
-                runOnUiThreadSafe(() ->
-                        Toast.makeText(getContext(), "Falha ao enviar imagem.", Toast.LENGTH_LONG).show()
-                );
+                runOnUiThreadSafe(() -> Toast.makeText(getContext(), "Falha ao enviar imagem.", Toast.LENGTH_LONG).show());
             }
 
-            @Override
-            public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
-                okhttp3.ResponseBody rb = response.body();
-                String json = (rb != null) ? rb.string() : "";
-
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Log.e(TAG, "Cloudinary HTTP " + response.code() + " - " + json);
-                    runOnUiThreadSafe(() ->
-                            Toast.makeText(getContext(), "Erro no upload (" + response.code() + ")", Toast.LENGTH_LONG).show()
-                    );
+                    String bodyErr = response.body() != null ? response.body().string() : "";
+                    Log.e(TAG, "Cloudinary HTTP " + response.code() + " - " + bodyErr);
+                    runOnUiThreadSafe(() -> Toast.makeText(getContext(), "Erro no upload (" + response.code() + ")", Toast.LENGTH_LONG).show());
                     return;
                 }
 
+                // Parse json mínimo para pegar secure_url
+                String json = response.body() != null ? response.body().string() : "{}";
                 String secureUrl = parseSecureUrl(json);
                 if (secureUrl == null || secureUrl.isEmpty()) {
                     Log.e(TAG, "Cloudinary: secure_url ausente. Resposta: " + json);
-                    runOnUiThreadSafe(() ->
-                            Toast.makeText(getContext(), "Upload sem URL de retorno.", Toast.LENGTH_LONG).show()
-                    );
+                    runOnUiThreadSafe(() -> Toast.makeText(getContext(), "Upload sem URL de retorno.", Toast.LENGTH_LONG).show());
                     return;
                 }
 
-                // PATCH de acordo com o tipo do usuário
+                // Com URL em mãos → PATCH na API
                 if ("COMPANY".equals(kind)) {
                     patchCompanyProfile(id, secureUrl);
                 } else {
@@ -436,11 +385,9 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressPrograms.setGradientColors(0xFF043253, 0x0F5ECB);
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de cursos", t);
@@ -449,21 +396,15 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     }
 
     private void fetchCompanyGoalProgress(int companyId) {
-        api.findPercentageFinishedGoalsById(companyId).enqueue(new Callback<GoalProgress>() {
+        api.findAverageFinishedGoalsById(companyId).enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(@NonNull Call<GoalProgress> call, @NonNull Response<GoalProgress> response) {
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressGoals.setGradientColors(0xFF043253, 0x0F5ECB);
-
-                    GoalProgress gp = response.body();
-
-                    int percentage = (int) ((gp.getCompletedGoals() * 100.0) / gp.getTotalGoals());
-
-                    circularProgressGoals.setProgress(percentage);                }
+                    circularProgressGoals.setProgress(response.body());
+                }
             }
-
             @Override
-            public void onFailure(@NonNull Call<GoalProgress> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de metas", t);
             }
         });
@@ -482,7 +423,6 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     circularProgressGoals.setProgress(response.body());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de metas", t);
@@ -498,7 +438,6 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de cursos", t);
@@ -529,7 +468,6 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
                 loadingAndamentoLayout.setVisibility(View.VISIBLE);
@@ -563,7 +501,6 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
                 loadingAndamentoLayout.setVisibility(View.VISIBLE);
