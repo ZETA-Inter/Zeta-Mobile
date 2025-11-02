@@ -16,12 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_produtor.api.ProgressApiHelper;
-import com.example.feature_produtor.model.mongo.Class;
+import com.example.core.model.mongo.Class;
 import com.example.feature_produtor.api.ApiMongo;
-import com.example.feature_produtor.api.ApiPostgres;
-import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
 
 import com.google.android.material.button.MaterialButton;
 import com.example.core.network.RetrofitClientMongo;

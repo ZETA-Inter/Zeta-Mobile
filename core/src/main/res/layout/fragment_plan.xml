@@ -94,7 +94,7 @@
             tools:listitem="@layout/item_plan" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/percentageBar"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="60dp"
             android:layout_height="60dp"

@@ -1,11 +1,11 @@
 package com.example.feature_produtor.api;
 
 import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
-import com.example.feature_produtor.dto.response.ProgramWorkerResponseDTO;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
-import com.example.feature_produtor.model.postegres.Program;
-import com.example.feature_produtor.model.postegres.Segment;
+import com.example.core.model.Program;
+import com.example.core.model.Segment;
 
 import java.util.List;
 

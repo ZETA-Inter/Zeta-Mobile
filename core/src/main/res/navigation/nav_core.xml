@@ -58,8 +58,11 @@
         android:name="com.example.core.Plan">
     </fragment>
 
-    <activity
+    <fragment
         android:id="@+id/Profile"
         android:name="com.example.core.Profile">
-    </activity>
+        <deepLink
+            android:id="@+id/ProfileDeepLink"
+            app:uri="app://Core/Profile" />
+    </fragment>
 </navigation>
