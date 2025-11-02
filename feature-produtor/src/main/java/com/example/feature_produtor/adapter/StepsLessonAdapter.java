@@ -11,13 +11,17 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.mongo.Class; // IMPORTANTE: Importar o modelo Class
+import com.example.core.model.mongo.Class; // IMPORTANTE: Importar o modelo Class
 
 // Extende ListAdapter de Class
 public class StepsLessonAdapter extends ListAdapter<Class, StepsLessonAdapter.LessonStepViewHolder> {
 
     // A interface usa o modelo Class
     public interface OnStepClickListener {
+        void onProgressUpdated(int newPercentage);
+
+        void onError(String message);
+
         void onStepClick(Class item, Integer stepNumber);
     }
 
