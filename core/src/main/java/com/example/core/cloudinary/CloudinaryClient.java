@@ -17,7 +17,7 @@ public final class CloudinaryClient {
         if (api == null) {
             synchronized (CloudinaryClient.class) {
                 if (api == null) {
-                    String cloudName = ctx.getString(R.string.cloudinary_cloud_name);
+                    String cloudName = ctx.getString(R.string.core_cloudinary_cloud_name);
                     String baseUrl = "https://api.cloudinary.com/v1_1/" + cloudName + "/";
 
                     OkHttpClient ok = new OkHttpClient.Builder().build();

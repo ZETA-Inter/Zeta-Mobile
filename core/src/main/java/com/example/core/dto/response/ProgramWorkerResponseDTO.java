@@ -1,9 +1,6 @@
 package com.example.core.dto.response;
-
 import com.example.core.model.Segment;
 import com.google.gson.annotations.SerializedName;
-
-
 public class ProgramWorkerResponseDTO {
 
 

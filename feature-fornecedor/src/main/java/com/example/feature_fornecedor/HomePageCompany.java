@@ -1,5 +1,6 @@
 package com.example.feature_fornecedor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.core.ProfileStarter;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 public class HomePageCompany extends Fragment {
@@ -78,23 +78,22 @@ public class HomePageCompany extends Fragment {
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
         imgProfile.setOnClickListener(v -> {
-            android.content.SharedPreferences sp =
-                    requireContext().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE);
-
-            int companyId = sp.getInt("user_id", -1); // ID numérico do COMPANY salvo na sessão
-
+            SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+            int companyId = sp.getInt("user_id", -1);
             if (companyId <= 0) {
-                android.widget.Toast.makeText(requireContext(),
-                        "Perfil indisponível: ID do usuário não encontrado na sessão.",
-                        android.widget.Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Perfil indisponível: ID do usuário não encontrado na sessão.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            android.content.Intent it = new android.content.Intent(requireContext(), com.example.core.Profile.class);
-            it.putExtra(com.example.core.ProfileStarter.EXTRA_KIND, "COMPANY");
-            it.putExtra(com.example.core.ProfileStarter.EXTRA_ID, companyId);
-            startActivity(it);
+            Bundle args = new Bundle();
+            args.putString("EXTRA_KIND", "COMPANY");
+            args.putInt("EXTRA_ID", companyId);
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(R.id.action_HomePageCompany_to_Profile, args);
         });
+
+
 
 
 
