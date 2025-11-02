@@ -242,30 +242,5 @@ public class ContentLessonWorker extends Fragment {
         return workerId != -1 ? workerId : null;
     }
 
-//    private void updateProgramProgress(int programId, int percentage) {
-//        Integer workerId = getWorkerIdFromLocalStore();
-//        if (workerId == null) return;
-//
-//        ApiPostgres client = RetrofitClientPostgres
-//                .getInstance(requireContext())
-//                .create(ApiPostgres.class);
-//
-//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-//
-//        client.updateProgramProgress(workerId, request)
-//                .enqueue(new Callback<Void>() {
-//                    @Override
-//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-//                        if (response.isSuccessful()) {
-//                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
-//                        } else {
-//                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-//                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
-//                    }
-//                });
-//    }
+
 }
