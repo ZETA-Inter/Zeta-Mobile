@@ -19,7 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.core.network.RetrofitClientMongo;
+
 import com.example.core.network.RetrofitClientIA;
+
+import com.example.core.network.RetrofitClientRedis;
+
 import com.example.feature_produtor.adapter.AnswerAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
@@ -30,6 +34,7 @@ import com.example.feature_produtor.model.mongo.Activity.Question;
 import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
 import com.example.feature_produtor.dto.request.StepRequest;
 import com.example.feature_produtor.dto.response.StepResponse;
+
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;

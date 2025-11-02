@@ -55,7 +55,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/text_pocentagem"
+            android:id="@+id/text_porcentagem"
             android:layout_width="36dp"
             android:layout_height="22dp"
             android:layout_marginTop="140dp"
@@ -64,20 +64,6 @@
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.159"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/porcentagem"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="140dp"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="0"
-            android:textColor="#3C3C3C"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/text_pocentagem"
-            app:layout_constraintHorizontal_bias="0.755"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

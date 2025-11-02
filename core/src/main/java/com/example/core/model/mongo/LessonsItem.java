@@ -1,4 +1,4 @@
-package com.example.feature_produtor.model.mongo;
+package com.example.core.model.mongo;
 
 public class LessonsItem {
     private final String id;

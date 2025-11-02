@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.feature_produtor.R;
-import com.example.feature_produtor.model.mongo.FlashCard;
+import com.example.core.model.mongo.FlashCard;
 // Importação da interface que criamos no callback para comunicação
 import com.example.feature_produtor.FlashCardItemTouchHelperCallback;
 
