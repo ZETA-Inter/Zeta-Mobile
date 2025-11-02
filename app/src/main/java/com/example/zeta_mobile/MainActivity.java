@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.core.notifications.NotificationHelper;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationHelper.createNotificationChannel(this);
         pedirPermissaoNotificacao();
+
+//        FirebaseAuth.getInstance().signOut();
+//        SharedPreferences sp = getSharedPreferences("user_session", MODE_PRIVATE);
+//        sp.edit().clear().apply();
 
         boolean isUserLoggedIn = checkIfUserIsLoggedIn();
 

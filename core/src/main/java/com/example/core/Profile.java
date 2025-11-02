@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.core.adapter.LessonsCardProgressAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.request.CompanyPatchRequest;
@@ -38,7 +41,6 @@ import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.WorkerResponse;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.ui.CircularProgressView;
-import com.example.core.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,8 +52,6 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import okhttp3.MediaType;
@@ -59,11 +59,6 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.Retrofit;
-import retrofit2.CallAdapter;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Callback;
@@ -81,6 +76,8 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     // Câmera
     private ImageButton btnCamera;
     private String currentPhotoPath;
+
+    private ImageView photo;
 
     // Cloudinary (OkHttp singleton)
     private final OkHttpClient http = new OkHttpClient();
@@ -103,7 +100,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                         // Atualiza imediatamente com a foto local (feedback ao usuário)
                         View v = getView();
                         if (v != null) {
-                            View avatar = v.findViewById(R.id.imageView);
+                            View avatar = v.findViewById(R.id.photo);
                             if (avatar instanceof android.widget.ImageView) {
                                 ((android.widget.ImageView) avatar).setImageURI(Uri.fromFile(photoFile));
                             }
@@ -133,6 +130,8 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
 
         api = RetrofitClientPostgres.getApiService(getContext());
 
+        photo = view.findViewById(R.id.photo);
+
         recyclerCursosAndamento = view.findViewById(R.id.rv_doing_programs);
         loadingAndamentoLayout = view.findViewById(R.id.layout_cursos_andamento_loading);
         circularProgressGoals = view.findViewById(R.id.circularProgressGoals);
@@ -147,10 +146,21 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         int id = sp.getInt("user_id", -1);
         String kind = sp.getString("tipo_usuario", null);
         String name = sp.getString("name", "Usuário");
+        String imageUrl = sp.getString("image_url", null);
 
         if (id <= 0 || kind == null) {
             Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.perfil)
+                    .error(R.drawable.perfil)
+                    .into(photo);
+        } else {
+            photo.setImageResource(R.drawable.perfil);
         }
 
         ((TextView) view.findViewById(R.id.nome_worker)).setText(name);
@@ -345,7 +355,11 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     runOnUiThreadSafe(() -> {
                         Toast.makeText(getContext(), "Foto de Worker atualizada!", Toast.LENGTH_SHORT).show();
                         // Se quiser forçar reload do avatar a partir da URL remota:
-                        // Glide.with(Profile.this).load(imageUrl).into((ImageView) requireView().findViewById(R.id.imageView));
+                         Glide.with(Profile.this)
+                                 .load(imageUrl)
+                                 .placeholder(R.drawable.perfil)
+                                 .error(R.drawable.perfil)
+                                 .into(photo);
                     });
                 } else {
                     Log.e(TAG, "PATCH worker falhou: " + response.code());
@@ -372,6 +386,11 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                 if (response.isSuccessful()) {
                     runOnUiThreadSafe(() -> {
                         Toast.makeText(getContext(), "Logo da empresa atualizada!", Toast.LENGTH_SHORT).show();
+                        Glide.with(Profile.this)
+                                .load(imageUrl)
+                                .placeholder(R.drawable.perfil)
+                                .error(R.drawable.perfil)
+                                .into(photo);
                     });
                 } else {
                     Log.e(TAG, "PATCH company falhou: " + response.code());
@@ -436,7 +455,9 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressPrograms.setGradientColors(0xFF043253, 0x0F5ECB);
+                    int startColor = Color.parseColor("#043253");
+                    int endColor = Color.parseColor("#0F5ECB");
+                    circularProgressPrograms.setGradientColors(startColor, endColor);
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
@@ -453,7 +474,9 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
             @Override
             public void onResponse(@NonNull Call<GoalProgress> call, @NonNull Response<GoalProgress> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressGoals.setGradientColors(0xFF043253, 0x0F5ECB);
+                    int startColor = Color.parseColor("#043253");
+                    int endColor = Color.parseColor("#0F5ECB");
+                    circularProgressGoals.setGradientColors(startColor, endColor);
 
                     GoalProgress gp = response.body();
 
