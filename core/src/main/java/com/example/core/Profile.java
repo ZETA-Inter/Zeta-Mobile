@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -141,6 +143,16 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
         recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
+
+        ImageView btComeback = view.findViewById(R.id.btComeback);
+
+        btComeback.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(Profile.this);
+            if (!nav.popBackStack()) {
+                requireActivity().onBackPressed();
+            }
+        });
+
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int id = sp.getInt("user_id", -1);

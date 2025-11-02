@@ -178,6 +178,13 @@ public class HomePageWorkerFragment extends Fragment
                     allPrograms.clear();
                     concludedPrograms.clear();
 
+                    programs.stream()
+                            .map(v -> {
+                                Log.d(TAG, String.valueOf(v.getProgressPercentage()));
+                                return v;
+                            })
+                            .toArray();
+
                     // Ajuste dentro de fetchPrograms -> onResponse
                     List<ProgramWorkerResponseDTO> inProgress = programs.stream()
                             .filter(p -> p.getProgressPercentage() < 100) // Qualquer coisa abaixo de 100%
