@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.core.model.mongo.Activity;
 import com.example.core.network.RetrofitClientMongo;
 
 import com.example.core.network.RetrofitClientIA;
@@ -29,9 +30,7 @@ import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiRedis;
 import com.example.feature_produtor.api.ProgressApiHelper;
 
-import com.example.feature_produtor.model.mongo.Activity;
-import com.example.feature_produtor.model.mongo.Activity.Question;
-import com.example.feature_produtor.model.mongo.Activity.Question.Answer;
+
 import com.example.feature_produtor.dto.request.StepRequest;
 import com.example.feature_produtor.dto.response.StepResponse;
 
@@ -65,11 +64,11 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     private int currentProgramProgress = 0;
     private double progressValue = 0.0;
 
-    private List<Question> allQuestions;
+    private List<Activity.Question> allQuestions;
     private int currentQuestionIndex = 0;
 
     private AnswerAdapter answerAdapter;
-    private Answer selectedAnswer = null;
+    private Activity.Question.Answer selectedAnswer = null;
 
     private ImageView chatbot;
 
@@ -217,7 +216,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     private void displayCurrentQuestion() {
         if (allQuestions == null || allQuestions.isEmpty()) return;
 
-        Question question = allQuestions.get(currentQuestionIndex);
+        Activity.Question question = allQuestions.get(currentQuestionIndex);
 
         resetQuestionState();
 
@@ -318,7 +317,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
     }
 
     @Override
-    public void onAnswerSelected(Answer selectedAnswer, int position) {
+    public void onAnswerSelected(Activity.Question.Answer selectedAnswer, int position) {
         this.selectedAnswer = selectedAnswer;
 
         answerAdapter.setSelectedPosition(position);

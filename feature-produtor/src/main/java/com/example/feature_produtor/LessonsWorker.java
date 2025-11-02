@@ -23,22 +23,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.core.adapter.LessonsCardAdapter;
+import com.example.core.model.Program;
 import com.example.core.network.RetrofitClientIA;
 import com.example.core.network.RetrofitClientPostgres;
 
 
-import com.example.feature_produtor.adapter.LessonsCardAdapter;
 import com.example.feature_produtor.api.ApiIA;
 import com.example.feature_produtor.api.ApiPostgres;
 
 import com.example.feature_produtor.dto.request.SearchRequest;
 import com.example.feature_produtor.dto.response.SearchResponse;
-//import com.example.feature_produtor.model.postegres.Program; centralização feita no core
-
-import com.example.core.adapter.LessonsCardAdapter;
-import com.example.feature_produtor.api.ApiPostgres;
-
-import com.example.core.model.Program;
 
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -414,7 +409,7 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     }
 
     private void setupClickListeners() {
-        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(com.example.core.R.id.Profile));
+       // perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
         notificacao.setOnClickListener(v -> {
             if (getView() != null) Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
         });
