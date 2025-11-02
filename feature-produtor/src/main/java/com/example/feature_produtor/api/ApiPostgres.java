@@ -1,6 +1,6 @@
 package com.example.feature_produtor.api;
 
-import com.example.feature_produtor.dto.request.ProgressUpdatePayload;
+import com.example.feature_produtor.dto.request.GradeRequestDTO;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
@@ -28,10 +28,9 @@ public interface ApiPostgres {
     @GET("/api/segments/list-segments")
     Call<List<Segment>> getAllSegments();
 
-    @PATCH("/api/workers/update/{id}")
+    @PATCH("/api/worker-programs/grade")
     Call<Void> updateProgramProgress(
-            @Path("id") int workerId,
-            @Body ProgressUpdatePayload request
+            @Body GradeRequestDTO request
     );
 
     @GET("/api/workers/list-actual-programs-by-id/{id}")

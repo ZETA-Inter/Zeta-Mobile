@@ -124,31 +124,49 @@ public class ContentLessonWorker extends Fragment {
                 return;
             }
 
-            int totalPages = contentPages.size();
-            int transitions = Math.max(1, totalPages - 1);
-            double contentPaginationValue = remainingStepProgress / 3.0;
-            double progressPerClick = contentPaginationValue / transitions;
-
-            if (currentPageIndex < contentPages.size() - 1) {
-
-                currentPageIndex++;
-                displayCurrentPage();
+            // Se for a última página, apenas navega para a atividade
+            if (currentPageIndex == contentPages.size() - 1) {
+                navigateToNextScreen();
+                return;
             }
 
-            if (currentPageIndex > 0) {
-                currentProgramProgress = (int) Math.round(currentProgramProgress + progressPerClick);
-                currentProgramProgress = Math.min(currentProgramProgress, 100);
+            int totalPages = contentPages.size();
+            // Transitions = número de cliques necessários para ir da página 0 à penúltima
+            int transitions = Math.max(1, totalPages - 1);
 
-                Integer workerId = getWorkerIdFromLocalStore();
-                if (workerId != null && programId != null) {
-                    ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
-                }
+            // 1. CALCULA O VALOR DO CONTEÚDO (1/3 do remainingStepProgress = 25% da Etapa)
+            double contentPaginationValue = remainingStepProgress / 3.0;
 
-                // 3. Atualiza o remainingStepProgress para refletir que este valor foi gasto
-                remainingStepProgress -= progressPerClick;
-            }else {
+            // 2. DISTRIBUI ESTE VALOR PELOS CLIQUES
+            double progressPerClick = contentPaginationValue / transitions;
 
-                navigateToNextScreen();
+            // 3. CALCULA O NOVO PROGRESSO DO CURSO A SER ENVIADO
+            final int progressToSend = (int) Math.round(currentProgramProgress + progressPerClick);
+            final double progressSpent = progressPerClick;
+
+            Integer workerId = getWorkerIdFromLocalStore();
+
+            if (workerId != null && programId != null) {
+                // CHAMA A API COM O CALLBACK
+                ProgressApiHelper.updateProgramProgress(requireContext(), programId, Math.min(progressToSend, 100), workerId,
+                        new ProgressApiHelper.ProgressUpdateCallback() {
+                            @Override
+                            public void onProgressUpdated(int newPercentage) {
+                                // SUCESSO: ATUALIZA ESTADO E AVANÇA A PÁGINA
+                                currentProgramProgress = newPercentage;
+                                remainingStepProgress -= progressSpent; // Reduz o valor gasto
+
+                                currentPageIndex++;
+                                displayCurrentPage();
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                // FALHA: ALERTA E PERMANECE NA PÁGINA
+                                Toast.makeText(getContext(), "Erro ao salvar progresso da página. Tente novamente.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
             }
         });
     }
@@ -161,7 +179,6 @@ public class ContentLessonWorker extends Fragment {
             bundle.putInt("currentProgramProgress", currentProgramProgress);
 
             if(getView() != null) {
-                // Navega para a tela ActivityLessonWorker
                 Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, bundle);
             }
         } else {

@@ -133,6 +133,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
 
+
     //pegando o id do worker
     private Integer getWorkerIdFromLocalStore() {
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
@@ -140,33 +141,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         return workerId != -1 ? workerId : null;
     }
 
-    //atualizando progresso do curso
-//    private void updateProgramProgress(int programId, int percentage) {
-//        Integer workerId = getWorkerIdFromLocalStore();
-//        if (workerId == null) return;
-//
-//        ApiPostgres client = RetrofitClientPostgres
-//                .getInstance(requireContext())
-//                .create(ApiPostgres.class);
-//
-//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-//
-//        client.updateProgramProgress(workerId, request)
-//                .enqueue(new Callback<Void>() {
-//                    @Override
-//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-//                        if (response.isSuccessful()) {
-//                            Log.d("PROGRESS", "Progresso atualizado para " + percentage + "% no programa " + programId);
-//                        } else {
-//                            Log.e("PROGRESS", "Falha ao atualizar progresso. Code: " + response.code());
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-//                        Log.e("PROGRESS", "Erro de conexão ao atualizar progresso: " + t.getMessage());
-//                    }
-//                });
-//    }
+
 
 
     //pega a descrição do curso
@@ -364,31 +339,26 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         stepsLessonAdapter.submitList(filteredList);
     }
 
+
+
+
+
     @Override
-    public void onStepClick(Class item, Integer stepNumber) {
-        if (programId == null || allLessons.isEmpty()) return;
+    public void onProgressUpdated(int newPercentage) {
+        // Não usado diretamente aqui, mas necessário pela interface.
+    }
 
-        // divisão de progresso (1/4, 1/4 e 2/4 para atividades)
-        double initialProgress = progressPerClass / 4.0;
-
-        // somente 25% do progresso da etapa é concluido nessa tela
-        double remainingStepProgress = progressPerClass * 0.75;
-
-        int newProgress = (int) Math.round(currentProgramProgress + initialProgress);
-        newProgress = Math.min(newProgress, 100);
-
-        Log.d(TAG, "Step Clicked: " + item.getTitle() + " | Initial Gain: " + initialProgress + "%");
-
-        int clickedIndex = allLessons.indexOf(item);
-
-        if (clickedIndex >= 0) {
-            Integer workerId = getWorkerIdFromLocalStore();
-            if (workerId != null && programId != null) {
-                ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
-            }
-            currentProgramProgress = newProgress; // Atualiza o valor interno
+    @Override
+    public void onError(String message) {
+        // Tratamento de erro geral para qualquer progresso que falhe no Fragment
+        if (isAdded()) {
+            Toast.makeText(getContext(), "Erro ao salvar progresso inicial: " + message, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Falha no salvamento do progresso inicial: " + message);
+            // IMPORTANTE: NÃO HOUVE NAVEGAÇÃO, O USUÁRIO DEVE TENTAR NOVAMENTE OU CONTINUAR DE ONDE PAROU
         }
+    }
 
+    private void navigateToLesson(Class item, Integer stepNumber, double remainingStepProgress) {
         Integer classId = item.getId();
 
         bundle.putInt("stepId", classId);
@@ -402,6 +372,48 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.ContentLessonWorker, bundle);
         }
+    }
 
+    @Override
+    public void onStepClick(Class item, Integer stepNumber) {
+        if (programId == null || allLessons.isEmpty()) return;
+
+        // VALORES DA ETAPA
+        // progressPerClass é o 20% do curso que esta etapa vale.
+        // initialGainValue é 25% * progressPerClass
+        double initialGainValue = progressPerClass * 0.25;
+
+        // O progresso total do CURSO que tentaremos salvar
+        int progressToSend = (int) Math.round(currentProgramProgress + initialGainValue);
+        progressToSend = Math.min(progressToSend, 100);
+
+        // O valor que será passado para a próxima tela (75% do valor da etapa)
+        double remainingStepProgress = progressPerClass * 0.75;
+
+        Log.d(TAG, "Step Clicked: " + item.getTitle() + " | Initial Gain (Course %): " + initialGainValue + "%");
+
+        Integer workerId = getWorkerIdFromLocalStore();
+
+        if (workerId != null && programId != null) {
+
+            // CHAMA A API COM O CALLBACK
+            ProgressApiHelper.updateProgramProgress(requireContext(), workerId, programId, progressToSend,
+                    new ProgressApiHelper.ProgressUpdateCallback() {
+                        @Override
+                        public void onProgressUpdated(int percentageSaved) {
+                            // SUCESSO: ATUALIZA O ESTADO LOCAL E NAVEGA
+                            currentProgramProgress = percentageSaved;
+                            navigateToLesson(item, stepNumber, remainingStepProgress);
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            Toast.makeText(getContext(), "Não foi possível salvar progresso inicial. " + message, Toast.LENGTH_LONG).show();
+                        }
+                    }
+            );
+        } else {
+            Toast.makeText(getContext(), "Erro de ID: Worker ou Program ID inválido.", Toast.LENGTH_LONG).show();
+        }
     }
 }
