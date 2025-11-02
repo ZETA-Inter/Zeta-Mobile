@@ -285,7 +285,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     // PATCH worker
     private void patchWorkerProfile(int workerId, String imageUrl) {
         WorkerPatchRequest req = new WorkerPatchRequest();
-        req.setImage_url(imageUrl);
+        req.setImageUrl(imageUrl);
 
         api.patchWorker(workerId, req).enqueue(new retrofit2.Callback<WorkerResponse>() {
             @Override
@@ -313,7 +313,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     // PATCH company
     private void patchCompanyProfile(int companyId, String imageUrl) {
         CompanyPatchRequest req = new CompanyPatchRequest();
-        req.setImage_url(imageUrl);
+        req.setImageUrl(imageUrl);
 
         api.patchCompany(companyId, req).enqueue(new retrofit2.Callback<CompanyResponse>() {
             @Override

@@ -1,11 +1,14 @@
 package com.example.core.dto.request;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CompanyPatchRequest {
     private String name;
     private String email;
-    private String image_url;
+
+    @SerializedName("image_url")
+    private String imageUrl;
     private PlanInfoRequest plan_info;
 
-    public void setImage_url(String url) { this.image_url = url; }
-    // getters/setters demais campos se precisar
+    public void setImageUrl(String url) { this.imageUrl = url; }
 }
