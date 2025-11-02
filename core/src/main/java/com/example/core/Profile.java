@@ -406,7 +406,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     }
 
     private void fetchCompanyGoalProgress(int companyId) {
-        api.findAverageFinishedGoalsById(companyId).enqueue(new Callback<Integer>() {
+        api.findPercentageFinishedGoalsById(companyId).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
