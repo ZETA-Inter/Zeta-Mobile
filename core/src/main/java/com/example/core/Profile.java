@@ -178,25 +178,32 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     }
 
     // ---------------------- CÂMERA ----------------------
+    // ---------------------- CÂMERA ----------------------
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Verifica se existe app de câmera
         if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            File photoFile;
+            File photoFile = null;
             try {
                 photoFile = createImageFile();
-            } catch (IOException ex) {
-                Log.e(TAG, "Erro ao criar arquivo de imagem", ex);
+            } catch (IOException e) {
+                Log.e(TAG, "Erro ao criar arquivo de imagem", e);
                 Toast.makeText(getContext(), "Erro ao criar arquivo de imagem.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(
+                Uri photoUri = FileProvider.getUriForFile(
                         requireContext(),
                         requireContext().getPackageName() + ".fileprovider",
                         photoFile
                 );
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+                // Adiciona permissões temporárias para o app de câmera
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                 cameraLauncher.launch(takePictureIntent);
             }
         } else {
@@ -207,11 +214,24 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
+
+        // Use getExternalFilesDir para que fique privado do app
         File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        if (storageDir != null && !storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
 
     // ---------------------- CLOUDINARY + PATCH ----------------------
     private void uploadAndSaveProfilePicture(File photoFile) {
@@ -416,6 +436,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    circularProgressPrograms.setGradientColors(0xFF043253, 0x0F5ECB);
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
@@ -432,7 +453,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
             @Override
             public void onResponse(@NonNull Call<GoalProgress> call, @NonNull Response<GoalProgress> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressGoals.setGradientColors(0x0F5ECB, 0xFF043253);
+                    circularProgressGoals.setGradientColors(0xFF043253, 0x0F5ECB);
 
                     GoalProgress gp = response.body();
 
