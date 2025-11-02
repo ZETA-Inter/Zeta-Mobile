@@ -10,6 +10,10 @@
         <deepLink
             android:id="@+id/HomePageCompanyDeepLink"
             app:uri="app://Company/Home" />
+
+        <action
+            android:id="@+id/action_HomePageCompany_to_Profile"
+            app:destination="@id/Profile" />
     </fragment>
 
     <fragment

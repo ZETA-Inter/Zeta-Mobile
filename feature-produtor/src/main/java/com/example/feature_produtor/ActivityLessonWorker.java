@@ -389,7 +389,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                 );
             }
         });
-
     }
 
     @Override

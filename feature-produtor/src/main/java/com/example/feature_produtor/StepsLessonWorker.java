@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientIA;
+import com.example.core.network.RetrofitClientRedis;
 import com.example.feature_produtor.adapter.StepsLessonAdapter;
 import com.example.feature_produtor.api.ApiMongo;
 import com.example.feature_produtor.api.ApiPostgres;
@@ -278,7 +279,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
-                ApiRedis apiRedis = RetrofitClientIA
+                ApiRedis apiRedis = RetrofitClientRedis
                         .getInstance(requireContext())
                         .create(ApiRedis.class);
 
@@ -299,6 +300,11 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                         }
 
                         Log.d(TAG, "Número da etapa: "+stepNumber);
+
+                        if (stepNumber > allLessons.size()) {
+                            Toast.makeText(getContext(), "Curso já concluido!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         Class firstLesson = allLessons.get(stepNumber - 1);
 

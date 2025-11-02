@@ -34,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         NotificationHelper.createNotificationChannel(this);
         pedirPermissaoNotificacao();
 
+//        FirebaseAuth.getInstance().signOut();
+//        SharedPreferences sp = getSharedPreferences("user_session", MODE_PRIVATE);
+//        sp.edit().clear().apply();
+
         boolean isUserLoggedIn = checkIfUserIsLoggedIn();
 
         if (isUserLoggedIn) {

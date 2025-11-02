@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.core.Profile;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_fornecedor.ListPage.ListAdapter;
 import com.example.feature_fornecedor.ListPage.ListAPI;
@@ -66,6 +69,35 @@ public class WorkerListPageCompany extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ImageView imgProfile = view.findViewById(R.id.imgProfile);
+
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(imgProfile);
+        } else {
+            imgProfile.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
+        imgProfile.setOnClickListener(v -> {
+            int companyId = sp.getInt("user_id", -1);
+            if (companyId <= 0) {
+                Toast.makeText(requireContext(), "Perfil indisponível: ID do usuário não encontrado na sessão.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Uri deeplink = Uri.parse("app://Core/Profile");
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(deeplink);
+        });
 
         // 1) RecyclerView da tela
         recyclerView = view.findViewById(R.id.item_worker);

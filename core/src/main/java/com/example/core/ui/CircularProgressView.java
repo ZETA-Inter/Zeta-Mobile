@@ -2,6 +2,7 @@ package com.example.core.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
@@ -19,8 +20,8 @@ public class CircularProgressView extends View {
     private Paint textPaint;
     private RectF rect;
     private float progress = 0;
-    private int startColor = 0xFF563887; // roxo claro
-    private int endColor = 0xFF9C89BE; // roxo escuro
+    private int startColor = Color.parseColor("#563887"); // roxo claro
+    private int endColor = Color.parseColor("#9C89BE"); // roxo escuro
 
     public CircularProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

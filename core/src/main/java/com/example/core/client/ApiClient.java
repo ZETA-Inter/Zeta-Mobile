@@ -19,8 +19,9 @@ public final class ApiClient {
     private static final String PREF_NAME = "user_session";
     private static final String TOKEN_KEY = "access_token"; // Chave que armazena o token
 
+    private static Context context;
     // ✅ Alteração: O método 'get' agora recebe o Context
-    public static ApiPostgresClient get(@NonNull Context context) {
+    public static ApiPostgresClient get() {
         if (api == null) {
 
             // 1. Crie o Interceptor para adicionar o token
