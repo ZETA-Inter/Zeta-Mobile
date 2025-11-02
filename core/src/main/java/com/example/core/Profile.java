@@ -1,9 +1,11 @@
 package com.example.core;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +22,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +32,7 @@ import com.example.core.adapter.LessonsCardProgressAdapter;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.request.CompanyPatchRequest;
 import com.example.core.dto.request.WorkerPatchRequest;
+import com.example.core.dto.response.GoalProgress;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.dto.response.CompanyResponse;
 import com.example.core.dto.response.WorkerResponse;
@@ -80,6 +84,16 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
 
     // Cloudinary (OkHttp singleton)
     private final OkHttpClient http = new OkHttpClient();
+
+    private final ActivityResultLauncher<String> requestCameraPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    dispatchTakePictureIntent();
+                } else {
+                    Toast.makeText(getContext(), "Permissão de câmera negada", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
     private final ActivityResultLauncher<Intent> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -142,7 +156,14 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         ((TextView) view.findViewById(R.id.nome_worker)).setText(name);
 
         if (btnCamera != null) {
-            btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
+            btnCamera.setOnClickListener(v -> {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+                } else {
+                    dispatchTakePictureIntent();
+                }
+            });
         } else {
             Log.e(TAG, "btnCamera não encontrado no layout. Verifique @+id/btnCamera no XML.");
         }
@@ -398,6 +419,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de cursos", t);
@@ -406,15 +428,21 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     }
 
     private void fetchCompanyGoalProgress(int companyId) {
-        api.findPercentageFinishedGoalsById(companyId).enqueue(new Callback<Integer>() {
+        api.findPercentageFinishedGoalsById(companyId).enqueue(new Callback<GoalProgress>() {
             @Override
-            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+            public void onResponse(@NonNull Call<GoalProgress> call, @NonNull Response<GoalProgress> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    circularProgressGoals.setProgress(response.body());
-                }
+                    circularProgressGoals.setGradientColors(0x0F5ECB, 0xFF043253);
+
+                    GoalProgress gp = response.body();
+
+                    int percentage = (int) ((gp.getCompletedGoals() * 100.0) / gp.getTotalGoals());
+
+                    circularProgressGoals.setProgress(percentage);                }
             }
+
             @Override
-            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<GoalProgress> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de metas", t);
             }
         });
@@ -433,6 +461,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     circularProgressGoals.setProgress(response.body());
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de metas", t);
@@ -448,6 +477,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     circularProgressPrograms.setProgress(response.body());
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro ao buscar progresso de cursos", t);
@@ -478,6 +508,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
                 loadingAndamentoLayout.setVisibility(View.VISIBLE);
@@ -511,6 +542,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<List<ProgramWorkerResponseDTO>> call, @NonNull Throwable t) {
                 loadingAndamentoLayout.setVisibility(View.VISIBLE);

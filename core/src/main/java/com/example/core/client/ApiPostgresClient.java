@@ -3,6 +3,7 @@ package com.example.core.client;
 import com.example.core.dto.request.CompanyPatchRequest;
 import com.example.core.dto.request.WorkerPatchRequest;
 import com.example.core.dto.response.CompanyResponse;
+import com.example.core.dto.response.GoalProgress;
 import com.example.core.dto.response.PlanResponse;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.dto.response.UserResponse;
@@ -60,7 +61,7 @@ public interface ApiPostgresClient {
     Call<Integer> findAverageProgressPercentageById(@Path("companyId") Integer companyId);
 
     @GET("api/goals/finished-goals-percentage/{companyId}")
-    Call<Integer> findPercentageFinishedGoalsById(@Path("companyId") Integer companyId);
+    Call<GoalProgress> findPercentageFinishedGoalsById(@Path("companyId") Integer companyId);
 
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);
