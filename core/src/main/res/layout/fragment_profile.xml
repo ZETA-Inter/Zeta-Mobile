@@ -20,6 +20,8 @@
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSizeCircle" />
 
     <!-- BOTÃO DE CÂMERA SOBREPOSTO NA BASE DIREITA DA FOTO -->
+
+    <!-- NOME DO USUÁRIO -->
     <ImageButton
         android:id="@+id/btnCamera"
         android:layout_width="123dp"
@@ -29,12 +31,10 @@
         android:background="@drawable/bg_circle_camera"
         android:contentDescription="@string/tirar_foto"
         android:padding="8dp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintEnd_toEndOf="@id/photo"
         app:tint="@android:color/white" />
 
-    <!-- NOME DO USUÁRIO -->
     <TextView
         android:id="@+id/nome_worker"
         android:layout_width="wrap_content"

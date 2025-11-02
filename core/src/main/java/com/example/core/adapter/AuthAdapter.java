@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.core.Login;
+import com.example.core.R;
 import com.example.core.Repository;
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
@@ -177,8 +178,9 @@ public class AuthAdapter {
                             .putInt("user_id", (user.getId() != null) ? user.getId() : -1)
                             .putString("name", user.getName())
                             .putString("email", user.getEmail())
-                            .putString("image_url", user.getEmail())
+                            .putString("image_url", user.getImageUrl())
                             .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")
+                            .putString("token", c.getString(R.string.core_api_token))
                             .apply();
 
                     String title = "Bem-vindo!";

@@ -74,7 +74,7 @@ public interface ApiPostgresClient {
 
     // ApiPostgresClient
     @PATCH("api/companies/{id}")
-    Call<Void> patchCompany(@Path("id") int id, @Body CompanyPatchRequest body);
+    Call<CompanyResponse> patchCompany(@Path("id") int id, @Body CompanyPatchRequest body);
 
 
 }
