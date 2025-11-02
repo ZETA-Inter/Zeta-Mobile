@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.core.adapter.LessonsCardProgressAdapter;
@@ -125,12 +126,13 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         btnCamera = view.findViewById(R.id.btnCamera);
 
         andamentoLessonsAdapter = new LessonsCardProgressAdapter(this, getContext());
+        recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int id = sp.getInt("user_id", -1);
         String kind = sp.getString("tipo_usuario", null);
-        String name = sp.getString("nmae", "Usuário"); // (atenção: sua chave está como "nmae")
+        String name = sp.getString("name", "Usuário");
 
         if (id <= 0 || kind == null) {
             Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();

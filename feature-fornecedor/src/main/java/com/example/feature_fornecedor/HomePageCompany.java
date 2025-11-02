@@ -3,6 +3,7 @@ package com.example.feature_fornecedor;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,19 +21,11 @@ import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 public class HomePageCompany extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     public HomePageCompany() { }
 
     public static HomePageCompany newInstance(String param1, String param2) {
         HomePageCompany fragment = new HomePageCompany();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,10 +33,6 @@ public class HomePageCompany extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Nullable
@@ -85,17 +74,11 @@ public class HomePageCompany extends Fragment {
                 return;
             }
 
-            Bundle args = new Bundle();
-            args.putString("EXTRA_KIND", "COMPANY");
-            args.putInt("EXTRA_ID", companyId);
+            Uri deeplink = Uri.parse("app://Core/Profile");
 
             NavController nav = NavHostFragment.findNavController(this);
-            nav.navigate(R.id.action_HomePageCompany_to_Profile, args);
+            nav.navigate(deeplink);
         });
-
-
-
-
 
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
