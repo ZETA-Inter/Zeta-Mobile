@@ -2,6 +2,7 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientIA;
@@ -118,6 +120,27 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         recyclerEtapas.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL, false));
         recyclerEtapas.setAdapter(stepsLessonAdapter);
+
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(perfil);
+        } else {
+            perfil.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
+        perfil.setOnClickListener(v -> {
+            Uri deeplink = Uri.parse("app://Core/Profile");
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(deeplink);
+        });
 
         if (programId != null) {
             fetchProgramDetails(programId);

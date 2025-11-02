@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.ui.CircularProgressView;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
@@ -311,6 +312,20 @@ public class HomePageWorkerFragment extends Fragment
         recyclerTipoConteudo = view.findViewById(R.id.recycler_tipo_conteudo);
         recyclerCursosConcluidos = view.findViewById(R.id.recycler_cursos_concluidos);
         loadingAndamentoLayout = view.findViewById(R.id.layout_cursos_andamento_loading);
+
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(perfil);
+        } else {
+            perfil.setImageResource(com.example.core.R.drawable.perfil);
+        }
     }
 
     // nav bar

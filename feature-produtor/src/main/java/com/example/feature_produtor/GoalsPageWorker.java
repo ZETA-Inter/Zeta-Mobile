@@ -2,6 +2,7 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_produtor.adapter.GoalsAdapter;
 import com.example.feature_produtor.api.ApiPostgres;
@@ -82,6 +85,27 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
         txtPesquisa = view.findViewById(R.id.txtPesquisa2);
         //se não houver meta atribuida a esse worker esse card fica visível
         loadingGoalsContainer = view.findViewById(R.id.loading_goals_container);
+
+        ImageView perfil = view.findViewById(R.id.icon_perfil_goals);
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(perfil);
+        } else {
+            perfil.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
+        perfil.setOnClickListener(v -> {
+            Uri deeplink = Uri.parse("app://Core/Profile");
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(deeplink);
+        });
 
     }
 
