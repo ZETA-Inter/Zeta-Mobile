@@ -214,12 +214,14 @@
     <!-- LISTA DE CURSOS -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_doing_programs"
-        android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/txt_lessons"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_lessons"
         tools:listitem="@layout/item_lessons_worker" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
