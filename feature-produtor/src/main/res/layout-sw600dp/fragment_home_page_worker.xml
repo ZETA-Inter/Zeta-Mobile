@@ -328,7 +328,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
-            app:layout_constraintTop_toBottomOf="@id/layout_cursos_andamento_loading" />
+            app:layout_constraintTop_toBottomOf="@id/recycler_cursos_andamento"  app:layout_goneMarginTop="24dp"  app:layout_goneMarginBottom="24dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_cursos_concluidos"
@@ -346,6 +346,8 @@
             app:layout_constraintTop_toBottomOf="@id/text_novos_conteudos"
             tools:itemCount="3"
             tools:orientation="horizontal" />
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

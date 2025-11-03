@@ -38,8 +38,8 @@
 
         <ImageView
             android:id="@+id/icon_atividade"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_marginTop="24dp"
             android:contentDescription="Ícone Chatbot"
             android:src="@drawable/boichat"
@@ -58,46 +58,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titulo_chat" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recicler_bot"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@id/inputLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/separator"
-            app:layout_constraintVertical_bias="0.0" />
-
         <LinearLayout
             android:id="@+id/inputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1128dp"
             android:background="#F9F5FF"
             android:orientation="horizontal"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <EditText
-                android:id="@+id/editMessage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/edittext_bg"
-                android:hint="   Mensagem..."
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="5"
-                android:minHeight="48dp"
-                android:scrollbars="vertical"
-                android:textColor="#000"
-                android:textColorHint="#888" />
+            app:layout_constraintBottom_toBottomOf="parent"> <EditText
+            android:id="@+id/editMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/edittext_bg"
+            android:hint="   Mensagem..."
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="5"
+            android:minHeight="48dp"
+            android:scrollbars="vertical"
+            android:textColor="#000"
+            android:textColorHint="#888" />
 
             <ImageButton
                 android:id="@+id/btnSend"
@@ -110,6 +92,17 @@
                 android:src="@drawable/btnenviarchat"
                 app:tint="#7B4DFF" />
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recicler_bot"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/inputLayout" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
