@@ -323,7 +323,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         dialog.show();
     }
 
-// ... (restante do código: setupClickListeners, onAnswerSelected) ...
 
 
 
@@ -345,6 +344,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                 resetQuestionState();
                 return;
             }
+
 
             // Resposta correta: Inicia a lógica de salvamento encadeada
 
@@ -389,6 +389,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                 );
             }
         });
+
     }
 
     @Override

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F6F7FF"
     android:fitsSystemWindows="true"
-    tools:context=".HomePageWorkerFragment">
+    tools:context=".HomePageWorker">
 
     <ScrollView
         android:id="@+id/main_scroll_view"

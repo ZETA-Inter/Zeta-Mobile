@@ -30,6 +30,7 @@ public class FlashCardStudy extends Fragment
     private RecyclerView recyclerView;
     private FlashCardAdapter adapter;
     private List<FlashCard> flashCardList;
+
     private LinearLayout mainRootLayout;
     private ItemTouchHelper itemTouchHelper;
     private FlashCardItemTouchHelperCallback touchHelperCallback;
@@ -38,9 +39,17 @@ public class FlashCardStudy extends Fragment
     // Contadores e Título Mock
     private int acertosCount = 0;
     private int errosCount = 0;
-    private static final String CURSO_MOCK_TITLE = "Rastreabilidade Bovina ";
+    // O CURSO_MOCK_TITLE não é mais necessário, mas se quiser mantê-lo:
+    // private static final String CURSO_MOCK_TITLE = "Rastreabilidade Bovina ";
 
-    // Cores (ajustadas para uso direto no código)
+    // Variáveis para dados reais
+    private String cursoNomeReal = "Curso de Revisão"; // Usado como fallback
+    private static final String KEY_FLASHCARDS = "flashcards_list";
+    private static final String KEY_CURSO_NOME = "curso_nome";
+
+
+
+
     private static final int COLOR_DEFAULT = Color.parseColor("#F0F0F0");
     private static final int COLOR_GREEN = Color.parseColor("#5F9F7F");
     private static final int COLOR_RED = Color.parseColor("#18A4E1");
@@ -51,6 +60,8 @@ public class FlashCardStudy extends Fragment
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_flash_card_study, container, false);
+        flashCardList = new ArrayList<>(); // Inicializa, mas será preenchido
+
 
         mainRootLayout = view.findViewById(R.id.main_root_layout);
         recyclerView = view.findViewById(R.id.recycler_flash_cards);
@@ -76,11 +87,35 @@ public class FlashCardStudy extends Fragment
         btnLearned.setOnClickListener(v -> swipeProgrammatically(ItemTouchHelper.RIGHT));
         btnNotLearned.setOnClickListener(v -> swipeProgrammatically(ItemTouchHelper.LEFT));
 
-        loadMockData();
+        loadRealDataFromArgs();
         setupOnClick();
         return view;
 
 
+    }
+
+    private void loadRealDataFromArgs() {
+        Bundle args = getArguments();
+        if (args != null) {
+
+            // 1. Recebe a lista REAL de FlashCards
+            // OBS: ProgramWorkerResponseDTO precisa ter adicionado isso ao Bundle.
+            // O List precisa ser ArrayList e a classe FlashCard precisa ser Parcelable.
+            ArrayList<FlashCard> realCards = args.getParcelableArrayList(KEY_FLASHCARDS);
+
+            if (realCards != null && !realCards.isEmpty()) {
+                flashCardList.clear();
+                flashCardList.addAll(realCards);
+                adapter.notifyDataSetChanged();
+            }
+
+            // 2. Recebe o nome REAL do curso
+            cursoNomeReal = args.getString(KEY_CURSO_NOME, "Curso de Revisão");
+
+        } else {
+            // Log de erro caso o Bundle esteja nulo ou não contenha dados
+            System.err.println("Erro: Nenhum argumento de flashcard recebido!");
+        }
     }
 
 
@@ -161,7 +196,8 @@ public class FlashCardStudy extends Fragment
 
                 // 2. Cria o Bundle com os resultados
                 Bundle args = new Bundle();
-                args.putString("curso_nome", CURSO_MOCK_TITLE);
+                // AQUI: Usando o nome real do curso que foi recebido no Bundle
+                args.putString("curso_nome", cursoNomeReal);
                 args.putInt("acertos_count", acertosCount);
                 args.putInt("erros_count", errosCount);
 
@@ -183,14 +219,6 @@ public class FlashCardStudy extends Fragment
 
 
 
-    private void loadMockData() {
-        flashCardList.clear();
-        flashCardList.add(createCard("O que é rastreabilidade animal?", "Processo de identificar e acompanhar o animal."));
-        flashCardList.add(createCard("Qual a importância do MAPA?", "Controle sanitário e certificação."));
-        flashCardList.add(createCard("Métodos de identificação de bovinos?", "Brincos, tatuagens ou microchips."));
-        flashCardList.add(createCard("O que é DTA?", "Documento de Transito Animal"));
-        adapter.notifyDataSetChanged();
-    }
 
     private FlashCard createCard(String front, String back) {
         FlashCard c = new FlashCard();

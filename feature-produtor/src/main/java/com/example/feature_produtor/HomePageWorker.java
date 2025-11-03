@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.core.client.ApiPostgresClient;
+import com.example.core.model.mongo.FlashCard;
+import com.example.core.network.RetrofitClientMongo;
 import com.example.core.ui.CircularProgressView;
 import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.core.network.RetrofitClientPostgres;
@@ -28,6 +30,8 @@ import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_produtor.adapter.FilterAdapter;
 import com.example.core.adapter.LessonsCardProgressAdapter;
 import com.example.core.model.Segment;
+import com.example.feature_produtor.api.ApiMongo;
+import com.example.feature_produtor.dto.response.ClassesDetaisResponseDTO;
 import com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView;
 import com.example.feature_produtor.api.ApiPostgres;
 import java.util.ArrayList;
@@ -39,7 +43,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class HomePageWorkerFragment extends Fragment
+public class HomePageWorker extends Fragment
         implements LessonsCardProgressAdapter.OnLessonClickListener,
         FilterAdapter.OnSegmentClickListener {
 
@@ -187,7 +191,7 @@ public class HomePageWorkerFragment extends Fragment
 
                     // Ajuste dentro de fetchPrograms -> onResponse
                     List<ProgramWorkerResponseDTO> inProgress = programs.stream()
-                            .filter(p -> p.getProgressPercentage() < 100) // Qualquer coisa abaixo de 100%
+                            .filter(p -> p.getProgressPercentage() < 100)
                             .collect(Collectors.toList());
 
                     List<ProgramWorkerResponseDTO> completed = programs.stream()
@@ -207,7 +211,7 @@ public class HomePageWorkerFragment extends Fragment
                     loadingAndamentoLayout.setVisibility(View.VISIBLE);
                     recyclerCursosAndamento.setVisibility(View.GONE);
                     Log.e(TAG, "Falha ao carregar programas. CODE: " + response.code() + " URL: " + call.request().url());
-                 //   Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
+                    //   Toast.makeText(getContext(), "Erro ao carregar cursos: " + response.code(), Toast.LENGTH_LONG).show();
                     // se o erro for 404 td bem pq o worker pode simplismente não ter iniciado nenhum curso ainda
                 }
             }
@@ -247,7 +251,7 @@ public class HomePageWorkerFragment extends Fragment
         });
     }
 
-   // click do curso que passa o progresso o program id para etapas
+    // click do curso que passa o progresso o program id para etapas
     @Override
     public void onLessonClick(ProgramWorkerResponseDTO item) {
         int programId = item.getId();
@@ -260,9 +264,19 @@ public class HomePageWorkerFragment extends Fragment
         if (getView() == null) return;
 
         if (currentProgress >= 100) {
-            // Concluído: Navega para a tela de flashcard
-            Toast.makeText(getContext(), "Revisando: " + item.getName(), Toast.LENGTH_SHORT).show();
-            NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
+            // Concluído: Navega para a tela de flashcard (revisãooo)
+
+            String cursoNome = item.getName();
+            fetchProgramDetailsAndNavigate(programId, cursoNome);
+
+//            if (flashcards != null && !flashcards.isEmpty()) {
+//                // FlashCard PRECISA ser Parcelable
+//                bundle.putParcelableArrayList("flashcards_list", new ArrayList<>(flashcards));
+//                bundle.putString("curso_nome", cursoNome); // Passando o nome real
+//            }
+
+            //NavHostFragment.findNavController(this).navigate(R.id.FlashCardStudy, bundle);
+
         } else {
             // Em Andamento: Navega para a tela de etapas
             NavHostFragment.findNavController(this).navigate(R.id.StepsLessonWorker, bundle);
@@ -308,7 +322,59 @@ public class HomePageWorkerFragment extends Fragment
         }
     }
 
-    //iniciando variavis
+
+    private void fetchProgramDetailsAndNavigate(int programId, String programName) {
+
+        Toast.makeText(getContext(), "Carregando flashcards...", Toast.LENGTH_SHORT).show();
+
+        // Use a API correta para buscar os detalhes completos
+        ApiMongo apiMongo = RetrofitClientMongo
+                .getInstance(requireContext())
+                .create(ApiMongo.class);
+
+        // Chama o endpoint COMPLETO usando o NOVO DTO
+        // Lembre-se: 'getProgramDetailsById' deve ser definido na sua interface ApiPostgresClient
+        apiMongo.getClassesDetailsById(programId).enqueue(new Callback<ClassesDetaisResponseDTO>() {
+            @Override
+            public void onResponse(@NonNull Call<ClassesDetaisResponseDTO> call, @NonNull Response<ClassesDetaisResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+
+                    ClassesDetaisResponseDTO programDetails = response.body();
+                    // Acessa a lista de FlashCards usando o getter do DTO COMPLETO
+                    List<FlashCard> flashcards = programDetails.getFlashcards();
+
+                    // 1. Cria o Bundle com os dados REAIS
+                    Bundle bundle = new Bundle();
+                    bundle.putString("curso_nome", programName);
+
+                    if (flashcards != null && !flashcards.isEmpty()) {
+                        // FlashCard PRECISA ser Parcelable (Requisito CRÍTICO)
+                        bundle.putParcelableArrayList("flashcards_list", new ArrayList<>(flashcards));
+
+                        // 2. Navega com os dados
+                        NavHostFragment.findNavController(HomePageWorker.this).navigate(R.id.FlashCardStudy, bundle);
+                    } else {
+                        Toast.makeText(getContext(), "Nenhum flashcard encontrado para este curso.", Toast.LENGTH_LONG).show();
+                    }
+
+                } else {
+                    Log.e(TAG, "Falha ao buscar detalhes do programa: " + response.code());
+                    Toast.makeText(getContext(), "Erro ao carregar detalhes do curso: " + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            // CORREÇÃO: Adicionando o callback onFailure
+            @Override
+            public void onFailure(@NonNull Call<ClassesDetaisResponseDTO> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro de conexão ao buscar detalhes do programa", t);
+                Toast.makeText(getContext(), "Erro de conexão. Tente novamente.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+        //iniciando variavis
     private void initViews(View view) {
         perfil = view.findViewById(R.id.icon_perfil);
         boxIa = view.findViewById(R.id.boxIA);

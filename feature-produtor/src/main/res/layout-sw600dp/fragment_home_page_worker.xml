@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F6F7FF"
     android:fitsSystemWindows="true"
-    tools:context=".HomePageWorkerFragment">
+    tools:context=".HomePageWorker">
 
     <ScrollView
         android:id="@+id/main_scroll_view"
@@ -305,24 +305,6 @@
 
             </HorizontalScrollView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_cursos_andamento"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:scrollbars="none"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_cursos_andamento"
-                tools:itemCount="2"
-                tools:orientation="horizontal"
-                android:visibility="gone" />
-
             <TextView
                 android:id="@+id/text_novos_conteudos"
                 android:layout_width="0dp"
@@ -376,6 +358,17 @@
                 app:layout_constraintStart_toStartOf="@id/boxIA"
                 app:layout_constraintTop_toTopOf="@+id/boxIA"
                 app:layout_constraintVertical_bias="0.466" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_cursos_andamento"
+                android:layout_width="706dp"
+                android:layout_height="258dp"
+                android:layout_marginTop="593dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.216"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_cursos_andamento" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

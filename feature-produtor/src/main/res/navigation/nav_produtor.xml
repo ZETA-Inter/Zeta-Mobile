@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/HomePageWorker"
-        android:name="com.example.feature_produtor.HomePageWorkerFragment">
+        android:name="com.example.feature_produtor.HomePageWorker">
         <deepLink
             android:id="@+id/HomePageWorkerDeepLink"
             app:uri="app://Worker/Home" />

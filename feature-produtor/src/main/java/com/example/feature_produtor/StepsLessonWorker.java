@@ -2,7 +2,6 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,8 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.bumptech.glide.Glide;
-import com.example.core.client.ApiPostgresClient;
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientIA;
@@ -80,6 +77,8 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
     private Integer programId;
 
+    private int currentRequiredStep = 1;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,31 +122,11 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         recyclerEtapas.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL, false));
         recyclerEtapas.setAdapter(stepsLessonAdapter);
 
-        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-        String imageUrl = sp.getString("image_url", null);
-
-
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            Glide.with(this)
-                    .load(imageUrl)
-                    .placeholder(com.example.core.R.drawable.perfil)
-                    .error(com.example.core.R.drawable.perfil)
-                    .into(perfil);
-        } else {
-            perfil.setImageResource(com.example.core.R.drawable.perfil);
-        }
-
-        perfil.setOnClickListener(v -> {
-            Uri deeplink = Uri.parse("app://Core/Profile");
-
-            NavController nav = NavHostFragment.findNavController(this);
-            nav.navigate(deeplink);
-        });
-
         if (programId != null) {
             fetchProgramDetails(programId);
 
             fetchClassesByProgramId(programId);
+            fetchCurrentStep(programId);
         }
 
         setupClickListeners(programId);
@@ -164,6 +143,50 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int workerId = sp.getInt("user_id", -1);
         return workerId != -1 ? workerId : null;
+    }
+
+    // Adicione este novo método na classe StepsLessonWorker
+    private void fetchCurrentStep(Integer programId) {
+        if (programId == null || !isAdded()) return;
+        Integer workerId = getWorkerIdFromLocalStore();
+        if (workerId == null) return;
+
+        // Garante que o workerId e programId são válidos antes de chamar a API
+        if (workerId == -1 || programId == -1) {
+            Log.e(TAG, "Worker ID ou Program ID inválido para buscar a etapa atual.");
+            return;
+        }
+
+        ApiRedis apiRedis = RetrofitClientRedis
+                .getInstance(requireContext())
+                .create(ApiRedis.class);
+
+        Call<StepResponse> call = apiRedis.getStep(workerId, programId);
+
+        call.enqueue(new Callback<StepResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StepResponse> call, @NonNull Response<StepResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    StepResponse step = response.body();
+                    if (step.getStatus() != null && step.getStatus() == 200) {
+                        try {
+                            // Atualiza a variável de instância com a etapa que o usuário deve fazer
+                            currentRequiredStep = Integer.parseInt(step.getValue());
+                            Log.d(TAG, "Etapa obrigatória atualizada para: " + currentRequiredStep);
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Erro ao converter número da etapa: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    Log.w(TAG, "Falha ao buscar etapa no Redis: Código " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StepResponse> call, @NonNull Throwable throwable) {
+                Log.e(TAG, "Falha de conexão ao buscar etapa no Redis: " + throwable.getMessage());
+            }
+        });
     }
 
 
@@ -280,48 +303,21 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
         comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
-                ApiRedis apiRedis = RetrofitClientRedis
-                        .getInstance(requireContext())
-                        .create(ApiRedis.class);
 
-                SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                Integer workerId = p.getInt("user_id",  -1);
+                // 🌟 USA A VARIÁVEL DE INSTÂNCIA JÁ CARREGADA
+                int stepNumberToStart = currentRequiredStep;
 
-                Log.d(TAG, "Tentando buscar a etapa para programId=" + programId +" e workerId=" + workerId );
-                Call<StepResponse> call = apiRedis.getStep(workerId, programId);
+                Log.d(TAG, "Botão Começar: Acessando a etapa obrigatória: "+stepNumberToStart);
 
-                call.enqueue(new Callback<StepResponse>() {
-                    @Override
-                    public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
-                        StepResponse step = response.body();
+                // Garante que o índice da lista é válido (stepNumber - 1)
+                if (stepNumberToStart >= 1 && stepNumberToStart <= allLessons.size()) {
+                    Class lessonToStart = allLessons.get(stepNumberToStart - 1);
 
-                        int stepNumber = 1;
-                        assert step != null;
-                        if (step.getStatus() == 200) {
-                            stepNumber = Integer.parseInt(step.getValue());
-                        } else if (step.getStatus() == 404) {
-                            assignProgram(workerId, programId);
-                        }
-
-                        Log.d(TAG, "Número da etapa: "+stepNumber);
-
-                        if (stepNumber > allLessons.size()) {
-                            Toast.makeText(getContext(), "Curso já concluido!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        Class firstLesson = allLessons.get(stepNumber - 1);
-
-                        Log.d(TAG, "Step: " + firstLesson);
-
-                        onStepClick(firstLesson, stepNumber);
-                    }
-
-                    @Override
-                    public void onFailure(Call<StepResponse> call, Throwable throwable) {
-                        Log.e(TAG, "Falha na requisição de step no Redis: " + throwable.getMessage() + throwable);
-                    }
-                });
+                    // Chama onStepClick, que iniciará o processo e navegará.
+                    onStepClick(lessonToStart, stepNumberToStart);
+                } else {
+                    Toast.makeText(getContext(), "Progresso inválido. Por favor, reinicie o aplicativo.", Toast.LENGTH_LONG).show();
+                }
 
             } else {
                 Toast.makeText(getContext(), "Nenhuma etapa carregada para começar.", Toast.LENGTH_SHORT).show();
@@ -337,24 +333,6 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             Toast.makeText(getContext(), "Notificações clicadas", Toast.LENGTH_SHORT).show();
         });
 
-    }
-
-    private void assignProgram(Integer workerId, Integer programId) {
-        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
-
-        api.assignProgram(workerId, programId).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                String message = response.body();
-                assert message != null;
-                Log.d(TAG, message);
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.e(TAG,  "Falha na conexão: " + t.getMessage());
-            }
-        });
     }
 
     private void setupSearchListener() {
@@ -425,77 +403,48 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         }
     }
 
+    // StepsLessonWorker.java
+
     @Override
     public void onStepClick(Class item, Integer stepNumber) {
         if (programId == null || allLessons.isEmpty()) return;
 
-        // VALORES DA ETAPA
-        // progressPerClass é o 20% do curso que esta etapa vale.
-        // initialGainValue é 25% * progressPerClass
+
+        // Se o número da etapa clicada for MENOR que a etapa obrigatória atual,
+        // significa que ela já foi concluída e o progresso avançou.
+        if (stepNumber < currentRequiredStep) {
+            Toast.makeText(getContext(),
+                    "Essa etapa já foi feita!",
+                    Toast.LENGTH_LONG).show();
+            return; // Retorna após o aviso e navegação para revisão
+        }
+
+
+        // 2. REGRA DE BLOQUEIO: Etapa FUTURA
+        if (stepNumber > currentRequiredStep) {
+            Toast.makeText(getContext(),
+                    "Você deve completar a Etapa " + currentRequiredStep + " primeiro para liberar a Etapa " + stepNumber + ".",
+                    Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Acesso negado: Tentou Etapa " + stepNumber + ", obrigatória é " + currentRequiredStep);
+            return;
+        }
+
+        // AÇÃO PRINCIPAL: Etapa ATUAL (stepNumber == currentRequiredStep)
+
+        Log.d(TAG, "Acesso permitido: Iniciando Etapa " + stepNumber);
+
+
+        // Seu código original de API e navegação
         double initialGainValue = progressPerClass * 0.25;
         int percentageGain = (int) Math.round(initialGainValue);
-
-        // O valor que será passado para a próxima tela (75% do valor da etapa)
         double remainingStepProgress = progressPerClass * 0.75;
 
-        Log.d(TAG, "Step Clicked: " + item.getTitle() + " | Initial Gain (Course %): " + initialGainValue + "%");
 
         Integer workerId = getWorkerIdFromLocalStore();
 
         if (workerId != null && programId != null) {
 
-            ApiRedis apiRedis = RetrofitClientRedis
-                    .getInstance(requireContext())
-                    .create(ApiRedis.class);
-
-            Log.d(TAG, "Tentando buscar a etapa para programId=" + programId +" e workerId=" + workerId );
-            Call<StepResponse> call = apiRedis.getStep(workerId, programId);
-
-            call.enqueue(new Callback<StepResponse>() {
-                @Override
-                public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
-                    StepResponse step = response.body();
-
-                    int redisStep = 1;
-                    assert step != null;
-                    if (step.getStatus() == 200) {
-                        redisStep = Integer.parseInt(step.getValue());
-                    } else if (step.getStatus() == 404) {
-                        if (stepNumber > 1) {
-                            Toast.makeText(getContext(), "Curso não iniciado! Comece pela etapa 1.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        assignProgram(workerId, programId);
-                    }
-
-                    Log.d(TAG, "Número da etapa: "+stepNumber);
-
-                    if (stepNumber > redisStep) {
-                        Toast.makeText(getContext(), "Etapas anteriores ainda não concluídas.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (stepNumber > allLessons.size()) {
-                        Toast.makeText(getContext(), "Curso já concluido!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    Class firstLesson = allLessons.get(stepNumber - 1);
-
-                    Log.d(TAG, "Step: " + firstLesson);
-
-                    onStepClick(firstLesson, stepNumber);
-                }
-
-                @Override
-                public void onFailure(Call<StepResponse> call, Throwable throwable) {
-                    Log.e(TAG, "Falha na requisição de step no Redis: " + throwable.getMessage() + throwable);
-                }
-            });
-
-            // PONTOS: No clique inicial, o ganho de pontos é ZERO
             int pointsGain = 0;
-
 
             ProgressApiHelper.updateProgramProgress(
                     requireContext(),
@@ -507,14 +456,14 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                     new ProgressApiHelper.ProgressUpdateCallback() {
                         @Override
                         public void onProgressUpdated(int newPercentage) {
-
                             currentProgramProgress = newPercentage;
+                            // A navegação só ocorre SE a API for bem-sucedida.
                             navigateToLesson(item, stepNumber, remainingStepProgress);
                         }
 
                         @Override
                         public void onError(String message) {
-                            Toast.makeText(getContext(), "Não foi possível salvar progresso inicial. " + message, Toast.LENGTH_LONG).show();
+                           showDialogDennied();
                         }
                     }
             );
@@ -522,4 +471,48 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
             Toast.makeText(getContext(), "Erro de ID: Worker ou Program ID inválido.", Toast.LENGTH_LONG).show();
         }
     }
+
+
+
+
+    private void showDialogDennied() {
+        // Garante que o Fragment ainda está anexado à Activity
+        if (!isAdded()) return;
+
+        //Cria e configura o AlertDialog/
+        androidx.appcompat.app.AlertDialog.Builder builder =
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+
+        // Infla o layout customizado
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_couse_denied, null);
+        builder.setView(dialogView);
+
+        // Configura o botão de fechar (OK)
+        Button btnClose = dialogView.findViewById(R.id.btn_close_denied_dialog);
+
+        final androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        // Torna o fundo transparente para que o CardView no XML seja visível
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnClose.setOnClickListener(v -> {
+            dialog.dismiss();
+            // Opcional: Navegar de volta para a Home após fechar o diálogo
+            if (getView() != null) {
+                Navigation.findNavController(getView()).navigateUp();
+            }
+        });
+
+        dialog.show();
+    }
+
+
+
+
 }
+
+
+
