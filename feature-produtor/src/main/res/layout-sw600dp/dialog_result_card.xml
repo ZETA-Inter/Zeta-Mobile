@@ -2,91 +2,76 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"  android:layout_height="wrap_content"
     android:layout_gravity="center"
     app:cardCornerRadius="16dp"
     app:cardElevation="10dp"
-    android:minWidth="300dp">
+    android:minWidth="350dp"  app:layout_constraintWidth_max="450dp"> <LinearLayout
+    android:layout_width="match_parent"  android:layout_height="wrap_content" android:background="#62C4ABF6"
+    android:orientation="vertical"
+    android:padding="32dp"> <ImageButton
+    android:id="@+id/button_close_dialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="Fechar"
+    android:padding="8dp" android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+    <TextView
+        android:id="@+id/text_curso_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"  android:layout_marginBottom="24dp" android:fontFamily="@font/poppins_medium"
+        android:text="Nome do Curso"
+        android:textAlignment="center"
+        android:textSize="28sp" android:textStyle="bold" />
 
     <LinearLayout
-        android:layout_width="411dp"
-        android:layout_height="315dp"
-        android:background="#62C4ABF6"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <ImageButton
-            android:id="@+id/button_close_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Fechar"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"> <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Lembrou:"
+        android:textSize="20sp" tools:ignore="HardcodedText" />
 
         <TextView
-            android:id="@+id/text_curso_nome"
-            android:layout_width="match_parent"
+            android:id="@+id/text_acertos"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Nome do Curso"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Lembrou:"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/text_acertos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:text="0"
-                android:textColor="@color/correct_green"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Esqueceu:"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/text_erros"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:text="0"
-                android:textColor="@color/error_red"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
+            android:text="0"
+            android:textColor="@color/correct_green"
+            android:textSize="20sp" android:textStyle="bold" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"> <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Esqueceu:"
+        android:textSize="20sp" tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/text_erros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:text="0"
+            android:textColor="@color/error_red"
+            android:textSize="20sp" android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
 </androidx.cardview.widget.CardView>
