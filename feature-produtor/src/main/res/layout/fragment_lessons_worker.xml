@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/perfil3"
         app:layout_constraintEnd_toStartOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/perfil3"
-        app:srcCompat="@drawable/ic_notificationx"
+        app:srcCompat="@drawable/ic_notification"
         tools:ignore="ContentDescription" />
 
     <ImageView
@@ -88,9 +88,8 @@
         android:id="@+id/cursos"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

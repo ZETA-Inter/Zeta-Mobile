@@ -18,6 +18,11 @@ public class StepsLessonAdapter extends ListAdapter<Class, StepsLessonAdapter.Le
 
     // A interface usa o modelo Class
     public interface OnStepClickListener {
+        // NOVO: Adiciona a implementação do Callback (Obrigatório)
+        void onProgressUpdated(int newPercentage);
+
+        void onError(String message);
+
         void onStepClick(Class item, Integer stepNumber);
     }
 

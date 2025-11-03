@@ -35,7 +35,7 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
     public LessonsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_lessons_item, parent, false);
-        return new LessonsViewHolder(view, context);
+        return new LessonsViewHolder(view);
     }
 
     @Override
@@ -48,32 +48,18 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
 
         private final TextView title;
         private final TextView description;
-        private final ImageView img;
 
-        private final TextView percentageTextView;
-        private final Context context;
-
-
-
-        public LessonsViewHolder(@NonNull View itemView, Context context) {
+        public LessonsViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.context = context;
 
             title = itemView.findViewById(R.id.cursoTitulo);
             description = itemView.findViewById(R.id.cursoDescr);
-            img = itemView.findViewById(R.id.imageView3);
-
-
-            // Mapeamento dos componentes de progresso do seu XML
-            percentageTextView = itemView.findViewById(R.id.text_porcentagem);
         }
 
         public void bind(final Program item, final OnLessonClickListener listener) {
             title.setText(item.getName());
             description.setText(item.getDescription());
 
-
-            // Configura o clique
             itemView.setOnClickListener(v -> listener.onLessonClick(item));
         }
     }
@@ -91,7 +77,6 @@ public class LessonsCardAdapter extends ListAdapter<Program, LessonsCardAdapter.
 
         @Override
         public boolean areContentsTheSame(@NonNull Program oldItem, @NonNull Program newItem) {
-            // Adicionado progressPercentage na comparação para que o Adapter atualize a barra
             return oldItem.getName().equals(newItem.getName()) &&
                     oldItem.getDescription().equals(newItem.getDescription());
         }

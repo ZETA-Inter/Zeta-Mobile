@@ -49,18 +49,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="14dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="14dp">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Pesquisar"
-                        android:textSize="16sp"
-                        android:textColor="@color/label_grey"/>
+                        android:textColor="@color/label_grey"
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:layout_width="22dp"
@@ -72,12 +72,16 @@
 
             <ImageButton
                 android:id="@+id/btnBell"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="15dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="10dp"
+                android:paddingEnd="15dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_notification"
+                android:src="@drawable/ic_notificationx"
                 tools:ignore="ContentDescription" />
 
             <ImageButton

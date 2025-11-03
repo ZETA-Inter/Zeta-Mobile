@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,8 @@ public class RankingPageCompany extends Fragment {
     private TextView nameFirst, nameSecond, nameThird;
     private TextView ptsFirst, ptsSecond, ptsThird;
     private RankingAdapter adapter;
+
+    private ImageView iconNotificacao;
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -76,10 +79,14 @@ public class RankingPageCompany extends Fragment {
                     R.id.WorkerListPageCompany
             );
             bottom.setActive(CompanyBottomNavView.Item.AWARDS, false);
+
         }
+
+
 
         // Ícone de perfil
         ImageView imgProfile = v.findViewById(R.id.imgProfile);
+        iconNotificacao = v.findViewById(R.id.btnBell);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         String imageUrl = sp.getString("image_url", null);
@@ -93,6 +100,7 @@ public class RankingPageCompany extends Fragment {
                     .into(imgProfile);
         } else {
             imgProfile.setImageResource(com.example.core.R.drawable.perfil);
+
         }
 
         imgProfile.setOnClickListener(view -> {
@@ -106,6 +114,12 @@ public class RankingPageCompany extends Fragment {
 
             NavController nav = NavHostFragment.findNavController(this);
             nav.navigate(deeplink);
+        });
+
+        Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
+
+        iconNotificacao.setOnClickListener(view->{
+            Navigation.findNavController(v).navigate(deeplink);
         });
 
         fetchRanking();

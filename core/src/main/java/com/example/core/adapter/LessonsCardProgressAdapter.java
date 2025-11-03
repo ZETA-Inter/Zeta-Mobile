@@ -50,7 +50,7 @@ public class LessonsCardProgressAdapter extends ListAdapter<ProgramWorkerRespons
 
         private final TextView title;
         private final TextView description;
-        private final ImageView img;
+
         private final TextView percentage;
 
         private final ProgressBar percentageBar;
@@ -60,7 +60,7 @@ public class LessonsCardProgressAdapter extends ListAdapter<ProgramWorkerRespons
 
             title = itemView.findViewById(R.id.cursoTitulo);
             description = itemView.findViewById(R.id.cursoDescr);
-            img = itemView.findViewById(R.id.imageView3);
+
 
             percentage = itemView.findViewById(R.id.text_porcentagem);
             percentageBar = itemView.findViewById(R.id.percentageBar);

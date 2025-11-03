@@ -84,4 +84,9 @@
         <item name="android:windowFullscreen">false</item>
     </style>
 
+    <style name="CustomAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+    </style>
+
 </resources>

@@ -1,5 +1,8 @@
 package com.example.feature_produtor;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.core.adapter.LessonsCardAdapter;
 import com.example.core.model.Program;
 import com.example.core.network.RetrofitClientIA;
@@ -106,6 +110,28 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
         lessonsCardAdapter = new LessonsCardAdapter(this, getContext());
         recyclerCursos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerCursos.setAdapter(lessonsCardAdapter);
+
+        // --- Configuração perfil ---
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(perfil);
+        } else {
+            perfil.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
+        perfil.setOnClickListener(v -> {
+            Uri deeplink = Uri.parse("app://Core/Profile");
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(deeplink);
+        });
 
         // --- Inicialização do Serviço de Pesquisa da IA ---
         apiSearchAgent = RetrofitClientIA
@@ -409,10 +435,13 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     }
 
     private void setupClickListeners() {
-       // perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.Profileworker));
-        notificacao.setOnClickListener(v -> {
-            if (getView() != null) Navigation.findNavController(getView()).navigate(R.id.CardNotificacao);
-        });
+        NavController nav = NavHostFragment.findNavController(this);
+        Uri deeplink = Uri.parse("app://Core/Profile");
+
+        perfil.setOnClickListener(v -> nav.navigate(deeplink));
+
+        notificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
+
         config.setOnClickListener(v -> {
             // Implementar navegação
         });

@@ -1,5 +1,6 @@
 package com.example.feature_produtor;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -63,12 +64,14 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
 
     private int currentProgramProgress = 0;
     private double progressValue = 0.0;
-
+    private double pointsPerQuestion = 0.0;
     private List<Activity.Question> allQuestions;
     private int currentQuestionIndex = 0;
 
     private AnswerAdapter answerAdapter;
     private Activity.Question.Answer selectedAnswer = null;
+
+    private ImageView logo;
 
     private ImageView chatbot;
 
@@ -93,10 +96,12 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         recyclerAnswers = view.findViewById(R.id.recycler_answers);
         btContinuar = view.findViewById(R.id.btContinuar2);
         chatbot = view.findViewById(R.id.chatbot);
+        logo = view.findViewById(R.id.icon_logo_boi2);
 
         answerAdapter = new AnswerAdapter(this);
         recyclerAnswers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerAnswers.setAdapter(answerAdapter);
+
 
         setupClickListeners(programId);
 
@@ -137,33 +142,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         return workerId != -1 ? workerId : null;
     }
 
-//    private void updateProgramProgress(int programId, int percentage) {
-//        Integer workerId = getWorkerIdFromLocalStore();
-//        if (workerId == null) return;
-//
-//        ApiPostgres client = RetrofitClientPostgres
-//                .getInstance(requireContext())
-//                .create(ApiPostgres.class);
-//
-//        ProgressUpdatePayload request = new ProgressUpdatePayload(programId, percentage);
-//
-//        client.updateProgramProgress(workerId, request)
-//                .enqueue(new Callback<Void>() {
-//                    @Override
-//                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-//                        if (response.isSuccessful()) {
-//                            Log.d(TAG, "Progresso atualizado para " + percentage + "% no programa " + programId);
-//                        } else {
-//                            Log.e(TAG, "Falha ao atualizar progresso. Code: " + response.code());
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-//                        Log.e(TAG, "Erro de conexão ao atualizar progresso: " + t.getMessage());
-//                    }
-//                });
-//    }
-
     private void fetchActivityByClassId(int id) {
 
         Log.d(TAG, "ClassId para a busca das activities: " + id);
@@ -173,6 +151,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         call.enqueue(new Callback<List<Activity>>() {
             @Override
             public void onResponse(@NonNull Call<List<Activity>> call, @NonNull Response<List<Activity>> response) {
+                // SUCESSO OU FALHA NA RESPOSTA HTTP
                 if (response.isSuccessful() && response.body() != null) {
                     List<Activity> activities = response.body();
 
@@ -181,28 +160,30 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                             .flatMap(activity -> activity.getQuestions().stream())
                             .collect(Collectors.toList());
 
+                    // TRATAMENTO DO CONTEÚDO RECEBIDO
                     if (!allQuestions.isEmpty()) {
-
-                        // CALCULA O VALOR DE PROGRESSO POR PERGUNTA
+                        // CÁLCULO DO VALOR DE PROGRESSO POR PERGUNTA (Porcentagem)
                         if (progressValue > 0 && allQuestions.size() > 0) {
-                            // progressValue é os 50% do Step
                             progressValue = progressValue / allQuestions.size();
-                            Log.d(TAG, "Progresso por pergunta (50% do Step) ajustado para: " + progressValue + "%");
                         } else {
-                            // Caso não haja perguntas, ou progressValue seja 0, evita divisão por zero.
                             progressValue = 0.0;
                         }
+
+                        // NOVO CÁLCULO: PONTOS POR PERGUNTA (100 pontos totais)
+                        pointsPerQuestion = 100.0 / allQuestions.size(); // Ex: 100 / 4 = 25.0
+
                         currentQuestionIndex = 0;
                         displayCurrentQuestion();
-
-
-
                     } else {
-                        txtPergunta.setText("Falha ao carregar atividade: " + response.code());
+                        // Conteúdo vazio (Nenhuma pergunta)
+                        txtPergunta.setText("Falha ao carregar atividade: Nenhuma pergunta encontrada.");
                         btContinuar.setEnabled(false);
                     }
+                } else { // CORREÇÃO AQUI: O else pertence ao if(response.isSuccessful())
+                    txtPergunta.setText("Falha ao carregar atividade: " + response.code());
+                    btContinuar.setEnabled(false);
                 }
-            }
+            } // Fim do onResponse
 
             @Override
             public void onFailure(@NonNull Call<List<Activity>> call, @NonNull Throwable t) {
@@ -211,6 +192,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
             }
         });
     }
+
 
 
     private void displayCurrentQuestion() {
@@ -247,73 +229,170 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         }
     }
 
+
+
+    private void saveNextStepAndNavigate() {
+        ApiRedis apiRedis = RetrofitClientRedis
+                .getInstance(requireContext())
+                .create(ApiRedis.class);
+
+        SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        int workerId = p.getInt("user_id",  -1);
+        int stepNumber = bundle.getInt("stepNumber", 1);
+
+        StepRequest request = new StepRequest(workerId, programId, stepNumber + 1);
+        Call<StepResponse> call = apiRedis.saveStep(request);
+
+        call.enqueue(new Callback<StepResponse>() {
+            @Override
+            public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
+                if (response.isSuccessful() && response.body() != null && getView() != null) {
+                    StepResponse step = response.body();
+
+                    if (step.getStatus() != null && step.getStatus() == 200) {
+
+                        // LÓGICA DE PROGRESSÃO:
+                        // O número de etapas concluídas é 'stepNumber' (a etapa que acabou de ser concluída).
+                        int completedSteps = stepNumber;
+
+                        Log.d(TAG, "Etapa " + stepNumber + " salva com sucesso no Redis. Progresso Final: " + currentProgramProgress + "%");
+
+                        // CHAMA O POPUP ANTES DE NAVEGAR
+                        showConclusionPopupAndNavigate(completedSteps);
+
+
+                    } else {
+                        Log.w(TAG, "Falha ao salvar etapa no Redis: " + step.getError());
+                        Toast.makeText(getContext(), "Erro interno: Falha ao marcar a próxima etapa. Tente novamente.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.e(TAG, "Erro HTTP do Redis: " + response.code());
+                    Toast.makeText(getContext(), "Erro de servidor (Redis): " + response.code() + ". Tente novamente.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StepResponse> call, Throwable throwable) {
+                Log.e(TAG, "Erro de conexão ao salvar etapa no Redis: " + throwable.getMessage());
+                Toast.makeText(getContext(), "Erro de conexão ao finalizar. Tente novamente.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+    private void showConclusionPopupAndNavigate(int completedSteps) {
+        if (getContext() == null || getView() == null) return;
+
+        // 1. Inflar o layout customizado para o corpo do dialog
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.card_conclusion_step, null); // ASSUMIR que você criou este layout!
+
+        TextView tvMessage = dialogView.findViewById(R.id.tv_popup_message);
+        ImageView ivIcon = dialogView.findViewById(R.id.iv_popup_icon);
+        MaterialButton btFinish = dialogView.findViewById(R.id.bt_popup_finish);
+
+
+        if (tvMessage != null) {
+            tvMessage.setText(completedSteps + " etapas concluídas");
+        }
+        // Se você já tem o ícone no `drawable`, descomente a linha abaixo
+        // if (ivIcon != null) {
+        //     ivIcon.setImageResource(R.drawable.ic_conclusion_step);
+        // }
+
+        // 3. Criar o AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialogTheme); // Assumir um tema Material
+        builder.setView(dialogView);
+        builder.setCancelable(false); // Não permite fechar clicando fora
+
+        Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
+
+        AlertDialog dialog = builder.create();
+
+        // 4. Configurar o botão para navegar ao fechar
+        if (btFinish != null) {
+            btFinish.setOnClickListener(v -> {
+                dialog.dismiss();
+
+                // NAVEGAÇÃO FINAL APÓS O POPUP
+                Toast.makeText(getContext(), "Etapa concluída! Progresso Total: " + currentProgramProgress + "%", Toast.LENGTH_LONG).show();
+            });
+        }
+
+        dialog.show();
+    }
+
+
+
+
+
     private void setupClickListeners(Integer programId) {
         btComeback.setOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
 
+        logo.setOnClickListener(v->
+                Navigation.findNavController(v).navigate(R.id.HomePageWorker));
+
+        chatbot.setOnClickListener(v->
+                Navigation.findNavController(v).navigate(R.id.ChatBotWorker));
+
         btContinuar.setOnClickListener(v -> {
             if (selectedAnswer == null) return;
 
-            if (selectedAnswer.isCorrect()) {
+            // Se a resposta for incorreta, não mudamos nada, apenas resetamos o estado.
+            if (!selectedAnswer.isCorrect()) {
+                Toast.makeText(getContext(), "Resposta incorreta. Tente novamente.", Toast.LENGTH_SHORT).show();
+                resetQuestionState();
+                return;
+            }
 
-                // APLICA PROGRESSO PELA RESPOSTA CORRETA
-                if (progressValue > 0) {
-                    currentProgramProgress = (int) Math.round(currentProgramProgress + progressValue);
-                    currentProgramProgress = Math.min(currentProgramProgress, 100);
-                    Integer workerId = getWorkerIdFromLocalStore();
-                    if (workerId != null && programId != null) {
-                        ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
-                    }
-                } if (currentQuestionIndex < allQuestions.size() - 1) {
-                    currentQuestionIndex++;
-                    displayCurrentQuestion();
-                } else {
-                    if (getView() != null) {
-                        ApiRedis apiRedis = RetrofitClientRedis
-                                .getInstance(requireContext())
-                                .create(ApiRedis.class);
 
-                        SharedPreferences p = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
-                        int workerId = p.getInt("user_id",  -1);
-                        int stepNumber = bundle.getInt("stepNumber", 1);
-                        Log.d(TAG, "Tentando salvar a etapa="+stepNumber+" do programId=" + programId +" e do workerId=" + workerId );
+            // Resposta correta: Inicia a lógica de salvamento encadeada
 
-                        StepRequest request = new StepRequest(workerId, programId, stepNumber + 1);
-                        Call<StepResponse> call = apiRedis.saveStep(request);
+            final int percentageGain = (int) Math.round(progressValue); // Ganho em % do curso
+            final int pointsGain = (int) Math.round(pointsPerQuestion); // Ganho em Pontos (25 no exemplo)
 
-                        call.enqueue(new Callback<StepResponse>() {
+            Integer workerId = getWorkerIdFromLocalStore();
+
+            if (workerId != null && programId != null) {
+
+                // CHAMA 1: SALVAR PROGRESSO NO POSTGRES (Obrigatório antes de avançar)
+                // Usando a NOVA ASSINATURA do ProgressApiHelper
+                ProgressApiHelper.updateProgramProgress(
+                        requireContext(),
+                        programId,
+                        percentageGain,
+                        pointsGain,
+                        currentProgramProgress, // NOVO ARGUMENTO: Progresso total atual
+                        workerId,
+                        new ProgressApiHelper.ProgressUpdateCallback() {
                             @Override
-                            public void onResponse(Call<StepResponse> call, Response<StepResponse> response) {
-                                if (response.isSuccessful() && response.body() != null) {
-                                    StepResponse step = response.body();
+                            public void onProgressUpdated(int newPercentage) {
+                                // SUCESSO POSTGRES: ATUALIZA ESTADO E DECIDE PRÓXIMO PASSO
+                                currentProgramProgress = newPercentage; // newPercentage é o total do curso
 
-                                    if (step.getStatus() != null && step.getStatus() == 200) {
-                                        Log.d(TAG, "Etapa " + stepNumber + " salva com sucesso");
-                                    } else {
-                                        Log.w(TAG, "Falha ao salvar etapa: " + step.getError());
-                                    }
+                                if (currentQuestionIndex < allQuestions.size() - 1) {
+                                    // AINDA TEM PERGUNTAS: AVANÇA
+                                    currentQuestionIndex++;
+                                    displayCurrentQuestion();
                                 } else {
-                                    Log.e(TAG, "Erro HTTP: " + response.code());
+
+                                    saveNextStepAndNavigate();
                                 }
                             }
 
                             @Override
-                            public void onFailure(Call<StepResponse> call, Throwable throwable) {
-                                Log.e(TAG, "Erro na requisição de salvamento da etapa no Redis: " + throwable.getMessage());
+                            public void onError(String message) {
+                                // FALHA POSTGRES: ALERTA E MANTÉM NA PERGUNTA
+                                Toast.makeText(getContext(), "Erro ao salvar progresso da atividade. Tente novamente.", Toast.LENGTH_LONG).show();
                             }
-                        });
-
-                        Toast.makeText(getContext(), "Etapa concluída! Progresso: " + currentProgramProgress + "%", Toast.LENGTH_LONG).show();
-                        Navigation.findNavController(getView()).navigate(R.id.HomePageWorker);
-                    }
-                }
-
-            } else {
-                Toast.makeText(getContext(), "Resposta incorreta. Tente novamente.", Toast.LENGTH_SHORT).show();
-                resetQuestionState();
+                        }
+                );
             }
         });
+
     }
 
     @Override
