@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,8 +41,6 @@ public class WorkerListPageCompany extends Fragment {
 
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
-
-    private static final String DL_WORKER = "app.internal://profile/worker/";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -104,12 +103,19 @@ public class WorkerListPageCompany extends Fragment {
 
         // 2) Adapter com clique para navegar por URI (sem depender do :core)
         listAdapter = new ListAdapter(new ArrayList<>(), requireContext(), worker -> {
-            // worker aqui deve ser um objeto Worker
             String workerId = String.valueOf(worker.getId());
+            String tipoUsuario = "WORKER";
+            String name = worker.getName();
+            String imageUrl2 = worker.getImageUrl();
 
-            // Navegação via deeplink interno (NavController.resolve URI)
-            Uri uri = Uri.parse(DL_WORKER + workerId);
-            Navigation.findNavController(view).navigate(uri);
+            Uri deeplinkUri = Uri.parse("app://Core/Profile" +
+                    "?workerId=" + workerId +
+                    "&tipoUsuario=" + tipoUsuario +
+                    "&name=" + Uri.encode(name) +
+                    "&imageUrl=" + Uri.encode(imageUrl2));
+
+            Navigation.findNavController(view).navigate(deeplinkUri);
+
         });
 
         // 3) Layout + adapter
