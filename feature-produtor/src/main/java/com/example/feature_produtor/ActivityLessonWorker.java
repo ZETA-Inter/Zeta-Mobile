@@ -346,6 +346,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                 return;
             }
 
+
             // Resposta correta: Inicia a lógica de salvamento encadeada
 
             final int percentageGain = (int) Math.round(progressValue); // Ganho em % do curso
