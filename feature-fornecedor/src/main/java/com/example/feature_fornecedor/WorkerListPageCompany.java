@@ -40,6 +40,7 @@ public class WorkerListPageCompany extends Fragment {
 
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
+    private ImageView iconNotificacao;
 
     private static final String DL_WORKER = "app.internal://profile/worker/";
 
@@ -71,6 +72,7 @@ public class WorkerListPageCompany extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
+        iconNotificacao= view.findViewById(R.id.btnBell);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         String imageUrl = sp.getString("image_url", null);
@@ -97,6 +99,12 @@ public class WorkerListPageCompany extends Fragment {
 
             NavController nav = NavHostFragment.findNavController(this);
             nav.navigate(deeplink);
+        });
+
+        Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
+
+        iconNotificacao.setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(deeplink);
         });
 
         // 1) RecyclerView da tela

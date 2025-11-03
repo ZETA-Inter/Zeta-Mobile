@@ -63,6 +63,8 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
     // Lista para armazenar todas as metas buscadas (necessário para a pesquisa)
     private final List<Goal> allGoals = new ArrayList<>();
 
+    private ImageView iconNotificacao;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
         txtPesquisa = view.findViewById(R.id.txtPesquisa2);
         //se não houver meta atribuida a esse worker esse card fica visível
         loadingGoalsContainer = view.findViewById(R.id.loading_goals_container);
+        iconNotificacao = view.findViewById(R.id.icon_notifica);
 
         ImageView perfil = view.findViewById(R.id.icon_perfil_goals);
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
@@ -100,12 +103,14 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
             perfil.setImageResource(com.example.core.R.drawable.perfil);
         }
 
-        perfil.setOnClickListener(v -> {
-            Uri deeplink = Uri.parse("app://Core/Profile");
+        NavController nav = NavHostFragment.findNavController(this);
+        Uri deeplink = Uri.parse("app://Core/Profile");
 
-            NavController nav = NavHostFragment.findNavController(this);
-            nav.navigate(deeplink);
-        });
+        perfil.setOnClickListener(v -> nav.navigate(deeplink));
+
+
+
+        iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
 
     }
 

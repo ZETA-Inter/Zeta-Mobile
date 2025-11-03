@@ -79,7 +79,11 @@
     <dialog
         android:id="@+id/CardNotificacao"
         android:name="com.example.feature_produtor.CardNotificacao"
-        tools:layout="@layout/fragment_card_notificacao"/>
+        tools:layout="@layout/fragment_card_notificacao">
+        <deepLink
+            android:id="@+id/CardNotificacaoDeepLink"
+            app:uri="app://Worker/CardNotificacao" />
+    </dialog>
 
 
 </navigation>

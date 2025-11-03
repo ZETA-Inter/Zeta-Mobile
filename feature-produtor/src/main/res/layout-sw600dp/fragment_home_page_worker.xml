@@ -16,356 +16,339 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="600dp"  app:layout_constraintHorizontal_bias="0.5"> <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F6F7FF"
+        android:paddingBottom="16dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp" />
+
+        <ImageView
+            android:id="@+id/icon_perfil"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="28dp"
+            android:src="@drawable/perfil"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/icon_configuracoes"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="18dp"
+            android:src="@drawable/iconconfig"
+            app:layout_constraintEnd_toStartOf="@id/guideline_end"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/icon_notificacao"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="76dp"
+            android:src="@drawable/ic_notification"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/boxIA"
+            android:layout_width="290dp"
+            android:layout_height="117dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ia_barra"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.413"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt"
+            android:layout_width="35dp"
+            android:layout_height="26dp"
+            android:layout_marginTop="44dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="IA"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.288"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_ola_usuario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Olá, Usuário"
+            android:textColor="#320453"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/icon_perfil" />
+
+        <TextView
+            android:id="@+id/text_subtitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Acompanhe seu progresso e comece novas jornadas"
+            android:textColor="#808080"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/guideline_end"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/text_ola_usuario" />
+
+        <TextView
+            android:id="@+id/text_desempenho"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Desempenho"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/text_subtitulo" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layout_desempenho_cards"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp">
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toStartOf="@id/guideline_end"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/text_desempenho">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_start"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_metas"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_begin="16dp" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_end="16dp" />
-
-            <ImageView
-                android:id="@+id/icon_perfil"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/perfil"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/icon_configuracoes"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintTop_toTopOf="@id/icon_perfil"
-                app:layout_constraintBottom_toBottomOf="@id/icon_perfil"
-                android:src="@drawable/iconconfig"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/icon_notificacao"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_notification"
-                app:layout_constraintEnd_toStartOf="@id/icon_configuracoes"
-                app:layout_constraintTop_toTopOf="@id/icon_perfil"
-                app:layout_constraintBottom_toBottomOf="@id/icon_perfil"
-                tools:ignore="ContentDescription" />
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/card_curso"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/text_ola_usuario"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Olá, Usuário"
-                android:textColor="#320453"
-                android:textSize="23sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/icon_perfil" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="287dp"
+                    android:layout_height="185dp"
+                    android:padding="16dp">
 
-            <TextView
-                android:id="@+id/text_subtitulo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Acompanhe seu progresso e comece novas jornadas"
-                android:textColor="#808080"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/text_ola_usuario" />
-
-            <TextView
-                android:id="@+id/text_desempenho"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Desempenho"
-                android:textColor="#000000"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/text_subtitulo" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_desempenho_cards"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/text_desempenho">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_metas"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/card_curso"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/text_progresso_metas"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="16dp">
+                        android:layout_marginStart="4dp"
+                        android:text="Progresso de metas"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                            android:id="@+id/text_progresso_metas"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Progresso de metas"
-                            android:textColor="#000000"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                    <FrameLayout
+                        android:layout_width="142dp"
+                        android:layout_height="114dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_progresso_metas">
 
-                        <FrameLayout
-                            android:layout_width="142dp"
-                            android:layout_height="114dp"
-                            android:layout_marginTop="8dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/text_progresso_metas">
+                        <com.example.core.ui.CircularProgressView
+                            android:id="@+id/circularProgressGoals"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-                            <com.example.core.ui.CircularProgressView
-                                android:id="@+id/circularProgressGoals"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </FrameLayout>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_curso"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/card_metas"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="459dp"
-                        android:layout_height="184dp"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:id="@+id/text_progresso_curso"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Progresso de curso"
-                            android:textColor="#000000"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <FrameLayout
-                            android:layout_width="142dp"
-                            android:layout_height="114dp"
-                            android:layout_marginTop="8dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/text_progresso_curso">
-
-                            <com.example.core.ui.CircularProgressView
-                                android:id="@+id/circularProgressPrograms"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </FrameLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/text_escolha_conteudo"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_curso"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Escolha seu tipo de conteúdo"
-                android:textColor="#000000"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/layout_desempenho_cards" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_tipo_conteudo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:scrollbars="none"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_escolha_conteudo"
-                tools:itemCount="3"
-                tools:orientation="horizontal" />
+                app:layout_constraintStart_toEndOf="@+id/card_metas"
+                app:layout_constraintTop_toTopOf="parent">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="241dp"
+                    android:layout_height="186dp"
+                    android:padding="16dp">
 
-            <TextView
-                android:id="@+id/text_cursos_andamento"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Cursos em andamento"
-                android:textColor="#000000"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/recycler_tipo_conteudo" />
+                    <TextView
+                        android:id="@+id/text_progresso_curso"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Progresso de curso"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <HorizontalScrollView
+                    <FrameLayout
+                        android:layout_width="142dp"
+                        android:layout_height="114dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_progresso_curso">
 
-                android:id="@+id/layout_cursos_andamento_loading"
-
-                android:layout_width="620dp"
-
-                android:layout_height="166dp"
-
-                android:layout_marginTop="8dp"
-
-                android:clipToPadding="false"
-
-                android:paddingStart="16dp"
-
-                android:paddingEnd="16dp"
-
-                android:scrollbars="none"
-
-                android:visibility="visible"
-
-                app:layout_constraintEnd_toEndOf="parent"
-
-                app:layout_constraintHorizontal_bias="0.395"
-
-                app:layout_constraintStart_toStartOf="parent"
-
-                app:layout_constraintTop_toBottomOf="@id/text_cursos_andamento">
-
-
-
-                <LinearLayout
-
-                    android:layout_width="wrap_content"
-
-                    android:layout_height="wrap_content"
-
-                    android:orientation="horizontal">
-
-
-
-                    <include layout="@layout/fragment_lessons_worker_loading" />
-
-
-
-                    <include layout="@layout/fragment_lessons_worker_loading" />
-
-
-
-                    <include layout="@layout/fragment_lessons_worker_loading" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_cursos_andamento"
-                        android:layout_width="706dp"
-                        android:layout_height="258dp"
-                        android:layout_marginTop="80dp"
-                        android:visibility="visible" />
-
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/text_novos_conteudos"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Cursos concluidos"
-                android:textColor="#070707"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/layout_cursos_andamento_loading" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_cursos_concluidos"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:scrollbars="none"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_novos_conteudos"
-                tools:itemCount="3"
-                tools:orientation="horizontal" />
-
-            <ImageView
-                android:id="@+id/boxIA"
-                android:layout_width="588dp"
-                android:layout_height="53dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ia_barra"
-                app:layout_constraintEnd_toStartOf="@id/guideline_end"
-                app:layout_constraintHorizontal_bias="0.535"
-                app:layout_constraintStart_toStartOf="@id/guideline_start"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/txt"
-                android:layout_width="28dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="220dp"
-                android:fontFamily="@font/bowlby_one"
-                android:text="IA"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@id/boxIA"
-                app:layout_constraintStart_toStartOf="@id/boxIA"
-                app:layout_constraintTop_toTopOf="@+id/boxIA"
-                app:layout_constraintVertical_bias="0.769" />
-
+                        <com.example.core.ui.CircularProgressView
+                            android:id="@+id/circularProgressPrograms"
+                            android:layout_width="162dp"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/text_escolha_conteudo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="Escolha seu tipo de conteúdo"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/layout_desempenho_cards" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_tipo_conteudo"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_escolha_conteudo"
+            tools:itemCount="3"
+            tools:orientation="horizontal" />
+
+
+        <TextView
+            android:id="@+id/text_cursos_andamento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:text="Cursos em andamento"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/recycler_tipo_conteudo" />
+
+
+        <HorizontalScrollView
+            android:id="@+id/layout_cursos_andamento_loading"
+            android:layout_width="match_parent"
+            android:layout_height="179dp"
+            android:layout_marginTop="12dp"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_cursos_andamento">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include layout="@layout/fragment_lessons_worker_loading" />
+                <include layout="@layout/fragment_lessons_worker_loading" />
+                <include layout="@layout/fragment_lessons_worker_loading" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_cursos_andamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_cursos_andamento"
+            tools:itemCount="2"
+            tools:orientation="horizontal" />
+
+        <TextView
+            android:id="@+id/text_novos_conteudos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Cursos concluídos"
+            android:textColor="#070707"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/layout_cursos_andamento_loading" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_cursos_concluidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_novos_conteudos"
+            tools:itemCount="3"
+            tools:orientation="horizontal" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
     <com.example.feature_produtor.ui.bottomnav.WorkerBottomNavView
@@ -376,5 +359,5 @@
         android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="600dp" /> </androidx.constraintlayout.widget.ConstraintLayout>

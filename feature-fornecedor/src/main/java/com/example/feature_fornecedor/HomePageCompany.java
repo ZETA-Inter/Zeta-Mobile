@@ -15,12 +15,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.feature_fornecedor.ui.bottomnav.CompanyBottomNavView;
 
 public class HomePageCompany extends Fragment {
+
+    ImageView iconNotificacao;
 
     public HomePageCompany() { }
 
@@ -66,6 +69,7 @@ public class HomePageCompany extends Fragment {
 
         // Ícone de perfil
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
+        iconNotificacao = view.findViewById(R.id.btnBell);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         String imageUrl = sp.getString("image_url", null);
@@ -94,6 +98,14 @@ public class HomePageCompany extends Fragment {
             nav.navigate(deeplink);
         });
 
+        Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
+
+        iconNotificacao.setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(deeplink);
+        });
+
+
+
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
@@ -105,7 +117,10 @@ public class HomePageCompany extends Fragment {
             );
             // Marca a aba atual sem navegar
             bottom.setActive(CompanyBottomNavView.Item.HOME, false);
+
         }
     }
+
+
 
 }
