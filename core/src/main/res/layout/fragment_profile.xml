@@ -7,6 +7,16 @@
     android:layout_height="match_parent">
 
     <!-- FOTO DO PERFIL -->
+    <ImageView
+        android:id="@+id/btComeback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="36dp"
+        android:src="@drawable/ic_curved_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/photo"
         android:layout_width="wrap_content"
@@ -55,7 +65,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Desempenho"
-        android:textColor="#0F0F0F"
+        android:textColor="#070707"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:fontFamily="@font/spartan"
         app:layout_constraintTop_toBottomOf="@+id/nome_worker"
         app:layout_constraintStart_toStartOf="parent"
@@ -175,7 +187,9 @@
         android:layout_marginTop="28dp"
         android:fontFamily="@font/spartan"
         android:text="Cursos em andamento"
-        android:textColor="#0F0F0F"
+        android:textColor="#070707"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.091"
         app:layout_constraintStart_toStartOf="parent"
