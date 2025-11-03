@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.core.client.ApiPostgresClient;
 import com.example.core.network.RetrofitClientMongo;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.core.network.RetrofitClientIA;
@@ -304,7 +305,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         comecar.setOnClickListener(v -> {
             if (!allLessons.isEmpty() && getView() != null) {
 
-                // 🌟 USA A VARIÁVEL DE INSTÂNCIA JÁ CARREGADA
+
                 int stepNumberToStart = currentRequiredStep;
 
                 Log.d(TAG, "Botão Começar: Acessando a etapa obrigatória: "+stepNumberToStart);
@@ -463,7 +464,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
                         @Override
                         public void onError(String message) {
-                           showDialogDennied();
+                            assignProgram(workerId, programId);
                         }
                     }
             );
@@ -474,40 +475,56 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
 
+    private void assignProgram(Integer workerId, Integer programId) {
+        ApiPostgresClient api = RetrofitClientPostgres.getApiService(requireContext());
 
-    private void showDialogDennied() {
-        // Garante que o Fragment ainda está anexado à Activity
-        if (!isAdded()) return;
+        api.assignProgram(workerId, programId).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String message = response.body();
+                assert message != null;
+                Log.d(TAG, message);
+            }
 
-        //Cria e configura o AlertDialog/
-        androidx.appcompat.app.AlertDialog.Builder builder =
-                new androidx.appcompat.app.AlertDialog.Builder(requireContext());
-
-        // Infla o layout customizado
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_couse_denied, null);
-        builder.setView(dialogView);
-
-        // Configura o botão de fechar (OK)
-        Button btnClose = dialogView.findViewById(R.id.btn_close_denied_dialog);
-
-        final androidx.appcompat.app.AlertDialog dialog = builder.create();
-
-        // Torna o fundo transparente para que o CardView no XML seja visível
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        btnClose.setOnClickListener(v -> {
-            dialog.dismiss();
-            // Opcional: Navegar de volta para a Home após fechar o diálogo
-            if (getView() != null) {
-                Navigation.findNavController(getView()).navigateUp();
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG,  "Falha na conexão: " + t.getMessage());
             }
         });
-
-        dialog.show();
     }
+//    private void showDialogDennied() {
+//        // Garante que o Fragment ainda está anexado à Activity
+//        if (!isAdded()) return;
+//
+//        //Cria e configura o AlertDialog/
+//        androidx.appcompat.app.AlertDialog.Builder builder =
+//                new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+//
+//        // Infla o layout customizado
+//        LayoutInflater inflater = requireActivity().getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.dialog_couse_denied, null);
+//        builder.setView(dialogView);
+//
+//        // Configura o botão de fechar (OK)
+//        Button btnClose = dialogView.findViewById(R.id.btn_close_denied_dialog);
+//
+//        final androidx.appcompat.app.AlertDialog dialog = builder.create();
+//
+//        // Torna o fundo transparente para que o CardView no XML seja visível
+//        if (dialog.getWindow() != null) {
+//            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//        }
+//
+//        btnClose.setOnClickListener(v -> {
+//            dialog.dismiss();
+//            // Opcional: Navegar de volta para a Home após fechar o diálogo
+//            if (getView() != null) {
+//                Navigation.findNavController(getView()).navigateUp();
+//            }
+//        });
+//
+//        dialog.show();
+//    }
 
 
 
