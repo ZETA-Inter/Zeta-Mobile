@@ -323,7 +323,6 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
         dialog.show();
     }
 
-// ... (restante do código: setupClickListeners, onAnswerSelected) ...
 
 
 
