@@ -33,6 +33,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/imgProfile"
                     android:layout_width="65dp"
                     android:layout_height="65dp"
                     android:padding="10dp"
@@ -120,12 +121,13 @@
             android:id="@+id/item_worker"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginTop="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="56dp" android:clipToPadding="false"
+            android:layout_weight="1"
+            android:clipToPadding="false"
             android:overScrollMode="never"
+            android:paddingStart="0dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="56dp"
             tools:listitem="@layout/item_worker" />
 
     </LinearLayout>

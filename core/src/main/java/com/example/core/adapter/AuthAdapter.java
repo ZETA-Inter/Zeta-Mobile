@@ -133,7 +133,7 @@ public class AuthAdapter {
     private final com.google.firebase.firestore.FirebaseFirestore mFirestore =
             com.google.firebase.firestore.FirebaseFirestore.getInstance();
 
-    private void verificarPerfil(String uid, @Nullable TipoUsuario tipoUsuario, Context c, String email) {
+    public void verificarPerfil(String uid, @Nullable TipoUsuario tipoUsuario, Context c, String email) {
         // Coleção compatível com seu cenário atual:
         String collection;
         if (tipoUsuario == null) {
@@ -177,6 +177,7 @@ public class AuthAdapter {
                             .putInt("user_id", (user.getId() != null) ? user.getId() : -1)
                             .putString("name", user.getName())
                             .putString("email", user.getEmail())
+                            .putString("image_url", user.getEmail())
                             .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")
                             .apply();
 

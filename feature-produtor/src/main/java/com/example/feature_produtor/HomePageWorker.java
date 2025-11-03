@@ -183,7 +183,7 @@ public class HomePageWorker extends Fragment
 
                     // Ajuste dentro de fetchPrograms -> onResponse
                     List<ProgramWorkerResponseDTO> inProgress = programs.stream()
-                            .filter(p -> p.getProgressPercentage() < 100) // Qualquer coisa abaixo de 100%
+                            .filter(p -> p.getProgressPercentage() < 100)
                             .collect(Collectors.toList());
 
                     List<ProgramWorkerResponseDTO> completed = programs.stream()

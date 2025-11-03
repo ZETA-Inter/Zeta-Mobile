@@ -1,10 +1,15 @@
 package com.example.feature_fornecedor;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,6 +77,36 @@ public class RankingPageCompany extends Fragment {
             );
             bottom.setActive(CompanyBottomNavView.Item.AWARDS, false);
         }
+
+        // Ícone de perfil
+        ImageView imgProfile = v.findViewById(R.id.imgProfile);
+
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+        String imageUrl = sp.getString("image_url", null);
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(com.example.core.R.drawable.perfil)
+                    .error(com.example.core.R.drawable.perfil)
+                    .into(imgProfile);
+        } else {
+            imgProfile.setImageResource(com.example.core.R.drawable.perfil);
+        }
+
+        imgProfile.setOnClickListener(view -> {
+            int companyId = sp.getInt("user_id", -1);
+            if (companyId <= 0) {
+                Toast.makeText(requireContext(), "Perfil indisponível: ID do usuário não encontrado na sessão.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Uri deeplink = Uri.parse("app://Core/Profile");
+
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(deeplink);
+        });
 
         fetchRanking();
     }
