@@ -160,6 +160,15 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         String name = sp.getString("name", "Usuário");
         String imageUrl = sp.getString("image_url", null);
 
+        Uri data = getActivity().getIntent().getData();
+        if (data != null) {
+            Log.d(TAG, "Bundle Worker");
+            id = Integer.parseInt(data.getQueryParameter("workerId"));
+            kind = data.getQueryParameter("tipoUsuario");
+            name = data.getQueryParameter("name");
+            imageUrl = data.getQueryParameter("imageUrl");
+        }
+
         if (id <= 0 || kind == null) {
             Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();
             return;
