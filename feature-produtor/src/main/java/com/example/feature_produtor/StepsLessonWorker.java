@@ -479,7 +479,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
         // Garante que o Fragment ainda está anexado à Activity
         if (!isAdded()) return;
 
-        // Cria e configura o AlertDialog
+        //Cria e configura o AlertDialog/
         androidx.appcompat.app.AlertDialog.Builder builder =
                 new androidx.appcompat.app.AlertDialog.Builder(requireContext());
 
