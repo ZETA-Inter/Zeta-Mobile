@@ -37,6 +37,8 @@
 
 
     <color name="company_primary">#043253</color>   <!-- exemplo -->
-    <color name="worker_primary">#654D95</color>    <!-- exemplo -->
+    <color name="worker_primary">#654D95</color>
+    <color name="black">#000000</color>
+    <color name="primary_light">#FFFFFF</color>    <!-- exemplo -->
 
 </resources>

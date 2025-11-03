@@ -1,11 +1,19 @@
 package com.example.feature_fornecedor;
 
 public class ChartPoint {
-    public final String label;
-    public final float value;
+    private String label;
+    private int value;
 
-    public ChartPoint(String label, float value) {
+    public ChartPoint(String label, int value) {
         this.label = label;
         this.value = value;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

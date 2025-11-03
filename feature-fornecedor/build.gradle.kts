@@ -48,14 +48,14 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore")
     implementation ("com.google.android.gms:play-services-auth:21.1.1")
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
-    implementation("com.github.PhilJay:MPAndroidChart:3.1.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
 
 }
