@@ -146,16 +146,16 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_answers"
-            android:layout_width="941dp"
-            android:layout_height="1058dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="548dp"
+            android:layout_height="556dp"
             android:layout_marginBottom="16dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/btContinuar2"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
-            app:layout_constraintTop_toBottomOf="@+id/txtPergunta"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.901"
             tools:listitem="@layout/item_activity_answer" />
 
         <com.google.android.material.button.MaterialButton

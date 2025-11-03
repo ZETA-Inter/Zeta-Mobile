@@ -87,7 +87,7 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
         txtPesquisa = view.findViewById(R.id.txtPesquisa2);
         //se não houver meta atribuida a esse worker esse card fica visível
         loadingGoalsContainer = view.findViewById(R.id.loading_goals_container);
-        iconNotificacao = view.findViewById(R.id.icon_notifica);
+        iconNotificacao = view.findViewById(R.id.icon_notificacao_goals);
 
         ImageView perfil = view.findViewById(R.id.icon_perfil_goals);
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);

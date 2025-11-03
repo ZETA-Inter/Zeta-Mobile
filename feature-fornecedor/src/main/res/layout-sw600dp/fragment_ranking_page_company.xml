@@ -76,7 +76,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="10dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_notification"
+                android:src="@drawable/ic_notificationx"
                 tools:ignore="ContentDescription" />
 
             <ImageButton
@@ -128,8 +128,8 @@
 
                 <ImageView
                     android:id="@+id/podiumBg"
-                    android:layout_width="660dp"
-                    android:layout_height="327dp"
+                    android:layout_width="729dp"
+                    android:layout_height="325dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/bg_ranking_podium"
                     app:layout_constraintBottom_toBottomOf="parent"

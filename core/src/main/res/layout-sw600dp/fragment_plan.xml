@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,62 +9,94 @@
     android:background="@color/bg_light"
     tools:context=".Plan">
 
-    <!-- Conteúdo original do seu ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/planRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Todos os elementos existentes: ImageView, TextViews, RecyclerView, Botão, etc. -->
+        <!-- IMAGEM/LOGO - Agora faz parte da cadeia vertical e tem largura máxima -->
         <ImageView
             android:id="@+id/imgLogo"
-            android:layout_width="189dp"
-            android:layout_height="156dp"
-            android:layout_marginTop="88dp"
+            android:layout_width="311dp"
+            android:layout_height="219dp"
+            android:layout_marginTop="24dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/boinoite"
+            app:layout_constraintBottom_toTopOf="@id/tvTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <!-- TÍTULO PRINCIPAL - Largura limitada a 500dp -->
         <TextView
             android:id="@+id/tvTitle"
-            android:layout_width="209dp"
-            android:layout_height="65dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:gravity="center"
             android:text="PLANOS"
             android:textColor="@color/primary_dark"
             android:textSize="22sp"
             android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/imgLogo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imgLogo" />
+            app:layout_constraintBottom_toTopOf="@id/tvPlansError"
 
+            app:layout_constrainedWidth="true"
+            app:layout_constraintWidth_max="500dp" />
+
+        <!-- MENSAGEM DE ERRO/AVISO - Largura limitada a 500dp -->
         <TextView
             android:id="@+id/tvPlansError"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="Escolha um plano para continuar."
             android:textColor="@color/error_red"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintBottom_toTopOf="@id/planRV"
 
+            app:layout_constrainedWidth="true"
+            app:layout_constraintWidth_max="500dp" />
+
+        <!-- RECYCLERVIEW - Preenche o espaço entre o erro e o botão. Largura máxima de 600dp para melhor visualização dos cards em tablet. -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/planRV"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnContinuar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPlansError"
+
+            app:layout_constrainedWidth="true"
+            app:layout_constraintWidth_max="600dp"
+            tools:listitem="@layout/item_plan" />
+
+        <!-- BOTÃO CONTINUAR - Ancorado no final da tela. Largura limitada a 400dp. -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinuar"
             style="@style/NoStrokeButton"
-            android:layout_width="684dp"
-            android:layout_height="80dp"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="32dp"
             android:text="Continuar"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -72,37 +105,24 @@
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/planRV"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="248dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnContinuar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:listitem="@layout/item_plan" />
 
+            app:layout_constrainedWidth="true"
+            app:layout_constraintWidth_max="400dp" />
+
+        <!-- ProgressBar - Centralizado na tela, fora da cadeia de elementos -->
         <ProgressBar
             android:id="@+id/percentageBar"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:visibility="gone"
-            android:layout_gravity="center"
             android:indeterminate="true"
+            android:layout_gravity="center"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

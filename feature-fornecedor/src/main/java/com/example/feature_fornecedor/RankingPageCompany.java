@@ -86,6 +86,7 @@ public class RankingPageCompany extends Fragment {
 
         // Ícone de perfil
         ImageView imgProfile = v.findViewById(R.id.imgProfile);
+        iconNotificacao = v.findViewById(R.id.btnBell);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         String imageUrl = sp.getString("image_url", null);
@@ -99,6 +100,7 @@ public class RankingPageCompany extends Fragment {
                     .into(imgProfile);
         } else {
             imgProfile.setImageResource(com.example.core.R.drawable.perfil);
+
         }
 
         imgProfile.setOnClickListener(view -> {

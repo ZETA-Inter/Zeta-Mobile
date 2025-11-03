@@ -14,8 +14,8 @@
 
         <TextView
             android:id="@+id/cursoDescr"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="346dp"
+            android:layout_height="47dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/poppins_medium"
@@ -28,8 +28,8 @@
 
         <TextView
             android:id="@+id/cursoTitulo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="349dp"
+            android:layout_height="33dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="16dp"
