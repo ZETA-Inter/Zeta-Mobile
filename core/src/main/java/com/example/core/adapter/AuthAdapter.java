@@ -4,11 +4,14 @@ package com.example.core.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.example.core.Login;
 import com.example.core.R;
@@ -17,6 +20,7 @@ import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
 import com.example.core.dto.response.UserResponse;
 import com.example.core.notifications.NotificationHelper;
+import com.example.core.utils.LoginCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -113,20 +117,19 @@ public class AuthAdapter {
     // com o restante do app. Ajuste conforme seu uso real.
     // ================================================================
 
-    public void login(TipoUsuario tipoUsuario, String email, String senha, Context c) {
+    public void login(TipoUsuario tipoUsuario, String email, String senha, Context c, LoginCallback callback) {
         mAuth.signInWithEmailAndPassword(email, senha)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(c, "Login realizado com sucesso..!", Toast.LENGTH_SHORT).show();
                         String uid = (task.getResult() != null && task.getResult().getUser() != null)
                                 ? task.getResult().getUser().getUid() : null;
                         if (uid != null) {
-                            verificarPerfil(uid, tipoUsuario, c, email);
+                            verificarPerfil(uid, tipoUsuario, c, email, callback);
                         } else {
-                            Toast.makeText(c, "Falha ao obter UID do usuário.", Toast.LENGTH_SHORT).show();
+                            callback.onLoginFailure("Falha ao obter UID do usuário.");
                         }
                     } else {
-                        Toast.makeText(c, "Erro ao realizar login..!", Toast.LENGTH_SHORT).show();
+                        callback.onLoginFailure("Erro ao realizar login.");
                     }
                 });
     }
@@ -134,33 +137,24 @@ public class AuthAdapter {
     private final com.google.firebase.firestore.FirebaseFirestore mFirestore =
             com.google.firebase.firestore.FirebaseFirestore.getInstance();
 
-    public void verificarPerfil(String uid, @Nullable TipoUsuario tipoUsuario, Context c, String email) {
-        // Coleção compatível com seu cenário atual:
-        String collection;
-        if (tipoUsuario == null) {
-            collection = "Fornecedor"; // default
-        } else {
-            collection = (tipoUsuario == TipoUsuario.WORKER) ? "Produtor" : "Fornecedor";
-        }
+    public void verificarPerfil(String uid, @Nullable TipoUsuario tipoUsuario, Context c, String email, LoginCallback callback) {
+        String collection = (tipoUsuario == TipoUsuario.WORKER) ? "Produtor" : "Fornecedor";
 
         mFirestore.collection(collection)
                 .document(uid)
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        fetchUserFromBackend(email, tipoUsuario, c);
-                        Toast.makeText(c, "Perfil encontrado..!", Toast.LENGTH_SHORT).show();
+                        fetchUserFromBackend(email, tipoUsuario, c, callback);
                     } else {
-                        Toast.makeText(c, "Perfil não encontrado..!", Toast.LENGTH_SHORT).show();
                         mAuth.signOut();
+                        callback.onLoginFailure("Perfil não encontrado!");
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(c, "Erro ao verificar perfil..!", Toast.LENGTH_SHORT).show()
-                );
+                .addOnFailureListener(e -> callback.onLoginFailure("Erro ao verificar perfil."));
     }
 
-    private void fetchUserFromBackend(String email, @Nullable TipoUsuario tipoUsuario, Context c) {
+    private void fetchUserFromBackend(String email, @Nullable TipoUsuario tipoUsuario, Context c, LoginCallback callback) {
         ApiPostgresClient api = com.example.core.network.RetrofitClientPostgres.getApiService(c);
 
         Call<UserResponse> call = (tipoUsuario == TipoUsuario.WORKER)
@@ -168,10 +162,11 @@ public class AuthAdapter {
                 : api.findCompanyByEmail(email);
 
         call.enqueue(new Callback<UserResponse>() {
-            @Override public void onResponse(@NonNull Call<UserResponse> call,
-                                             @NonNull Response<UserResponse> resp) {
+            @Override
+            public void onResponse(@NonNull Call<UserResponse> call, @NonNull Response<UserResponse> resp) {
                 if (resp.isSuccessful() && resp.body() != null) {
                     UserResponse user = resp.body();
+
                     SharedPreferences prefs = c.getSharedPreferences("user_session", Context.MODE_PRIVATE);
                     prefs.edit()
                             .putInt("user_id", (user.getId() != null) ? user.getId() : -1)
@@ -194,13 +189,15 @@ public class AuthAdapter {
                     Log.d(TAG, "Notificação de Login enviada com sucesso!");
 
                     Toast.makeText(c, "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
+                    callback.onLoginSuccess();
                 } else {
-                    Toast.makeText(c, "Erro ao buscar usuário: " + resp.code(), Toast.LENGTH_SHORT).show();
+                    callback.onLoginFailure("Erro ao buscar usuário: " + resp.code());
                 }
             }
 
-            @Override public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
-                Toast.makeText(c, "Falha de rede: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
+                callback.onLoginFailure("Falha de rede: " + t.getMessage());
             }
         });
     }

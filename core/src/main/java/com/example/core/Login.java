@@ -20,6 +20,7 @@ import com.example.core.adapter.AuthAdapter;
 import com.example.core.databinding.FragmentLoginBinding;
 import com.example.core.ui.BrandingHelper;
 import com.example.core.network.RetrofitClientPostgres;
+import com.example.core.utils.LoginCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -108,9 +109,17 @@ public class Login extends Fragment {
 
             bloquearUI(true);
             AuthAdapter adapter = new AuthAdapter();
-            adapter.login(tipoAtual, email, senha, getContext());
+            adapter.login(tipoAtual, email, senha, getContext(), new LoginCallback() {
+                @Override
+                public void onLoginSuccess() {
+                    navegarDepoisLogin(v);
+                }
 
-            navegarDepoisLogin(v);
+                @Override
+                public void onLoginFailure(String mensagem) {
+                    Toast.makeText(getContext(), mensagem, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         // Esqueci a senha
@@ -162,7 +171,17 @@ public class Login extends Fragment {
                                     .addOnSuccessListener(aVoid -> {
                                         String uid = r.getUser().getUid();
                                         AuthAdapter adapter = new AuthAdapter();
-                                        adapter.verificarPerfil(uid, tipoAtual, getContext(), r.getUser().getEmail());
+                                        adapter.verificarPerfil(uid, tipoAtual, getContext(), r.getUser().getEmail(), new LoginCallback() {
+                                            @Override
+                                            public void onLoginSuccess() {
+                                                navegarDepoisLogin(requireView());
+                                            }
+
+                                            @Override
+                                            public void onLoginFailure(String mensagem) {
+                                                Toast.makeText(getContext(), mensagem, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                         navegarDepoisLogin(requireView());
                                         bloquearUI(false);
                                     })
