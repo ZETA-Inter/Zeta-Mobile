@@ -181,6 +181,20 @@ public class HomePageCompany extends Fragment {
             };
             prefs.registerOnSharedPreferenceChangeListener(spListener);
         }
+
+
+        ImageView btnSettings = view.findViewById(R.id.btnSettings);
+        btnSettings.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(this);
+
+            try {
+                nav.navigate(R.id.SettingsFragment);
+            } catch (Exception e) {
+                Uri deeplink = Uri.parse("app://Fornecedor/Settings");
+                nav.navigate(deeplink);
+            }
+        });
+
     }
 
     @Override
@@ -542,8 +556,7 @@ public class HomePageCompany extends Fragment {
         });
     }
 
-    // 2) api/companies/average-points/{companyId}
-    // -> único campo (número). Exibimos com 1 casa decimal.
+
     private void fetchKpiAveragePoints(int companyId) {
         api.averagePoints(companyId).enqueue(new Callback<Double>() {
             @Override
