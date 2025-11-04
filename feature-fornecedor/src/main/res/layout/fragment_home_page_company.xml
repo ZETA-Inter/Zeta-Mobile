@@ -89,7 +89,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="10dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_notification" />
+                        android:src="@drawable/ic_notificationx" />
 
                     <ImageButton
                         android:id="@+id/btnSettings"

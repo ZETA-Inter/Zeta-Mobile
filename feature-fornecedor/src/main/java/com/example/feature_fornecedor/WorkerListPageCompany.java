@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,8 +41,7 @@ public class WorkerListPageCompany extends Fragment {
 
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
-
-    private static final String DL_WORKER = "app.internal://profile/worker/";
+    private ImageView iconNotificacao;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -71,6 +71,7 @@ public class WorkerListPageCompany extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
+        iconNotificacao= view.findViewById(R.id.btnBell);
 
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         String imageUrl = sp.getString("image_url", null);
@@ -99,17 +100,30 @@ public class WorkerListPageCompany extends Fragment {
             nav.navigate(deeplink);
         });
 
+        Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
+
+        iconNotificacao.setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(deeplink);
+        });
+
         // 1) RecyclerView da tela
         recyclerView = view.findViewById(R.id.item_worker);
 
         // 2) Adapter com clique para navegar por URI (sem depender do :core)
         listAdapter = new ListAdapter(new ArrayList<>(), requireContext(), worker -> {
-            // worker aqui deve ser um objeto Worker
             String workerId = String.valueOf(worker.getId());
+            String tipoUsuario = "WORKER";
+            String name = worker.getName();
+            String imageUrl2 = worker.getImageUrl();
 
-            // Navegação via deeplink interno (NavController.resolve URI)
-            Uri uri = Uri.parse(DL_WORKER + workerId);
-            Navigation.findNavController(view).navigate(uri);
+            Uri deeplinkUri = Uri.parse("app://Core/Profile" +
+                    "?workerId=" + workerId +
+                    "&tipoUsuario=" + tipoUsuario +
+                    "&name=" + Uri.encode(name) +
+                    "&imageUrl=" + Uri.encode(imageUrl2));
+
+            Navigation.findNavController(view).navigate(deeplinkUri);
+
         });
 
         // 3) Layout + adapter

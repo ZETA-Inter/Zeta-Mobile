@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +42,7 @@ import com.google.android.material.button.MaterialButton;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +50,9 @@ import retrofit2.Response;
 
 public class HomePageCompany extends Fragment {
 
+    ImageView iconNotificacao;
+
+    public HomePageCompany() { }
     private static final String TAG = "HomePageCompany";
 
     // Enum do filtro
@@ -68,7 +73,6 @@ public class HomePageCompany extends Fragment {
     private TextView tvKpiPointsValue;  // Pontuação média
     private TextView tvKpiGoalsValue;   // Porcentagem de Conclusão - Metas (%)
 
-    public HomePageCompany() {}
 
     public static HomePageCompany newInstance(String p1, String p2) {
         HomePageCompany f = new HomePageCompany();
@@ -95,6 +99,10 @@ public class HomePageCompany extends Fragment {
 
         // ========= Cabeçalho: foto perfil =========
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
+        iconNotificacao = view.findViewById(R.id.btnBell);
+
+        SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+
         String imageUrl = prefs.getString("image_url", null);
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(this)
@@ -114,7 +122,9 @@ public class HomePageCompany extends Fragment {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+
             Uri deeplink = Uri.parse("app://Core/Profile");
+
             NavController nav = NavHostFragment.findNavController(this);
             nav.navigate(deeplink);
         });
@@ -131,6 +141,14 @@ public class HomePageCompany extends Fragment {
         btnSuino.setOnClickListener(v -> updateFilter(AnimalType.SUINO, btnAve, btnBovino, btnSuino));
 
         // ========= Bottom nav =========
+        AtomicReference<Uri> deeplink = new AtomicReference<>(Uri.parse("app://Worker/CardNotificacao"));
+
+        iconNotificacao.setOnClickListener(v->{
+            Navigation.findNavController(v).navigate(deeplink.get());
+        });
+
+
+
         CompanyBottomNavView bottom = view.findViewById(R.id.bottomNav);
         if (bottom != null) {
             NavController nav = NavHostFragment.findNavController(this);
@@ -140,7 +158,9 @@ public class HomePageCompany extends Fragment {
                     R.id.HomePageCompany,
                     R.id.WorkerListPageCompany
             );
+            // Marca a aba atual sem navegar
             bottom.setActive(CompanyBottomNavView.Item.HOME, false);
+
         }
 
         // ========= KPIs: bind dos valores =========
@@ -165,7 +185,7 @@ public class HomePageCompany extends Fragment {
             fetchAllKpis(idNow);
         } else {
             Log.w(TAG, "Esperando o login salvar o user_id...");
-            spListener = (sp, key) -> {
+            spListener = (shared, key) -> {
                 if ("user_id".equals(key)) {
                     int id = sp.getInt("user_id", -1);
                     Log.d(TAG, "Listener detectou user_id = " + id);
@@ -190,8 +210,8 @@ public class HomePageCompany extends Fragment {
             try {
                 nav.navigate(R.id.SettingsFragment);
             } catch (Exception e) {
-                Uri deeplink = Uri.parse("app://Fornecedor/Settings");
-                nav.navigate(deeplink);
+                deeplink.set(Uri.parse("app://Fornecedor/Settings"));
+                nav.navigate(deeplink.get());
             }
         });
 
@@ -625,5 +645,7 @@ public class HomePageCompany extends Fragment {
     private void setKpiText(TextView tv, String value) {
         if (tv != null) tv.setText(value);
     }
+
+
 
 }

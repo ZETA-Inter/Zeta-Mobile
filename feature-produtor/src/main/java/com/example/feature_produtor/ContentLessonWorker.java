@@ -55,6 +55,8 @@ public class ContentLessonWorker extends Fragment {
     private List<String> contentPages;
     private int currentPageIndex = 0;
 
+    private ImageView logo;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class ContentLessonWorker extends Fragment {
         lessonTitleTextView = view.findViewById(R.id.titulocontent);
         conteudo = view.findViewById(R.id.tvConteudo);
         btContinuar = view.findViewById(R.id.btComeçar);
+        logo = view.findViewById(R.id.icon_logo_boi);
 
         setupClickListeners();
 
@@ -118,37 +121,67 @@ public class ContentLessonWorker extends Fragment {
             }
         });
 
+        logo.setOnClickListener(v->
+                Navigation.findNavController(v).navigate(R.id.HomePageWorker));
+
         btContinuar.setOnClickListener(v -> {
             if (contentPages == null || contentPages.isEmpty()) {
                 Toast.makeText(getContext(), "Conteúdo não carregado.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            int totalPages = contentPages.size();
-            int transitions = Math.max(1, totalPages - 1);
-            double contentPaginationValue = remainingStepProgress / 3.0;
-            double progressPerClick = contentPaginationValue / transitions;
-
-            if (currentPageIndex < contentPages.size() - 1) {
-
-                currentPageIndex++;
-                displayCurrentPage();
+            // Se for a última página, apenas navega para a atividade
+            if (currentPageIndex == contentPages.size() - 1) {
+                navigateToNextScreen();
+                return;
             }
 
-            if (currentPageIndex > 0) {
-                currentProgramProgress = (int) Math.round(currentProgramProgress + progressPerClick);
-                currentProgramProgress = Math.min(currentProgramProgress, 100);
+            int totalPages = contentPages.size();
+            // Transitions = número de cliques necessários para ir da página 0 à penúltima
+            int transitions = Math.max(1, totalPages - 1);
 
-                Integer workerId = getWorkerIdFromLocalStore();
-                if (workerId != null && programId != null) {
-                    ProgressApiHelper.updateProgramProgress(requireContext(), programId, currentProgramProgress, workerId);
-                }
+            // 1. CALCULA O VALOR DO CONTEÚDO (1/3 do remainingStepProgress = 25% da Etapa)
+            double contentPaginationValue = remainingStepProgress / 3.0;
 
-                // 3. Atualiza o remainingStepProgress para refletir que este valor foi gasto
-                remainingStepProgress -= progressPerClick;
-            }else {
+            // 2. DISTRIBUI ESTE VALOR PELOS CLIQUES
+            double progressPerClick = contentPaginationValue / transitions;
 
-                navigateToNextScreen();
+            final int percentageGain = (int) Math.round(progressPerClick); // Ganho em %
+            final double progressSpent = progressPerClick;
+
+            // PONTOS: No avanço do conteúdo, o ganho de pontos é ZERO
+            final int pointsGain = 0;
+
+            // O progresso total do CURSO que tentaremos salvar (agora passado como currentProgramProgress)
+            // final int progressToSend = (int) Math.round(currentProgramProgress + progressPerClick);
+
+            Integer workerId = getWorkerIdFromLocalStore();
+
+            if (workerId != null && programId != null) {
+                // CHAMA A API COM O CALLBACK (usando a nova assinatura)
+                ProgressApiHelper.updateProgramProgress(
+                        requireContext(),
+                        programId,
+                        percentageGain,
+                        pointsGain,
+                        currentProgramProgress,
+                        workerId,
+                        new ProgressApiHelper.ProgressUpdateCallback() {
+                            @Override
+                            public void onProgressUpdated(int newPercentage) {
+                                // SUCESSO: ATUALIZA ESTADO E AVANÇA A PÁGINA
+                                currentProgramProgress = newPercentage;
+                                remainingStepProgress -= progressSpent; // Reduz o valor gasto
+                                currentPageIndex++;
+                                displayCurrentPage();
+                            }
+                            @Override
+                            public void onError(String message) {
+                                // FALHA: ALERTA E PERMANECE NA PÁGINA
+                                Toast.makeText(getContext(), "Erro ao salvar progresso da página. Tente novamente.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
             }
         });
     }
@@ -161,7 +194,6 @@ public class ContentLessonWorker extends Fragment {
             bundle.putInt("currentProgramProgress", currentProgramProgress);
 
             if(getView() != null) {
-                // Navega para a tela ActivityLessonWorker
                 Navigation.findNavController(getView()).navigate(R.id.ActivityLessonWorker, bundle);
             }
         } else {

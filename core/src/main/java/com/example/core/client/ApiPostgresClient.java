@@ -20,6 +20,7 @@ import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiPostgresClient {
 
@@ -62,6 +63,12 @@ public interface ApiPostgresClient {
 
     @GET("api/goals/finished-goals-percentage/{companyId}")
     Call<GoalProgress> findPercentageFinishedGoalsById(@Path("companyId") Integer companyId);
+
+    @POST("api/workers/assign-program")
+    Call<String> assignProgram(
+            @Query("workerId") Integer workerId,
+            @Query("programId") Integer programId
+    );
 
     @POST("api/workers/create")
     Call<WorkerResponse> createWorker(@Body WorkerRequest worker);

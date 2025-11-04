@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- FOTO DO PERFIL -->
     <ImageView
         android:id="@+id/btComeback"
         android:layout_width="wrap_content"
@@ -15,7 +14,8 @@
         android:layout_marginTop="36dp"
         android:src="@drawable/ic_curved_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/photo"
@@ -29,18 +29,16 @@
         tools:srcCompat="@tools:sample/avatars"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSizeCircle" />
 
-    <!-- BOTÃO DE CÂMERA SOBREPOSTO NA BASE DIREITA DA FOTO -->
-
-    <!-- NOME DO USUÁRIO -->
     <ImageButton
         android:id="@+id/btnCamera"
-        android:layout_width="123dp"
-        android:layout_height="122dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/bg_circle_camera"
         android:contentDescription="@string/tirar_foto"
         android:padding="8dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintEnd_toEndOf="@id/photo"
         app:tint="@android:color/white" />
@@ -64,28 +62,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"
         android:text="Desempenho"
         android:textColor="#070707"
         android:textSize="18sp"
         android:textStyle="bold"
         android:fontFamily="@font/spartan"
         app:layout_constraintTop_toBottomOf="@+id/nome_worker"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Layout dos cards de progresso -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_desempenho_cards"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintTop_toBottomOf="@id/titulocontent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingHorizontal="16dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Card de metas -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_metas"
             android:layout_width="0dp"
@@ -107,7 +103,6 @@
                     android:id="@+id/text_progresso_metas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:text="Progresso de metas"
                     android:textColor="#000000"
                     android:textSize="14sp"
@@ -116,7 +111,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <FrameLayout
-                    android:layout_width="142dp"
+                    android:layout_width="0dp"
                     android:layout_height="114dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/text_progresso_metas"
@@ -152,7 +147,6 @@
                     android:id="@+id/text_progresso_curso"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:text="Progresso de curso"
                     android:textColor="#000000"
                     android:textSize="14sp"
@@ -161,7 +155,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <FrameLayout
-                    android:layout_width="142dp"
+                    android:layout_width="0dp"
                     android:layout_height="114dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/text_progresso_curso"
@@ -179,34 +173,31 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- TÍTULO DE CURSOS -->
     <TextView
         android:id="@+id/txt_lessons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
+        android:layout_marginStart="24dp"
         android:fontFamily="@font/spartan"
         android:text="Cursos em andamento"
         android:textColor="#070707"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_desempenho_cards" />
 
     <HorizontalScrollView
         android:id="@+id/layout_cursos_andamento_loading"
-        android:layout_width="406dp"
+        android:layout_width="0dp"
         android:layout_height="179dp"
         android:layout_marginTop="12dp"
         android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
         android:scrollbars="none"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.407"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txt_lessons">
 
@@ -216,26 +207,28 @@
             android:orientation="horizontal">
 
             <include layout="@layout/fragment_lessons_worker_loading" />
-
             <include layout="@layout/fragment_lessons_worker_loading" />
-
             <include layout="@layout/fragment_lessons_worker_loading" />
-
 
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- LISTA DE CURSOS -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_doing_programs"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:scrollbars="none"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_lessons"
-        tools:listitem="@layout/item_lessons_worker" />
+        tools:itemCount="3"
+        tools:listitem="@layout/item_lessons_worker"
+        tools:orientation="horizontal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

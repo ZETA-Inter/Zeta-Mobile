@@ -81,7 +81,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/ic_notificationx"
                     tools:ignore="ContentDescription" />
 
                 <ImageButton
@@ -123,14 +123,14 @@
 
                 <ImageView
                     android:id="@+id/podiumBg"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/bg_ranking_podium"
+                    android:layout_width="447dp"
+                    android:layout_height="312dp"
                     android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/bg_ranking_podium"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="ContentDescription" />
 
                 <LinearLayout
@@ -178,8 +178,9 @@
 
                 <LinearLayout
                     android:id="@+id/slotThird"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="107dp"
+                    android:layout_height="103dp"
+                    android:layout_marginEnd="4dp"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:gravity="center_horizontal"
@@ -187,8 +188,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/slotFirst"
                     app:layout_constraintTop_toTopOf="@id/slotFirst"
-                    app:layout_constraintVertical_bias="0.85"
-                    android:layout_marginEnd="8dp">
+                    app:layout_constraintVertical_bias="0.811">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgThird"
@@ -205,7 +205,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Gabriel Claro Ferreiro"
+                        android:text="       Gabriel Claro Ferreiro"
                         android:textAlignment="center"
                         android:textColor="@color/black"
                         android:textSize="14sp"
@@ -222,8 +222,9 @@
 
                 <LinearLayout
                     android:id="@+id/slotSecond"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="88dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="8dp"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:gravity="center_horizontal"
@@ -231,8 +232,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/slotFirst"
                     app:layout_constraintTop_toTopOf="@id/slotFirst"
-                    app:layout_constraintVertical_bias="0.65"
-                    android:layout_marginStart="8dp">
+                    app:layout_constraintVertical_bias="0.65">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgSecond"

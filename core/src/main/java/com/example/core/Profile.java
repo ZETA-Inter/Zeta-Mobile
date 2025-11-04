@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -148,11 +150,30 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         recyclerCursosAndamento.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerCursosAndamento.setAdapter(andamentoLessonsAdapter);
 
+        ImageView btComeback = view.findViewById(R.id.btComeback);
+
+        btComeback.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(Profile.this);
+            if (!nav.popBackStack()) {
+                requireActivity().onBackPressed();
+            }
+        });
+
+
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
         int id = sp.getInt("user_id", -1);
         String kind = sp.getString("tipo_usuario", null);
         String name = sp.getString("name", "Usuário");
         String imageUrl = sp.getString("image_url", null);
+
+        Uri data = getActivity().getIntent().getData();
+        if (data != null) {
+            Log.d(TAG, "Bundle Worker");
+            id = Integer.parseInt(data.getQueryParameter("workerId"));
+            kind = data.getQueryParameter("tipoUsuario");
+            name = data.getQueryParameter("name");
+            imageUrl = data.getQueryParameter("imageUrl");
+        }
 
         if (id <= 0 || kind == null) {
             Toast.makeText(getContext(), "Parâmetros inválidos", Toast.LENGTH_SHORT).show();
