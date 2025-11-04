@@ -1,6 +1,7 @@
 package com.example.core.network;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ public final class RetrofitClientPostgres {
     private static volatile Retrofit retrofit;
     private static volatile ApiPostgresClient api;
 
+
+
     private RetrofitClientPostgres() {}
 
     @NonNull
@@ -44,6 +47,7 @@ public final class RetrofitClientPostgres {
                 if (retrofit == null) {
                     String baseUrl = ensureSlash(context.getString(R.string.core_api_base_url));
                     final String tokenPref = context.getString(R.string.core_api_token);
+
 
                     Log.d("TOKEN_DEBUG", "Token configurado: " + tokenPref);
 
@@ -78,7 +82,7 @@ public final class RetrofitClientPostgres {
         return retrofit;
     }
 
-    private static String ensureSlash(String url) {
+    public static String ensureSlash(String url) {
         if (url == null || url.trim().isEmpty()) {
             throw new IllegalStateException("core_api_base_url vazio. Configure via resValue no build.gradle do :core.");
         }

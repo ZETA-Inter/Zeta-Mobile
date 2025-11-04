@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <cache-path name="images" path="images/"/>
-    <external-cache-path name="ext_images" path="images/"/>
+    <!-- cobre .../Android/data/<appId>/files/Pictures -->
+    <external-files-path
+        name="pics"
+        path="Pictures/" />
+    <!-- (opcional) cobre toda a pasta files -->
+    <external-files-path name="all" path="."/>
 </paths>

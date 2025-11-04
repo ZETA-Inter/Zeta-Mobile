@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 
 import com.example.core.Login;
+import com.example.core.R;
 import com.example.core.Repository;
 import com.example.core.TipoUsuario;
 import com.example.core.client.ApiPostgresClient;
@@ -171,10 +172,23 @@ public class AuthAdapter {
                             .putInt("user_id", (user.getId() != null) ? user.getId() : -1)
                             .putString("name", user.getName())
                             .putString("email", user.getEmail())
-                            .putString("image_url", user.getEmail())
+                            .putString("image_url", user.getImageUrl())
                             .putString("tipo_usuario", (tipoUsuario != null) ? tipoUsuario.name() : "")
+                            .putString("token", c.getString(R.string.core_api_token))
                             .apply();
 
+                    // Leia de volta para conferir
+                    int savedId = prefs.getInt("user_id", -1);
+                    android.util.Log.d("LOGIN", "user_id salvo = " + savedId +
+                            ", tipo_usuario=" + prefs.getString("tipo_usuario", "?"));
+
+                    // Notificação pós login
+                    String title = "Bem-vindo!";
+                    String mensagem = "Olá " + user.getName() + ", aproveite seu primeiro acesso.";
+                    NotificationHelper.sendNotification(c, title, mensagem, new Intent(c, Login.class));
+                    Log.d(TAG, "Notificação de Login enviada com sucesso!");
+
+                    Toast.makeText(c, "Sessão salva com sucesso!", Toast.LENGTH_SHORT).show();
                     callback.onLoginSuccess();
                 } else {
                     callback.onLoginFailure("Erro ao buscar usuário: " + resp.code());

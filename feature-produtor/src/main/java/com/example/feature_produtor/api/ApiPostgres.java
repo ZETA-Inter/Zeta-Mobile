@@ -1,7 +1,7 @@
 package com.example.feature_produtor.api;
 
-import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.feature_produtor.dto.request.ProgressAddRequestDTO;
+import com.example.core.dto.response.ProgramWorkerResponseDTO;
 import com.example.feature_produtor.dto.response.WorkerProgressResponse;
 import com.example.feature_produtor.model.postegres.Goal;
 import com.example.core.model.Program;
@@ -20,13 +20,13 @@ import retrofit2.http.Query;
 
 public interface ApiPostgres {
 
-    @GET("/api/programs/list-all")
+    @GET("api/programs/list-all")
     Call<List<Program>> getAllPrograms();
 
-    @GET("/api/programs/find-id/{id}")
+    @GET("api/programs/find-id/{id}")
     Call<Program> getProgramById(@Path("id") Integer id);
 
-    @GET("/api/segments/list-segments")
+    @GET("api/segments/list-segments")
     Call<List<Segment>> getAllSegments();
 
     @GET("/api/workers/list-actual-programs-by-id/{id}")
@@ -35,6 +35,8 @@ public interface ApiPostgres {
 
     @GET("api/goals/list-goals-by-worker-id/{workerId}")
     Call<List<Goal>> getGoalsByWorkerId(@Path("workerId") int id);
+
+
 
     @GET("api/goals/list-goals-by-company/{workerId}/{companyId}")
     Call<Goal> getGoalsByCompany(@Path("companyId") int companyId);

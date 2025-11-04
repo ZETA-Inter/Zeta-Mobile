@@ -10,6 +10,7 @@ public class CompanyResponse extends UserResponse {
     @SerializedName("plan_name")
     private String planName;
 
+    @SerializedName("image_url")
     private String imageUrl;
 
     public CompanyResponse() {}
@@ -31,8 +32,8 @@ public class CompanyResponse extends UserResponse {
         this.planName = planName;
     }
 
-    public Collection<Object> getImageUrl() {
-        return Collections.singleton(imageUrl);
+    public String getImageUrl() {
+        return Collections.singleton(imageUrl).toString();
     }
 
     public void setImageUrl(String imageUrl) {

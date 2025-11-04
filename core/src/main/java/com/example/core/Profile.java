@@ -1,5 +1,7 @@
 package com.example.core;
 
+import static com.example.core.network.RetrofitClientPostgres.ensureSlash;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -54,8 +56,10 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -64,6 +68,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLessonClickListener {
 
@@ -130,7 +136,7 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        api = RetrofitClientPostgres.getApiService(getContext());
+        api = RetrofitClientPostgres.getApiService(requireContext());
 
         photo = view.findViewById(R.id.photo);
 
@@ -401,7 +407,40 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
         CompanyPatchRequest req = new CompanyPatchRequest();
         req.setImageUrl(imageUrl);
 
-        api.patchCompany(companyId, req).enqueue(new retrofit2.Callback<CompanyResponse>() {
+        String baseUrl = ensureSlash(requireContext().getString(R.string.core_api_base_url));
+        final String tokenPref = requireContext().getString(R.string.core_api_token);
+
+        Log.d("TOKEN_DEBUG", "Token configurado: " + tokenPref);
+
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request original = chain.request();
+                        Request.Builder b = original.newBuilder()
+                                .header("Accept", "application/json");
+                        if (tokenPref != null && !tokenPref.trim().isEmpty()) {
+                            b.header("Authorization", "Bearer " + tokenPref.trim());
+                        }
+
+                        Request request = b.method(original.method(), original.body()).build();
+                        Log.d("Retrofit", "Headers enviados: " + request.headers());
+                        return chain.proceed(request);                                }
+                })
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        ApiPostgresClient apiPostgresClient = retrofit.create(ApiPostgresClient.class);
+
+        apiPostgresClient.patchCompany(companyId, req).enqueue(new retrofit2.Callback<CompanyResponse>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<CompanyResponse> call, @NonNull retrofit2.Response<CompanyResponse> response) {
                 if (response.isSuccessful()) {
@@ -415,6 +454,12 @@ public class Profile extends Fragment implements LessonsCardProgressAdapter.OnLe
                     });
                 } else {
                     Log.e(TAG, "PATCH company falhou: " + response.code());
+                    try {
+                        Log.e(TAG, "Corpo de erro: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     runOnUiThreadSafe(() -> Toast.makeText(getContext(), "Erro ao salvar imagem no backend (Company)", Toast.LENGTH_SHORT).show());
                 }
             }

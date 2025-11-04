@@ -1,10 +1,17 @@
 package com.example.core.dto.response;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
 public class UserResponse {
 
     private Integer id;
     private String name;
     private String email;
+
+    @SerializedName("image_url")
+    private String imageUrl;
 
     public UserResponse() {}
 
@@ -36,5 +43,13 @@ public class UserResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

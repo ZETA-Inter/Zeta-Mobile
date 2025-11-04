@@ -32,4 +32,12 @@
             app:uri="app://Company/WorkerList" />
     </fragment>
 
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="com.example.feature_fornecedor.SettingsFragment">
+        <deepLink
+            android:id="@+id/SettingsFragmentDeepLink"
+            app:uri="app://Company/SettingsFragment" />
+    </fragment>
+
 </navigation>
