@@ -12,4 +12,7 @@
     <string name="core_cloudinary_api_secret"> RbVePIbxiPfnkmtfaLVvLwYMLr0</string>
     <string name="profile_image">profile_image</string>
     <string name="tirar_foto">tirar_foto</string>
+
+    <string name="back">back</string>
+
 </resources>

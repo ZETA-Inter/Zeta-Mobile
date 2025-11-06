@@ -1,4 +1,4 @@
-package com.example.feature_fornecedor;
+package com.example.core;
 
 import android.content.Context;
 import android.content.Intent;

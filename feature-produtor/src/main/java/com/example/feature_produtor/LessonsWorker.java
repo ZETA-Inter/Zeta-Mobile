@@ -435,17 +435,27 @@ public class LessonsWorker extends Fragment implements LessonsCardAdapter.OnLess
     }
 
     private void setupClickListeners() {
-        NavController nav = NavHostFragment.findNavController(this);
-        Uri deeplink = Uri.parse("app://Core/Profile");
+        perfil.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(Uri.parse("app://Core/Profile"))
+        );
 
-        perfil.setOnClickListener(v -> nav.navigate(deeplink));
+        notificacao.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.CardNotificacao)
+        );
 
-        notificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
-
+        // >>> CONFIGURAÇÕES (imageView5) <<<
         config.setOnClickListener(v -> {
-            // Implementar navegação
+            NavController nav = Navigation.findNavController(v);
+            try {
+                // 1) Por ID do destino, se existir no seu nav_graph
+                nav.navigate(R.id.SettingsFragment);
+            } catch (Exception e) {
+                // 2) Fallback por deep link (garanta o deep link no grafo)
+                nav.navigate(Uri.parse("app://Worker/Settings"));
+            }
         });
     }
+
 
     @Override
     public void onDestroyView() {

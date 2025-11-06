@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.example.feature_fornecedor.SettingsFragment">
+        android:name="com.example.core.SettingsFragment">
         <deepLink
             android:id="@+id/SettingsFragmentDeepLink"
             app:uri="app://Company/SettingsFragment" />

@@ -100,6 +100,22 @@ public class WorkerListPageCompany extends Fragment {
             nav.navigate(deeplink);
         });
 
+        // Botão de Settings (engrenagem do header)
+        ImageView btnSettings = view.findViewById(R.id.btnSettings);
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                NavController nav = Navigation.findNavController(v);
+                try {
+                    // Caminho principal por ID do destino
+                    nav.navigate(R.id.SettingsFragment);
+                } catch (Exception e) {
+                    // Fallback por deep link (requer <deepLink app:uri="app://Fornecedor/Settings" />)
+                    nav.navigate(Uri.parse("app://Fornecedor/Settings"));
+                }
+            });
+        }
+
+
         Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
 
         iconNotificacao.setOnClickListener(v->{

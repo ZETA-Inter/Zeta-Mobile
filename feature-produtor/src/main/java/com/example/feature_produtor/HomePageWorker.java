@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -432,18 +433,33 @@ public class HomePageWorker extends Fragment
     }
 
     // clicks da nav bar superior
+    // clicks da nav bar superior
     private void setupClickListeners() {
-        NavController nav = NavHostFragment.findNavController(this);
+        // Use o NavController via a view do clique (mais estável)
+        perfil.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(Uri.parse("app://Core/Profile"))
+        );
 
+        boxIa.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.ChatBotWorker)
+        );
 
-        Uri deeplink = Uri.parse("app://Core/Profile");
-        perfil.setOnClickListener(v -> nav.navigate(deeplink));
-        boxIa.setOnClickListener(v -> nav.navigate(R.id.ChatBotWorker));
+        // >>> CONFIGURAÇÕES (icon_configuracoes) <<<
+        iconConfig.setOnClickListener(v -> {
+            NavController nav = Navigation.findNavController(v);
+            try {
+                // 1) Por ID do destino (se existir no seu nav_graph)
+                nav.navigate(R.id.SettingsFragment);
+            } catch (Exception e) {
+                // 2) Fallback por deep link (adicione <deepLink app:uri="app://Worker/Settings" /> no destino)
+                nav.navigate(Uri.parse("app://Worker/Settings"));
+            }
+        });
 
-        iconConfig.setOnClickListener(v -> { nav.navigate(R.id.FlashCardStudy);});
-        iconNotificacao.setOnClickListener(v -> nav.navigate(R.id.CardNotificacao));
-
-
+        iconNotificacao.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.CardNotificacao)
+        );
     }
+
 
 }
