@@ -255,9 +255,9 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCadastrar"
                     style="@style/NoStrokeButton"
-                    android:layout_width="315dp"
-                    android:layout_height="68dp"
-                    android:layout_marginTop="84dp"
+                    android:layout_width="821dp"
+                    android:layout_height="79dp"
+                    android:layout_marginTop="136dp"
                     android:text="Cadastrar"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -265,7 +265,7 @@
                     app:backgroundTint="@color/primary_dark"
                     app:cornerRadius="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.494"
+                    app:layout_constraintHorizontal_bias="0.505"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvLegal" />
 

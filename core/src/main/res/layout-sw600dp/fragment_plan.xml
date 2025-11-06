@@ -15,21 +15,24 @@
         android:layout_height="match_parent">
 
         <!-- IMAGEM/LOGO - Agora faz parte da cadeia vertical e tem largura máxima -->
+
+        <!-- TÍTULO PRINCIPAL - Largura limitada a 500dp -->
+
         <ImageView
             android:id="@+id/imgLogo"
-            android:layout_width="311dp"
-            android:layout_height="219dp"
+            android:layout_width="275dp"
+            android:layout_height="203dp"
             android:layout_marginTop="24dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/boinoite"
             app:layout_constraintBottom_toTopOf="@id/tvTitle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.525"
 
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <!-- TÍTULO PRINCIPAL - Largura limitada a 500dp -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"

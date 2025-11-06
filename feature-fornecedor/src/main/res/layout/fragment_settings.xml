@@ -31,12 +31,13 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Configurações"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/btnBack"
@@ -64,8 +65,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="Notificações"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -92,8 +94,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="Idioma"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -120,8 +123,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="Ajuda"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -145,8 +149,8 @@
             android:text="Sair"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            app:cornerRadius="24dp"
-            app:backgroundTint="@color/error_red" />
+            app:backgroundTint="@color/purple_custom"
+            app:cornerRadius="24dp" />
 
     </LinearLayout>
 

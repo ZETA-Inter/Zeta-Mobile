@@ -15,11 +15,11 @@
             android:id="@+id/icon_meta"
             android:layout_width="39dp"
             android:layout_height="38dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:contentDescription="Voltar"
             android:src="@drawable/voltarchat"
             app:layout_constraintEnd_toStartOf="@+id/titulo_chat"
-            app:layout_constraintHorizontal_bias="0.126"
+            app:layout_constraintHorizontal_bias="0.173"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,7 +27,8 @@
             android:id="@+id/titulo_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="4dp"
             android:text="Chatbot Zeta"
             android:textColor="#333333"
             android:textSize="22sp"
@@ -38,15 +39,15 @@
 
         <ImageView
             android:id="@+id/icon_atividade"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="82dp"
+            android:layout_height="63dp"
+            android:layout_marginBottom="3dp"
             android:contentDescription="Ícone Chatbot"
             android:src="@drawable/boichat"
+            app:layout_constraintBottom_toTopOf="@+id/recicler_bot"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.86"
-            app:layout_constraintStart_toEndOf="@+id/titulo_chat"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="0.814"
+            app:layout_constraintStart_toEndOf="@+id/titulo_chat" />
 
         <View
             android:id="@+id/separator"
@@ -67,19 +68,21 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"> <EditText
-            android:id="@+id/editMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/edittext_bg"
-            android:hint="   Mensagem..."
-            android:inputType="textMultiLine|textCapSentences"
-            android:maxLines="5"
-            android:minHeight="48dp"
-            android:scrollbars="vertical"
-            android:textColor="#000"
-            android:textColorHint="#888" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <EditText
+                android:id="@+id/editMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_bg"
+                android:hint="   Mensagem..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="5"
+                android:minHeight="48dp"
+                android:scrollbars="vertical"
+                android:textColor="#000"
+                android:textColorHint="#888" />
 
             <ImageButton
                 android:id="@+id/btnSend"
