@@ -322,7 +322,7 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
                     // Chama onStepClick, que iniciará o processo e navegará.
                     onStepClick(lessonToStart, stepNumberToStart);
                 } else {
-                    Toast.makeText(getContext(), "Progresso inválido. Por favor, reinicie o aplicativo.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Curso já completado!.", Toast.LENGTH_LONG).show();
                 }
 
             } else {
