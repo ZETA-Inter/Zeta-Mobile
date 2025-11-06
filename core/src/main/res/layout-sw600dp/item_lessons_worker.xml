@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="370dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="20dp"
     app:cardCornerRadius="15dp">
@@ -14,8 +14,10 @@
 
         <TextView
             android:id="@+id/cursoDescr"
-            android:layout_width="352dp"
-            android:layout_height="64dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:fontFamily="@font/poppins_medium"
             android:text="decricao"
             android:textColor="#3A3A3A"
@@ -27,9 +29,11 @@
 
         <TextView
             android:id="@+id/cursoTitulo"
-            android:layout_width="343dp"
-            android:layout_height="39dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
             android:fontFamily="@font/poppins_semibold"
             android:text="Titulo"
             android:textColor="#3A3A3A"
@@ -43,11 +47,11 @@
         <ProgressBar
             android:id="@+id/percentageBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="334dp"
-            android:layout_height="9dp"
-            android:layout_marginStart="22dp"
-            android:layout_marginEnd="14dp"
-            android:layout_marginBottom="19dp"
+            android:layout_width="0dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
             android:progress="5"
             android:progressDrawable="@drawable/progress_bar"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -56,17 +60,19 @@
 
         <TextView
             android:id="@+id/text_porcentagem"
-            android:layout_width="28dp"
-            android:layout_height="20dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/poppins_medium"
             android:text="5%"
             android:textColor="#3C3C3C"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/percentageBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.061"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cursoDescr"
+            app:layout_constraintVertical_bias="0.861" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

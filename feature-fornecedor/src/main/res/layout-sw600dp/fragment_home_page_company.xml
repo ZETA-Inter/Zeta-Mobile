@@ -134,7 +134,8 @@
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="0dp"
                     android:background="@android:color/transparent"
                     android:clipToPadding="false"
                     android:overScrollMode="never"
@@ -151,12 +152,12 @@
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/kpiCoursesCard"
                             android:layout_width="0dp"
-                            android:layout_height="120dp"
+                            android:layout_height="140dp"
                             android:layout_marginEnd="12dp"
                             android:layout_weight="1"
+                            app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="18dp"
-                            app:cardElevation="0dp"
-                            app:cardBackgroundColor="@color/white">
+                            app:cardElevation="0dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -169,28 +170,28 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Conclusão Média - Cursos"
-                                    android:textStyle="bold"
+                                    android:textColor="@color/black"
                                     android:textSize="16sp"
-                                    android:textColor="@color/black"/>
+                                    android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tvKpiCoursesDesc"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
                                     android:text="Valor médio da conclusão dos cursos de seus produtores"
-                                    android:textSize="12sp"
                                     android:textColor="@color/label_grey"
-                                    android:layout_marginTop="4dp"/>
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/tvKpiCoursesValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="24dp"
                                     android:text="--%"
-                                    android:textStyle="bold"
-                                    android:textSize="24sp"
                                     android:textColor="@color/black"
-                                    android:layout_marginTop="10dp"/>
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -198,47 +199,47 @@
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/kpiPointsCard"
                             android:layout_width="0dp"
-                            android:layout_height="120dp"
-                            android:layout_weight="1"
+                            android:layout_height="140dp"
                             android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
                             app:cardCornerRadius="18dp"
                             app:cardElevation="0dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:background="@color/primary_dark"
                                 android:orientation="vertical"
-                                android:padding="14dp"
-                                android:background="@color/primary_dark">
+                                android:padding="14dp">
 
                                 <TextView
                                     android:id="@+id/tvKpiPointsTitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Pontuação média"
-                                    android:textStyle="bold"
+                                    android:textColor="@color/white"
                                     android:textSize="16sp"
-                                    android:textColor="@color/white"/>
+                                    android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tvKpiPointsDesc"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Média de pontos dos seus produtores"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/white"
+                                    android:layout_marginTop="4dp"
                                     android:alpha="0.85"
-                                    android:layout_marginTop="4dp"/>
+                                    android:text="Média de pontos dos seus produtores"
+                                    android:textColor="@color/white"
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/tvKpiPointsValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="36dp"
                                     android:text="--"
-                                    android:textStyle="bold"
-                                    android:textSize="24sp"
                                     android:textColor="@color/white"
-                                    android:layout_marginTop="16dp"/>
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -246,11 +247,11 @@
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/kpiGoalsCard"
                             android:layout_width="0dp"
-                            android:layout_height="120dp"
+                            android:layout_height="140dp"
                             android:layout_weight="1"
+                            app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="18dp"
-                            app:cardElevation="0dp"
-                            app:cardBackgroundColor="@color/white">
+                            app:cardElevation="0dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -263,28 +264,28 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Porcentagem de Conclusão - Metas"
-                                    android:textStyle="bold"
+                                    android:textColor="@color/black"
                                     android:textSize="16sp"
-                                    android:textColor="@color/black"/>
+                                    android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tvKpiGoalsDesc"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
                                     android:text="Porcentagem das metas concluídas dos seus produtores."
-                                    android:textSize="12sp"
                                     android:textColor="@color/label_grey"
-                                    android:layout_marginTop="4dp"/>
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/tvKpiGoalsValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="24dp"
                                     android:text="--%"
-                                    android:textStyle="bold"
-                                    android:textSize="24sp"
                                     android:textColor="@color/black"
-                                    android:layout_marginTop="10dp"/>
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
