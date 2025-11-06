@@ -32,12 +32,12 @@ public class MessageActivityAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (viewType == Message.TYPE_USER) {
             // Layout do USUÁRIO (balão à direita)
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.msg_user, parent, false);
+                    .inflate(R.layout.msg_user_activity, parent, false);
             return new UserMessageViewHolder(view);
         } else {
             // Layout do CHATBOT (balão à esquerda)
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.msg_bot, parent, false);
+                    .inflate(R.layout.msg_bot_activity, parent, false);
             return new BotMessageViewHolder(view);
         }
     }
