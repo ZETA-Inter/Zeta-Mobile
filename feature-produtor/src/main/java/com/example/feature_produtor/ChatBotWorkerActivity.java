@@ -18,7 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.feature_produtor.api.ApiIA;
 import com.example.core.network.RetrofitClientIA;
-import com.example.feature_produtor.adapter.MessageAdapter;
+import com.example.feature_produtor.adapter.MessageActivityAdapter;
 import com.example.feature_produtor.dto.request.ChatRequest;
 import com.example.feature_produtor.dto.response.ChatResponse;
 import com.example.feature_produtor.model.chatbot.Message;
@@ -35,7 +35,7 @@ public class ChatBotWorkerActivity extends Fragment {
     private EditText editMessage;
     private ImageButton btnSend;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private MessageActivityAdapter messageAdapter;
     private List<Message> messageList;
     private ApiIA apiService;
 
@@ -64,7 +64,7 @@ public class ChatBotWorkerActivity extends Fragment {
 
         // 2. Configuração do RecyclerView
         messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageList);
+        messageAdapter = new MessageActivityAdapter(messageList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);

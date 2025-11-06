@@ -18,9 +18,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.feature_produtor.api.ApiIA;
 import com.example.core.network.RetrofitClientIA;
-import com.example.feature_produtor.adapter.MessageAdapter;
+import com.example.feature_produtor.adapter.MessageActivityAdapter;
 import com.example.feature_produtor.dto.request.ChatRequest;
+import com.example.feature_produtor.dto.request.SearchRequest;
 import com.example.feature_produtor.dto.response.ChatResponse;
+import com.example.feature_produtor.dto.response.SearchResponse;
 import com.example.feature_produtor.model.chatbot.Message;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class ChatBotWorker extends Fragment {
     private EditText editMessage;
     private ImageButton btnSend;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private MessageActivityAdapter messageAdapter;
     private List<Message> messageList;
     private ApiIA apiService;
 
@@ -64,7 +66,7 @@ public class ChatBotWorker extends Fragment {
 
         // 2. Configuração do RecyclerView
         messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageList);
+        messageAdapter = new MessageActivityAdapter(messageList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
@@ -117,14 +119,14 @@ public class ChatBotWorker extends Fragment {
         recyclerView.scrollToPosition(messageList.size() - 1);
 
         // 3. Faz a chamada à API
-        ChatRequest request = new ChatRequest(messageText);
-        Call<ChatResponse> call = apiService.searchPrograms(request);
+        SearchRequest request = new SearchRequest(messageText);
+        Call<SearchResponse> call = apiService.searchPrograms(request);
 
         setSending(true);
 
-        call.enqueue(new Callback<ChatResponse>() {
+        call.enqueue(new Callback<SearchResponse>() {
             @Override
-            public void onResponse(Call<ChatResponse> call, Response<ChatResponse> response) {
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 setSending(false);
 
                 String finalResponse;
@@ -140,7 +142,7 @@ public class ChatBotWorker extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ChatResponse> call, Throwable t) {
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
                 setSending(false);
                 String errorResponse = "Erro de conexão. Verifique sua internet ou tente novamente.";
                 Log.e("ChatBot", "Erro de rede: " + t.getMessage(), t);
