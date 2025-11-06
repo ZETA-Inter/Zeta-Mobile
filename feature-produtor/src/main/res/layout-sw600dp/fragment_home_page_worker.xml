@@ -70,13 +70,13 @@
 
         <ImageView
             android:id="@+id/boxIA"
-            android:layout_width="290dp"
-            android:layout_height="117dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
             android:src="@drawable/ia_barra"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.413"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/icon_notificacao"
+            app:layout_constraintStart_toEndOf="@+id/icon_perfil"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -89,7 +89,7 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.288"
+            app:layout_constraintHorizontal_bias="0.205"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -98,7 +98,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Olá, Usuário"
+            android:text="Olá!"
             android:textColor="#320453"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:text="Acompanhe seu progresso e comece novas jornadas"
             android:textColor="#808080"
-            android:textSize="15sp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
             app:layout_constraintTop_toBottomOf="@id/text_ola_usuario" />
@@ -307,7 +307,7 @@
             android:id="@+id/recycler_cursos_andamento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
             android:orientation="horizontal"
             android:paddingStart="16dp"
@@ -325,7 +325,7 @@
             android:id="@+id/text_novos_conteudos"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="235dp"
+            android:layout_marginTop="250dp"
             android:text="Cursos concluídos"
             android:textColor="#070707"
             android:textSize="18sp"

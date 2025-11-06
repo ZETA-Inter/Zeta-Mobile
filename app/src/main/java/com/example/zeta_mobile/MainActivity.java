@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 // Supondo que o ID do seu LoginFragment no nav_graph é 'loginFragment'
                 // Você DEVE verificar o nome correto no seu nav_graph.xml.
                 assert navController != null;
-                navController.navigate(com.example.core.R.id.Login);
+                navController.navigate(com.example.core.R.id.SplashScreen);
             } catch (Exception e) {
                 Log.e("MainActivity", "Falha ao navegar para LoginFragment: " + e.getMessage(), e);
             }

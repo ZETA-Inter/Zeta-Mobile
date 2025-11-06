@@ -2,6 +2,7 @@ package com.example.feature_produtor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -296,7 +297,11 @@ public class StepsLessonWorker extends Fragment implements StepsLessonAdapter.On
 
 
     private void setupClickListeners(Integer programId) {
-        perfil.setOnClickListener(v -> Navigation.findNavController(v).navigate(com.example.core.R.id.Profile));
+
+        perfil.setOnClickListener(v -> {
+            Uri deeplink = Uri.parse("app://Core/Profile");
+            Navigation.findNavController(v).navigate(deeplink);
+        });
 
         config.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Configurações clicadas", Toast.LENGTH_SHORT).show();

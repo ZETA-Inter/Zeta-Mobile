@@ -74,7 +74,13 @@
         android:name="com.example.feature_produtor.FlashCardStudy">
     </fragment>
 
-
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="com.example.core.SettingsFragment">
+        <deepLink
+            android:id="@+id/SettingsFragmentDeepLink"
+            app:uri="app://Worker/SettingsFragment" />
+    </fragment>
 
     <dialog
         android:id="@+id/CardNotificacao"

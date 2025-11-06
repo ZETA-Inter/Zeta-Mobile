@@ -112,27 +112,57 @@ public class AuthAdapter {
         }
     }
 
-    // ================================================================
-    // As funções abaixo são as que você já tinha. Mantive para compatibilidade
-    // com o restante do app. Ajuste conforme seu uso real.
-    // ================================================================
 
     public void login(TipoUsuario tipoUsuario, String email, String senha, Context c, LoginCallback callback) {
-        mAuth.signInWithEmailAndPassword(email, senha)
+        String e = email == null ? "" : email.trim();
+        String p = senha == null ? "" : senha.trim();
+
+        if (e.isEmpty() || p.isEmpty()) {
+            callback.onLoginFailure("Informe e-mail e senha.");
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(e, p)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = (task.getResult() != null && task.getResult().getUser() != null)
                                 ? task.getResult().getUser().getUid() : null;
                         if (uid != null) {
-                            verificarPerfil(uid, tipoUsuario, c, email, callback);
+                            verificarPerfil(uid, tipoUsuario, c, e, callback);
                         } else {
                             callback.onLoginFailure("Falha ao obter UID do usuário.");
                         }
                     } else {
-                        callback.onLoginFailure("Erro ao realizar login.");
+                        Exception ex = task.getException();
+                        android.util.Log.e("AUTH", "signIn failed", ex);
+                        callback.onLoginFailure(mapFirebaseAuthError(ex));
                     }
+                })
+                .addOnFailureListener(ex -> {
+                    android.util.Log.e("AUTH", "signIn exception", ex);
+                    callback.onLoginFailure(mapFirebaseAuthError(ex));
                 });
     }
+
+    private String mapFirebaseAuthError(Exception ex) {
+        if (ex == null) return "Erro ao realizar login.";
+        String msg = ex.getMessage() != null ? ex.getMessage() : "";
+        // Casos frequentes
+        if (ex instanceof com.google.firebase.auth.FirebaseAuthInvalidUserException) {
+            return "Usuário não encontrado ou desativado.";
+        }
+        if (ex instanceof com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
+            // Pode ser senha incorreta ou e-mail mal formatado
+            if (msg.toLowerCase().contains("password")) return "Senha incorreta.";
+            if (msg.toLowerCase().contains("email"))    return "E-mail inválido.";
+            return "Credenciais inválidas.";
+        }
+        if (ex instanceof com.google.firebase.FirebaseNetworkException) {
+            return "Sem conexão. Verifique sua internet.";
+        }
+        return "Erro ao realizar login: " + msg;
+    }
+
 
     private final com.google.firebase.firestore.FirebaseFirestore mFirestore =
             com.google.firebase.firestore.FirebaseFirestore.getInstance();

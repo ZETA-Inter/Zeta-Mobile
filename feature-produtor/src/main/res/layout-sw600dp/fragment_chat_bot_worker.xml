@@ -39,9 +39,15 @@
 
         <ImageView
             android:id="@+id/icon_atividade"
+<<<<<<< HEAD
             android:layout_width="82dp"
             android:layout_height="63dp"
             android:layout_marginBottom="3dp"
+=======
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="4dp"
+>>>>>>> 8fc9fb7f0e2dfa9d2aca9178023427f3cc215985
             android:contentDescription="Ícone Chatbot"
             android:src="@drawable/boichat"
             app:layout_constraintBottom_toTopOf="@+id/recicler_bot"

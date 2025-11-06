@@ -72,7 +72,7 @@ public class LessonsCardProgressAdapter extends ListAdapter<ProgramWorkerRespons
             description.setText(item.getDescription());
 
             final int progress = item.getProgressPercentage();
-            percentage.setText(String.valueOf(progress));
+            percentage.setText(String.valueOf(progress) + "%");
             percentageBar.setProgress(progress);
             itemView.setOnClickListener(v -> listener.onLessonClick(item));
         }

@@ -116,6 +116,22 @@ public class RankingPageCompany extends Fragment {
             nav.navigate(deeplink);
         });
 
+        // Botão de Settings (engrenagem no header)
+        ImageView btnSettings = v.findViewById(R.id.btnSettings);
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(view -> {
+                NavController nav = Navigation.findNavController(view);
+                try {
+                    // navega por ID do destino
+                    nav.navigate(R.id.SettingsFragment);
+                } catch (Exception e) {
+                    // fallback por deep link (requer <deepLink app:uri="app://Fornecedor/Settings" /> no grafo)
+                    nav.navigate(Uri.parse("app://Fornecedor/Settings"));
+                }
+            });
+        }
+
+
         Uri deeplink = Uri.parse("app://Worker/CardNotificacao");
 
         iconNotificacao.setOnClickListener(view->{

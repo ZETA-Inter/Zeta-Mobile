@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -88,6 +89,20 @@ public class GoalsPageWorker extends Fragment implements GoalsAdapter.OnGoalLong
         //se não houver meta atribuida a esse worker esse card fica visível
         loadingGoalsContainer = view.findViewById(R.id.loading_goals_container);
         iconNotificacao = view.findViewById(R.id.icon_notificacao_goals);
+
+        ImageView iconConfigGoals = view.findViewById(R.id.icon_configuracoes_goals);
+        if (iconConfigGoals != null) {
+            iconConfigGoals.setOnClickListener(v -> {
+                NavController nav = Navigation.findNavController(v);
+                try {
+                    // Caminho principal por ID do destino (se existir no seu nav_graph)
+                    nav.navigate(R.id.SettingsFragment);
+                } catch (Exception e) {
+                    // Fallback por deep link (lembre de declarar o deep link no grafo)
+                    nav.navigate(Uri.parse("app://Worker/Settings"));
+                }
+            });
+        }
 
         ImageView perfil = view.findViewById(R.id.icon_perfil_goals);
         SharedPreferences sp = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);

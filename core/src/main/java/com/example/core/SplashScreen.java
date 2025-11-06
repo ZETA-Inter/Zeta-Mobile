@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,76 +19,83 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.core.databinding.FragmentSplashScreenBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Objects;
 
 public class SplashScreen extends Fragment {
 
     private static final long SPLASH_DELAY = 1200L; // 1.2s
     private FragmentSplashScreenBinding binding;
 
+    // Guardamos handler e runnable para poder cancelar no onDestroyView()
+    private final Handler handler = new Handler();
+    private final Runnable navigateRunnable = new Runnable() {
+        @Override public void run() {
+            if (!isAdded() || binding == null) return;
+
+            // Resolva o NavController pela VIEW (mais seguro aqui)
+            View root = binding.getRoot();
+            NavController nav = Navigation.findNavController(root);
+
+            // Evita navegação múltipla se já saiu do Splash
+            if (nav.getCurrentDestination() == null ||
+                    nav.getCurrentDestination().getId() != R.id.SplashScreen) {
+                return;
+            }
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            try {
+                if (user != null) {
+                    String userType = getUserType();
+                    if ("WORKER".equalsIgnoreCase(userType)) {
+                        nav.navigate(Uri.parse("app://Worker/Home"));
+                    } else if ("COMPANY".equalsIgnoreCase(userType)) {
+                        nav.navigate(Uri.parse("app://Company/Home"));
+                    } else {
+                        nav.navigate(R.id.FirstPage);
+                    }
+                } else {
+                    // Volta limpando o Splash da pilha
+                    NavOptions options = new NavOptions.Builder()
+                            .setPopUpTo(R.id.SplashScreen, true)
+                            .build();
+                    nav.navigate(R.id.FirstPage, null, options);
+                }
+            } catch (Exception e) {
+                // Fallback seguro
+                NavOptions options = new NavOptions.Builder()
+                        .setPopUpTo(R.id.SplashScreen, true)
+                        .build();
+                nav.navigate(R.id.FirstPage, null, options);
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         binding = FragmentSplashScreenBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        return binding.getRoot();
+    }
 
-        // Status bar da mesma cor do fundo
-        if (getActivity() != null) {
-            getActivity().getWindow()
-                    .setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.bg_light));
-        }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Status bar combinando com o fundo
+        requireActivity().getWindow().setStatusBarColor(
+                ContextCompat.getColor(requireContext(), R.color.bg_light));
 
         // Animação do logo
         Animation fade = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in);
         binding.imgLogoSplash.startAnimation(fade);
 
-        // Checa FirebaseUser antes do delay
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        // Delay e redirecionamento
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // Use o 'root' view para encontrar o NavController
-            NavController navController = NavHostFragment.findNavController(this);
-
-            if (user != null) {
-
-                String userType = getUserType();
-                Log.d("SplashScreen", "Tipo de Usuário: " + userType);
-
-                try {
-                    if ("WORKER".equalsIgnoreCase(userType)) {
-                        navController.navigate(Uri.parse("app://Worker/Home"));
-                    } else if ("COMPANY".equalsIgnoreCase(userType)) {
-                        navController.navigate(Uri.parse("app://Company/Home"));
-                    } else {
-                        Log.w("SplashScreen", "Tipo de usuário inválido. Indo para tela inicial.");
-                        navController.navigate(R.id.FirstPage);
-                    }
-                } catch (Exception e) {
-                    Log.e("SplashScreen", "Erro ao navegar: " + e.getMessage(), e);
-                    navController.navigate(R.id.FirstPage);
-                }
-
-            } else {
-                // Navega para a página inicial (Primeira Página)
-                NavOptions options = new NavOptions.Builder()
-                        .setPopUpTo(R.id.SplashScreen, true)
-                        .build();
-
-                navController.navigate(R.id.FirstPage, null, options);
-            }
-
-        }, SPLASH_DELAY);
-
-        return root;
+        // Dispara a navegação DEPOIS da view existir
+        view.postDelayed(navigateRunnable, SPLASH_DELAY);
     }
 
     private String getUserType() {
@@ -98,10 +103,13 @@ public class SplashScreen extends Fragment {
         return prefs.getString("tipo_usuario", "");
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Cancela callbacks pendentes para não rodar sem view
+        handler.removeCallbacksAndMessages(null);
+        View v = binding != null ? binding.getRoot() : null;
+        if (v != null) v.removeCallbacks(navigateRunnable);
         binding = null;
     }
 }

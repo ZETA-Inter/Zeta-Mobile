@@ -13,6 +13,9 @@
     <fragment
         android:id="@+id/FirstPage"
         android:name="com.example.core.FirstPage">
+        <deepLink
+            android:id="@+id/FirstPageDeeplink"
+            app:uri="app://Core/FirstPage" />
     </fragment>
 
     <fragment

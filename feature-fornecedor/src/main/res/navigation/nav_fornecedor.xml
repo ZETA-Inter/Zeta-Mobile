@@ -34,10 +34,18 @@
 
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.example.feature_fornecedor.SettingsFragment">
+        android:name="com.example.core.SettingsFragment">
         <deepLink
             android:id="@+id/SettingsFragmentDeepLink"
             app:uri="app://Company/SettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/Profile"
+        android:name="com.example.core.Profile">
+        <deepLink
+            android:id="@+id/ProfileDeepLink"
+            app:uri="app://Company/Profile" />
     </fragment>
 
 </navigation>

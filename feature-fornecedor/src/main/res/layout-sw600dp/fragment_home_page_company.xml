@@ -134,7 +134,8 @@
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="0dp"
                     android:background="@android:color/transparent"
                     android:clipToPadding="false"
                     android:overScrollMode="never"
@@ -146,56 +147,145 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
+                        <!-- KPI 1 -->
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/kpiCoursesCard"
+                            android:layout_width="0dp"
+                            android:layout_height="140dp"
                             android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="18dp"
                             app:cardElevation="0dp">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:orientation="vertical"
                                 android:padding="14dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Impacto do curso" android:textColor="@color/black" android:textSize="16sp" android:textStyle="bold" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Acompanhe o desenvolvimento" android:textColor="@color/label_grey" android:textSize="12sp" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="62%" android:textColor="@color/black" android:textSize="24sp" android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiCoursesTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Conclusão Média - Cursos"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiCoursesDesc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Valor médio da conclusão dos cursos de seus produtores"
+                                    android:textColor="@color/label_grey"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiCoursesValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="24dp"
+                                    android:text="--%"
+                                    android:textColor="@color/black"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
+                        <!-- KPI 2 -->
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/kpiPointsCard"
+                            android:layout_width="0dp"
+                            android:layout_height="140dp"
                             android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
                             app:cardCornerRadius="18dp"
                             app:cardElevation="0dp">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@color/primary_dark"
                                 android:orientation="vertical"
                                 android:padding="14dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Impacto do curso" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:alpha="0.85" android:text="Acompanhe o desenvolvimento" android:textColor="@color/white" android:textSize="12sp" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="62%" android:textColor="@color/white" android:textSize="24sp" android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiPointsTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Pontuação média"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiPointsDesc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:alpha="0.85"
+                                    android:text="Média de pontos dos seus produtores"
+                                    android:textColor="@color/white"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiPointsValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="36dp"
+                                    android:text="--"
+                                    android:textColor="@color/white"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
+                        <!-- KPI 3 -->
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/kpiGoalsCard"
+                            android:layout_width="0dp"
+                            android:layout_height="140dp"
+                            android:layout_weight="1"
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="18dp"
                             app:cardElevation="0dp">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:orientation="vertical"
                                 android:padding="14dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Impacto do curso" android:textColor="@color/black" android:textSize="16sp" android:textStyle="bold" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Acompanhe o desenvolvimento" android:textColor="@color/label_grey" android:textSize="12sp" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="62%" android:textColor="@color/black" android:textSize="24sp" android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiGoalsTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Porcentagem de Conclusão - Metas"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiGoalsDesc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Porcentagem das metas concluídas dos seus produtores."
+                                    android:textColor="@color/label_grey"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvKpiGoalsValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="24dp"
+                                    android:text="--%"
+                                    android:textColor="@color/black"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
@@ -277,11 +367,62 @@
                         app:backgroundTint="@color/bg_light"/>
                 </LinearLayout>
 
-                <Space
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/chartsScroll"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    android:fillViewport="true"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    android:scrollbars="none"
+                    android:paddingBottom="110dp">
+
+                    <LinearLayout
+                        android:id="@+id/chartsContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Título do gráfico de barras -->
+                        <TextView
+                            android:id="@+id/tvTituloBarChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Quantidade de produtores por curso"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/primary_dark"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="8dp" />
+
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/barChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="240dp"
+                            android:layout_marginBottom="16dp" />
+
+                        <!-- Título do gráfico de linha -->
+                        <TextView
+                            android:id="@+id/tvTituloLineChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Quantidade de metas ativas por curso"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/primary_dark"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="8dp" />
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/lineChartGoals"
+                            android:layout_width="match_parent"
+                            android:layout_height="240dp"
+                            android:layout_marginBottom="8dp" />
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>
