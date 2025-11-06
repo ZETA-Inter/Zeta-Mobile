@@ -213,12 +213,12 @@ public class Register extends Fragment {
 
         if (tipo == TipoUsuario.WORKER) {
             et.setHint("Digite seu CPF");
-            MaskUtils.applyMaxDigits(et, 11);
+            //MaskUtils.applyMaxDigits(et, 14);
             docMaskWatcher = new MaskUtils.SimpleMaskTextWatcher(et, "###.###.###-##", 11);
             et.addTextChangedListener(docMaskWatcher);
         } else {
             et.setHint("Digite seu CNPJ");
-            MaskUtils.applyMaxDigits(et, 14);
+            //MaskUtils.applyMaxDigits(et, 18);
             docMaskWatcher = new MaskUtils.SimpleMaskTextWatcher(et, "##.###.###/####-##", 14);
             et.addTextChangedListener(docMaskWatcher);
         }
