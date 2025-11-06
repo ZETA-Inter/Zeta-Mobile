@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.core.Profile;
+import com.example.core.dto.response.UserResponse;
 import com.example.core.network.RetrofitClientPostgres;
 import com.example.feature_fornecedor.ListPage.ListAdapter;
 import com.example.feature_fornecedor.ListPage.ListAPI;
@@ -88,17 +89,26 @@ public class WorkerListPageCompany extends Fragment {
         }
 
         imgProfile.setOnClickListener(v -> {
-            int companyId = sp.getInt("user_id", -1);
-            if (companyId <= 0) {
+            SharedPreferences spLocal = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE);
+
+            int id = spLocal.getInt("user_id", -1);
+            if (id <= 0) {
                 Toast.makeText(requireContext(), "Perfil indisponível: ID do usuário não encontrado na sessão.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            Uri deeplink = Uri.parse("app://Core/Profile");
+            String tipoUsuario = spLocal.getString("tipo_usuario", "COMPANY"); // ou "WORKER", conforme seu login
+            String nome        = spLocal.getString("name", "Usuário");
 
-            NavController nav = NavHostFragment.findNavController(this);
-            nav.navigate(deeplink);
+            Bundle args = new Bundle();
+            args.putInt("workerId", id);
+            args.putString("tipoUsuario", tipoUsuario);
+            args.putString("name", nome);
+            args.putString("imageUrl", imageUrl);
+
+            NavHostFragment.findNavController(this).navigate(R.id.Profile, args);
         });
+
 
         // Botão de Settings (engrenagem do header)
         ImageView btnSettings = view.findViewById(R.id.btnSettings);
@@ -127,20 +137,17 @@ public class WorkerListPageCompany extends Fragment {
 
         // 2) Adapter com clique para navegar por URI (sem depender do :core)
         listAdapter = new ListAdapter(new ArrayList<>(), requireContext(), worker -> {
-            String workerId = String.valueOf(worker.getId());
-            String tipoUsuario = "WORKER";
-            String name = worker.getName();
-            String imageUrl2 = worker.getImageUrl();
+            if (worker == null || worker.getId() == 0) return;
 
             Uri deeplinkUri = Uri.parse("app://Core/Profile" +
-                    "?workerId=" + workerId +
-                    "&tipoUsuario=" + tipoUsuario +
-                    "&name=" + Uri.encode(name) +
-                    "&imageUrl=" + Uri.encode(imageUrl2));
+                    "?workerId=" + worker.getId() +
+                    "&tipoUsuario=WORKER" +
+                    "&name=" + Uri.encode(worker.getName()) +
+                    "&imageUrl=" + Uri.encode(worker.getImageUrl() == null ? "" : worker.getImageUrl()));
 
             Navigation.findNavController(view).navigate(deeplinkUri);
-
         });
+
 
         // 3) Layout + adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -176,7 +183,7 @@ public class WorkerListPageCompany extends Fragment {
 
 
     private void listWorkers() {
-        ListAPI listAPI = com.example.core.network.RetrofitClientPostgres
+        ListAPI listAPI = RetrofitClientPostgres
                 .getInstance(requireContext())
                 .create(ListAPI.class);
 

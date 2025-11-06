@@ -40,4 +40,12 @@
             app:uri="app://Company/SettingsFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/Profile"
+        android:name="com.example.core.Profile">
+        <deepLink
+            android:id="@+id/ProfileDeepLink"
+            app:uri="app://Company/Profile" />
+    </fragment>
+
 </navigation>

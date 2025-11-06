@@ -40,7 +40,7 @@
             android:id="@+id/icon_atividade"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="4dp"
             android:contentDescription="Ícone Chatbot"
             android:src="@drawable/boichat"
             app:layout_constraintEnd_toEndOf="parent"
