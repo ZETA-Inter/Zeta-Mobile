@@ -15,17 +15,9 @@ public class Worker {
     @SerializedName("email")
     private String email;
 
-    @SerializedName("planName")
-    private String planName;
-
-    @SerializedName("companyName")
-    private String companyName;
-
-    // CORREÇÃO: Adicionado o campo que faltava para corresponder ao JSON
     @SerializedName("image_url")
     private String imageUrl;
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -36,14 +28,6 @@ public class Worker {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPlanName() {
-        return planName;
-    }
-
-    public String getCompanyName() {
-        return companyName;
     }
 
     public String getImageUrl() {

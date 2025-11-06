@@ -9,6 +9,6 @@ import retrofit2.http.Path;
 
 public interface ListAPI {
 
-    @GET("api/workers/list-by-companyId/{id}")
+    @GET("api/workers/list-active-by-companyId/{id}")
     Call<List<Worker>> getWorkersByCompany(@Path("id") String companyId);
 }

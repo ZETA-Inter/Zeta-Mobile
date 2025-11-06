@@ -15,10 +15,11 @@ public class UserResponse {
 
     public UserResponse() {}
 
-    public UserResponse(Integer id, String name, String email) {
+    public UserResponse(Integer id, String name, String email, String imageUrl) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.imageUrl = imageUrl;
     }
 
     public Integer getId() {

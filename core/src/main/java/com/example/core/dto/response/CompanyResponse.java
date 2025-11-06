@@ -10,18 +10,14 @@ public class CompanyResponse extends UserResponse {
     @SerializedName("plan_name")
     private String planName;
 
-    @SerializedName("image_url")
-    private String imageUrl;
-
     public CompanyResponse() {}
 
-    public CompanyResponse(Integer id, String name, String email) {
-        super(id, name, email);
+    public CompanyResponse(Integer id, String name, String email, String imageUrl) {
+        super(id, name, email, imageUrl);
     }
 
-    public CompanyResponse(Integer id, String name, String email, String planName, String imageUrl) {
-        super(id, name, email);
-        this.imageUrl = imageUrl;
+    public CompanyResponse(Integer id, String name, String email, String imageUrl, String planName) {
+        super(id, name, email, imageUrl);
         this.planName = planName;
     }
     public String getPlanName() {
@@ -30,13 +26,5 @@ public class CompanyResponse extends UserResponse {
 
     public void setPlanName(String planName) {
         this.planName = planName;
-    }
-
-    public String getImageUrl() {
-        return Collections.singleton(imageUrl).toString();
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 }
