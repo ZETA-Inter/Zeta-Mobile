@@ -74,7 +74,7 @@ public class ChatBotWorker extends Fragment {
         apiService = RetrofitClientIA.getInstance(requireContext()).create(ApiIA.class);
 
         // Mensagem inicial do chatbot
-        addBotMessage("Olá! Sou o Chatbot Zeta. Como posso te ajudar?");
+        addBotMessage("Olá! Sou o Canchim. Como posso te ajudar?");
 
         // 4. Configuração do Botão de Envio
         btnSend.setOnClickListener(v -> sendMessage());
