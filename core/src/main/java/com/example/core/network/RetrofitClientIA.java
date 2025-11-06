@@ -11,11 +11,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClientIA {
     private static Retrofit retrofit;
     private static final String BASE_URL_CHATBOT = "http://3.82.86.44:8000/";
-<<<<<<< HEAD
-=======
-
->>>>>>> 8fc9fb7f0e2dfa9d2aca9178023427f3cc215985
-
 
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {

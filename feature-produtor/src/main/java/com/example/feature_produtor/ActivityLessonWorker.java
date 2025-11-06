@@ -336,7 +336,7 @@ public class ActivityLessonWorker extends Fragment implements AnswerAdapter.OnAn
                 Navigation.findNavController(v).navigate(R.id.HomePageWorker));
 
         chatbot.setOnClickListener(v->
-                Navigation.findNavController(v).navigate(R.id.ChatBotWorker));
+                Navigation.findNavController(v).navigate(R.id.ChatBotWorkerActivity));
 
         btContinuar.setOnClickListener(v -> {
             if (selectedAnswer == null) return;

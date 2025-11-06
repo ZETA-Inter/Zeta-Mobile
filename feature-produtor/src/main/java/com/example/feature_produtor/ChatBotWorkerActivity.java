@@ -30,7 +30,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // A classe agora é ChatBotWorker (usando o nome do seu código enviado)
-public class ChatBotWorker extends Fragment {
+public class ChatBotWorkerActivity extends Fragment {
 
     private EditText editMessage;
     private ImageButton btnSend;
@@ -118,7 +118,7 @@ public class ChatBotWorker extends Fragment {
 
         // 3. Faz a chamada à API
         ChatRequest request = new ChatRequest(messageText);
-        Call<ChatResponse> call = apiService.searchPrograms(request);
+        Call<ChatResponse> call = apiService.sendMessage(request);
 
         setSending(true);
 

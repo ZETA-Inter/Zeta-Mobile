@@ -39,11 +39,11 @@
 
         <ImageView
             android:id="@+id/icon_atividade"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="75dp"
+            android:layout_height="77dp"
             android:layout_marginTop="4dp"
             android:contentDescription="Ícone Chatbot"
-            android:src="@drawable/boichat"
+            android:src="@drawable/boinoite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.879"
             app:layout_constraintStart_toEndOf="@+id/titulo_chat"

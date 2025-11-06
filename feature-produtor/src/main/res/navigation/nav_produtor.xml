@@ -60,6 +60,11 @@
     </fragment>
 
     <fragment
+        android:id="@+id/ChatBotWorkerActivity"
+        android:name="com.example.feature_produtor.ChatBotWorkerActivity">
+    </fragment>
+
+    <fragment
         android:id="@+id/EditProfile"
         android:name="com.example.feature_produtor.EditProfile">
     </fragment>
